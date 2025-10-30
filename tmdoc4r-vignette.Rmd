@@ -1,0 +1,58 @@
+---
+title: tmdoc4r tutorial
+author: NN
+date: 2025-10-30 13:34
+output:
+   html_document:
+      toc: true
+      theme: null
+      css: mini.css
+vignette: >
+   %\VignetteEngine{knitr::rmarkdown}
+   %\VignetteIndexEntry{tmdoc4r tutorial}
+include-before: |
+    <style>
+    body { max-width: 900px; font-family: Candara, sans-serif; padding: 1em; margin: auto;}
+    pre  { font-family: Consolas; monospaced; }
+    pre, blockquote pre, #TOC {
+        font-size: 90%;
+        border-top:    0.1em #9ac solid;
+        border-bottom: 0.1em #9ac solid;
+        padding: 10px;
+        background: #e9f9ff;
+    }
+    #TOC ul, #TOC ul li, #TOC ul li a,
+    code, .hljs-literal, .hljs-number, .hljs-comment, .hljs-keyword, .hljs-string {  background: #e9f9ff; }
+    table { min-width: 400px; border-spacing: 5px;  border-collapse: collapse; }
+    .title, .author, .date { text-align: center ; }
+    #TOC > ul { margin-left: -20px;  list-style-type: square ; }
+    a { color: #0655cc; text-decoration: none; }
+    a:visited { color: #5506cc; }
+    a:hover { color: #cc5506; }    
+    table {    
+        border-collapse: collapse;
+        border-bottom: 2px solid;
+        border-spacing: 5px;
+        min-width: 400px;
+    }
+    table thead tr th { 
+        background-color: #fde9d9;
+        text-align: left; 
+        padding: 10px;
+        border-top: 2px solid;
+        border-bottom: 2px solid;
+    }
+    table td { 
+        background-color: #fff9e9;
+
+        text-align: left; 
+        padding: 10px;
+    }
+    table td strong { background-color: #fff9e9; }
+    p code { background: #f1f7fa ; font-size: 90%;}
+    </style>
+    <center>some links on top</center>
+---
+
+## Introduction
+
