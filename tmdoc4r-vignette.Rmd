@@ -1,14 +1,14 @@
 ---
 title: tmdoc4r tutorial
 author: NN
-date: 2025-10-30 13:34
+date: 2025-10-30 16:25
 output:
    html_document:
       toc: true
       theme: null
       css: mini.css
 vignette: >
-   %\VignetteEngine{knitr::rmarkdown}
+   %\VignetteEngine{tmdoc4r::tmdoc}
    %\VignetteIndexEntry{tmdoc4r tutorial}
 include-before: |
     <style>

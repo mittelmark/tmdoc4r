@@ -16,8 +16,6 @@
 #' URL:  https://github.com/mittelmark/tmdoc4r
 #' BugReports: https://github.com/mittelmark/tmdoc4r/issues
 #' Depends: R (>= 3.5.0)
-#' Suggests: knitr, rmarkdown
-#' VignetteBuilder: knitr
 #' License: MIT + file LICENSE
 #' Language: en-US
 #' Encoding: UTF-8
@@ -95,8 +93,8 @@
 #' }
 #' \examples{
 #' library(tmdoc4r)
-#' cat("## Hello\n\n```{r}\nprint('Hello World!')\n```\n",file="infile.Rmd")
-#' tmdoc("infile.Rmd","outfile.html")
+#'  cat("## Hello\n\n```{r}\nprint('Hello World!')\n```\n",file="infile.Rmd")
+#'  tmdoc("infile.Rmd","outfile.html")
 #' } 
 #' \author{Detlef Groth, University of Potsdam}
 
@@ -108,12 +106,11 @@
     tcltk::.Tcl(paste("lappend auto_path",file.path(system.file(package="tmdoc4r"),"tmdoc", "lib")))
     tcltk::.Tcl("package require tmdoc")
     tcltk::.Tcl("package require mndoc")    
-#    tools::vignetteEngine("tmdoc4r",
-#                          package=pkgname,
-#                          weave = function (file, ...) { tmdoc4r::tmdoc(file,...,mathjax=TRUE) },
-#                          tangle=function (file, ...) { tmdoc::ttangle(file,...) },
-#                          pattern="[.][PpTtRr]md$")
-
+    tools::vignetteEngine("tmdoc4r",
+                          package=pkgname,
+                          weave = function (file, ...) { tmdoc(file,...,mathjax=TRUE) },
+                          tangle=function (file, ...) { ttangle(file,...) },
+                          pattern="[.][PpTtRr]md$")
 }
 
 
@@ -122,7 +119,7 @@
 #' \alias{tmdoc}
 #' \title{perform literate programming}
 #' \description{
-#'     Convert Markdown documents with R, Python, Octave or Diagram code to HTML output.
+#' Convert Markdown documents with R, Python, Octave or Diagram code to HTML output.
 #' }
 #' \usage{ tmdoc(infile, outfile=NULL, css=NULL, quiet=FALSE, mathjax=NULL, refresh=NULL, inline=TRUE, ...) }
 #' \arguments{
@@ -151,15 +148,14 @@
 #'   \item{\ldots}{kept for compatibility with tmdoc, not used currently }
 #' }
 #' \details{
-#'   This function allows you to perform literate programming where you embed R, Python, Octave or Tcl code
-#'   into your Markdown documents and convert them later to HTML output. Beside of programming languages as 
-#'   well embedding shell programs, or diagram code for GraphViz or PlantUML can be embedded if the appropiate
-#'   tools are available. For a list of available tools which can be used see \url{https://github.com/mittelmark/tmdoc}.
+#' This function allows you to perform literate programming where you embed R, Python, Octave or Tcl code
+#' into your Markdown documents and convert them later to HTML output. Beside of programming languages as 
+#' well embedding shell programs, or diagram code for GraphViz or PlantUML can be embedded if the appropiate
+#' tools are available. For a list of available tools which can be used see \url{https://github.com/mittelmark/tmdoc}.
 #'
-#'   The package can be seen as a lightweight alternative to the rmarkdown or knitr packages. In contrast to them you have 
-#'   embed plots using the \code{png} and the \code{dev.off} commands within your Rmd document and then you use Markdown image syntax
-#'   after the code block to embed the image. 
-#' 
+#' The package can be seen as a lightweight alternative to the rmarkdown or knitr packages. In contrast to them you have 
+#' embed plots using the \code{png} and the \code{dev.off} commands within your Rmd document and then you use Markdown image syntax
+#' after the code block to embed the image. 
 #' }
 #' \examples{
 #' print("tmdoc running")
@@ -229,7 +225,7 @@ tmdoc <- function (infile, outfile=NULL, css=NULL, quiet=FALSE, mathjax=NULL, re
 #' \alias{ttangle}
 #' \title{ extract code chunks }
 #' \description{
-#'     A function which extracts code chunks from Markdown documents.
+#' A function which extracts code chunks from Markdown documents.
 #' }
 #' \usage{ ttangle(infile, outfile=NULL, type="r",quiet=FALSE,...) }
 #' \arguments{
@@ -288,8 +284,8 @@ ttangle <- function(infile, outfile=NULL,type="r",quiet=FALSE,...) {
 #' \alias{df2md}
 #' \title{Convert matrices or data frames into Markdown tables}
 #' \description{
-#'     Utility function to be used within Markdown documents to convert
-#'     data frames or matrices into Markdown tables.
+#' Utility function to be used within Markdown documents to convert
+#' data frames or matrices into Markdown tables.
 #' }
 #' \usage{df2md(df,caption="",rownames=TRUE) }
 #' \arguments{
@@ -352,8 +348,8 @@ df2md <- function(df,caption="",rownames=TRUE) {
 #' \alias{lipsum}
 #' \title{Create lipsum text to fill documents with text blocks}
 #' \description{
-#'     This function allows you to fill simple Lorem lipsum text into your document
-#'     to start initial layout previews.
+#' This function allows you to fill simple Lorem lipsum text into your document
+#' to start initial layout previews.
 #' }
 #' \usage{lipsum(type=1, paragraphs=1,lang="latin") }
 #' \arguments{
@@ -412,7 +408,6 @@ output:
       toc: true
       theme: null
       css: mini.css
-vignette: >
    %%\\VignetteEngine{knitr::rmarkdown}
    %%\\VignetteIndexEntry{%s tutorial}
 include-before: |
