@@ -1,0 +1,73 @@
+---
+title: Example 10 - LaTeX Equations
+author: Detlef Groth
+date: 2025-10-31 17:10
+---
+
+`tcl include header.md`
+
+## Introduction
+
+This is a Markdown file with a header  inclusion on top and a demonstration on
+how to embed LaTeX equations using the CodeCogs web service. The equations are embedded like this:
+
+
+```
+'``{.mtex}
+E = mc^2  \tag{1}
+'``
+```
+
+Here the output:
+
+```{.mtex}
+E = mc^2  \tag{1}
+```
+
+And here as an example a matrix displayed:
+
+```
+'``{.mtex}
+\begin{bmatrix}
+1 & 2 & 3 \\      \tag{2}
+4 & 5 & 6 
+\end{bmatrix}
+'``
+```
+
+And here the output:
+
+```{.mtex}
+\begin{bmatrix}
+1 & 2 & 3 \\      \tag{2}
+4 & 5 & 6 
+\end{bmatrix}
+```
+
+Again using the option  `echo=false`  we can as well hide the code to generate
+the equation or the matrix like so:
+
+```
+'``{.mtex echo=false}
+\begin{bmatrix}
+1 & 2 & 3 \\      \tag{3}
+4 & 5 & 6 \\
+7 & 8 & 9
+\end{bmatrix}
+'``
+```
+
+And here the output, where you only see the matrix but not the LaTeX code:
+
+```{.mtex echo=false}
+\begin{bmatrix}
+1 & 2 & 3 \\      \tag{3}
+4 & 5 & 6 \\
+7 & 8 & 9
+\end{bmatrix}
+```
+
+## EOF
+
+
+

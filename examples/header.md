@@ -5,7 +5,7 @@
 ---
 
 [ex-01](ex-01.html) - [ex-02](ex-02.html) - [ex-03](ex-03.html) - [ex-04](ex-04.html) - [ex-05](ex-05.html) - [ex-06](ex-06.html) - 
-[ex-07](ex-07.html) - [ex-08](ex-08.html) 
+[ex-07](ex-07.html) - [ex-08](ex-08.html) - [ex-09](ex-09.html) - [ex-10](ex-10.html) 
 
 ---
 
