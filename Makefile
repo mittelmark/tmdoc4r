@@ -41,6 +41,7 @@ ex:
 	cd examples && R_LIBS=`pwd`/$(pkg).Rcheck Rscript -e "library($(pkg));tmdoc('ex-03.Rmd','ex-03.html',css='tmdoc.css');"		
 	cd examples && R_LIBS=`pwd`/$(pkg).Rcheck Rscript -e "library($(pkg));tmdoc('ex-04.pmd','ex-04.html',css='tmdoc.css');"			
 	cd examples && R_LIBS=`pwd`/$(pkg).Rcheck Rscript -e "library($(pkg));tmdoc('ex-05.omd','ex-05.html',css='tmdoc.css');"				
+	cd examples && R_LIBS=`pwd`/$(pkg).Rcheck Rscript -e "library($(pkg));tmdoc('ex-06.tmd','ex-06.html',css='tmdoc.css');"					
 clean:
 	-rm -rf $(pkg)/
 	-rm -rf $(pkg).Rcheck

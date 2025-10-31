@@ -1,0 +1,82 @@
+---
+title: Example 02 - Kroki code chunks
+author: Detlef Groth
+date: 2025-10-31 11:01
+---
+
+`tcl include header.md`
+
+## Introduction
+
+This is a Markdown file with a Kroki diagram code chunks.
+
+## Hello World - GraphViz
+
+```{.kroki dia=graphviz}
+digraph { 
+    rankdir="LR"; 
+    node[shape=box,style=filled,fillcolor=skyblue];
+    Hello -> "World!" 
+}
+```
+
+## PlantUML Mindmap
+
+```{.kroki dia=plantuml}
+@startmindmap
+
++ "Literate Programming"
+++ Tcl
++++ tmdoc
++++ mndoc
+++ R
++++ tmdoc4r
+++++ mndoc
+++++ tmdoc
+
+@endmindmap
+```
+
+## PlantUML Class
+
+For more information look at this tutorial: [https://blog.planttext.com/2023/04/05/class-diagrams/](https://blog.planttext.com/2023/04/05/class-diagrams/)
+
+```{.kroki dia=plantuml}
+class A {
+ + prop1
+ # prop2
+ - prop3
+ + meth1()
+ # meth2()
+ - meth3()
+}
+class B { }
+class C { }
+class D { }
+class E extends A { }
+A --> B
+B -* C
+D --o C
+```
+
+## Ditaa Example
+
+```{.kroki dia=ditaa}
++----------------------------------+
+| File Edit #eee              Help |
++----------------------------------+
+|                                  |
+|                                  |
+| Edit Window                      |
+|                                  |
+|                                  |
+|                                  |
++----------------------+-----------+
+| status               | #aff      |
++----------------------+-----------+
+```
+
+## EOF
+
+
+
