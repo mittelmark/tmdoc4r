@@ -1,0 +1,27 @@
+---
+title: Example 07 - Abbreviations
+author: Detlef Groth
+date: 2025-10-31 11:45
+UP: University of Potsdam, Germany
+---
+
+`tcl include header.md`
+
+## Introduction
+
+This is a simple Markdown file  with a header inclusion on top and some abbreviations which are used from the YAML header.
+
+They can be used like this:
+
+```
+This document was modified at {date} by {author}, {UP}.
+```
+
+The output is:
+
+This document was modified at {date} by {author}, {UP}.
+
+## EOF
+
+
+
