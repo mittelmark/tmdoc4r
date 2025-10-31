@@ -1,0 +1,33 @@
+---
+title: Example 08 - CSV Tables
+author: Detlef Groth
+date: 2025-10-31 12:30
+---
+
+`tcl include header.md`
+
+## Introduction
+
+This  is  a  simple  Markdown  file  with  a  header   inclusion  on  top  and
+demonstrating how to embed simple tables based on the CSV format.
+
+```{.csv results=asis}
+col1,col2,col3,col4
+1,2,3,4
+5,6,7,8
+```
+
+The code for the table can be as well hidden by using `echo=false`.
+
+```{.csv results=asis echo=false}
+col5,col6,col7,col8
+9,10,11,12
+13,14,15,16
+17,18,19,20
+```
+
+
+## EOF
+
+
+
