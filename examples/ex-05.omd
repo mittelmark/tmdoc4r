@@ -1,14 +1,14 @@
 ---
-title: Example 04 - Octave code chunks
+title: Example 05 - Octave code chunks
 author: Detlef Groth
-date: 2025-10-31 09:17
+date: 2025-10-31 11:06
 ---
 
 `tcl include header.md`
 
 ## Introduction
 
-This is a Markdown file just with a few Python code chunks.
+This is a Markdown file with a few Octave code chunks.
 
 ## Hello World
 

@@ -1,16 +1,20 @@
 ---
-title: Example 02 - Kroki code chunks
+title: Example 06 - Kroki code chunks
 author: Detlef Groth
-date: 2025-10-31 11:01
+date: 2025-10-31 11:13
 ---
 
 `tcl include header.md`
 
 ## Introduction
 
-This is a Markdown file with a Kroki diagram code chunks.
+This is a Markdown file with Kroki diagram code chunks. If the tools plantuml,
+ditaa or dot (GraphViz) are installed locally these local applications will be
+used to generate the images.
 
 ## Hello World - GraphViz
+
+For more information about GraphViz diagrams look here: [https://graphviz.org/](https://graphviz.org/)
 
 ```{.kroki dia=graphviz}
 digraph { 
@@ -21,6 +25,8 @@ digraph {
 ```
 
 ## PlantUML Mindmap
+
+For more information about PlantUML mindmaps look here: [https://plantuml.com/de/mindmap-diagram](https://plantuml.com/de/mindmap-diagram)
 
 ```{.kroki dia=plantuml}
 @startmindmap
@@ -61,9 +67,11 @@ D --o C
 
 ## Ditaa Example
 
+For more information about Ditaa diagrams look here: [https://github.com/stathissideris/ditaa](https://github.com/stathissideris/ditaa)
+
 ```{.kroki dia=ditaa}
-+----------------------------------+
-| File Edit #eee              Help |
+/----------------------------------\
+| File Edit cEEE              Help |
 +----------------------------------+
 |                                  |
 |                                  |
@@ -72,8 +80,8 @@ D --o C
 |                                  |
 |                                  |
 +----------------------+-----------+
-| status               | #aff      |
-+----------------------+-----------+
+| statusbar            | c399      |
+\----------------------+-----------/
 ```
 
 ## EOF
