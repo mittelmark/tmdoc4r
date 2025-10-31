@@ -1,0 +1,40 @@
+---
+title: Example 02 - Tcl code chunks
+author: Detlef Groth
+date: 2025-10-31 08:56
+---
+
+`tcl include header.md`
+
+## Introduction
+
+This is a Markdown file just with a few Tcl code chunks.
+
+## Hello World
+
+```{.tcl}
+puts "Hello Tcl World!"
+```
+
+## Variable Values
+
+```{.tcl}
+set x 1
+puts $x
+```
+
+In the next code chunk we increment x:
+
+```{.tcl}
+incr x
+puts $x
+```
+
+## Inline code evaluation
+
+The value of x is `tcl set x`!
+
+## EOF
+
+
+

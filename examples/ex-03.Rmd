@@ -1,0 +1,40 @@
+---
+title: Example 03 - R code chunks
+author: Detlef Groth
+date: 2025-10-31 08:55
+---
+
+`tcl include header.md`
+
+## Introduction
+
+This is a Markdown file just with a few R code chunks.
+
+## Hello World
+
+```{r}
+print("Hello R World!")
+```
+
+## Variable Values
+
+```{r}
+x=1
+print(x)
+```
+
+In the next code chunk we increment x:
+
+```{r}
+x=x+1
+print(x)
+```
+
+## Inline code evaluation
+
+The value of x is `r x`!
+
+## EOF
+
+
+

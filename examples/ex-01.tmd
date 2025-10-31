@@ -1,0 +1,16 @@
+---
+title: Example 01
+author: Detlef Groth
+date: 2025-10-31 08:49
+---
+
+`tcl include header.md`
+
+## Introduction
+
+This is a simple Markdown file just with a header inclusion on top.
+
+## EOF
+
+
+
