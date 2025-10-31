@@ -1,0 +1,40 @@
+---
+title: Example 04 - Octave code chunks
+author: Detlef Groth
+date: 2025-10-31 09:17
+---
+
+`tcl include header.md`
+
+## Introduction
+
+This is a Markdown file just with a few Python code chunks.
+
+## Hello World
+
+```{oc wait=500}
+disp("Hello Octave World!")
+```
+
+## Variable Values
+
+```{oc}
+x=1
+disp(x)
+```
+
+In the next code chunk we increment x:
+
+```{oc}
+x=x+1
+disp(x)
+```
+
+## Inline code evaluation
+
+The value of x is `oc disp(x)`!
+
+## EOF
+
+
+

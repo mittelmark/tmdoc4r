@@ -1,0 +1,40 @@
+---
+title: Example 04 - Python code chunks
+author: Detlef Groth
+date: 2025-10-31 09:15
+---
+
+`tcl include header.md`
+
+## Introduction
+
+This is a Markdown file just with a few Python code chunks.
+
+## Hello World
+
+```{py wait=500}
+print("Hello Python World!")
+```
+
+## Variable Values
+
+```{py}
+x=1
+print(x)
+```
+
+In the next code chunk we increment x:
+
+```{py}
+x=x+1
+print(x)
+```
+
+## Inline code evaluation
+
+The value of x is `py x`!
+
+## EOF
+
+
+
