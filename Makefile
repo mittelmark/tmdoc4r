@@ -27,11 +27,12 @@ build:
 	Rscript $(pkg)-src.R --vignettex $(pkg)-src.R
 	mv $(pkg)/vignettes temp
 	mkdir $(pkg)/inst/doc
-	tmdoc tmdoc4r-examples.Rmd - | mndoc - $(pkg)/inst/doc/$(pkg)-examples.html
-	tmdoc tmdoc4r-vignette.Rmd - | mndoc - $(pkg)/inst/doc/$(pkg)-vignette.html	
+	tmdoc tmdoc4r-examples.Rmd - | mndoc - $(pkg)/inst/doc/$(pkg)-examples.html --css examples/tmdoc.css
+	tmdoc tmdoc4r-vignette.Rmd - --toc true | mndoc - $(pkg)/inst/doc/$(pkg)-vignette.html --css examples/tmdoc.css 
 	R_LIBS=`pwd`/$(pkg).Rcheck/ Rscript $(pkg)-src.R --build $(pkg)
 	R_LIBS=`pwd`/$(pkg).Rcheck/ Rscript $(pkg)-src.R --check $(pkg)_$(VERSION).tar.gz
-
+vignette:
+	tmdoc tmdoc4r-vignette.Rmd - --toc true | mndoc - $(pkg)/inst/doc/$(pkg)-vignette.html --css examples/tmdoc.css 
 install: build	
 	Rscript $(pkg)-src.R --install $(pkg)_$(VERSION).tar.gz
 

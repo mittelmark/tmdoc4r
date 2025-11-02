@@ -1,58 +1,322 @@
 ---
 title: tmdoc4r tutorial
-author: NN
-date: 2025-10-30 16:25
-output:
-   html_document:
-      toc: true
-      theme: null
-      css: mini.css
-vignette: >
-   %\VignetteEngine{tmdoc4r::tmdoc}
-   %\VignetteIndexEntry{tmdoc4r tutorial}
-include-before: |
-    <style>
-    body { max-width: 900px; font-family: Candara, sans-serif; padding: 1em; margin: auto;}
-    pre  { font-family: Consolas; monospaced; }
-    pre, blockquote pre, #TOC {
-        font-size: 90%;
-        border-top:    0.1em #9ac solid;
-        border-bottom: 0.1em #9ac solid;
-        padding: 10px;
-        background: #e9f9ff;
-    }
-    #TOC ul, #TOC ul li, #TOC ul li a,
-    code, .hljs-literal, .hljs-number, .hljs-comment, .hljs-keyword, .hljs-string {  background: #e9f9ff; }
-    table { min-width: 400px; border-spacing: 5px;  border-collapse: collapse; }
-    .title, .author, .date { text-align: center ; }
-    #TOC > ul { margin-left: -20px;  list-style-type: square ; }
-    a { color: #0655cc; text-decoration: none; }
-    a:visited { color: #5506cc; }
-    a:hover { color: #cc5506; }    
-    table {    
-        border-collapse: collapse;
-        border-bottom: 2px solid;
-        border-spacing: 5px;
-        min-width: 400px;
-    }
-    table thead tr th { 
-        background-color: #fde9d9;
-        text-align: left; 
-        padding: 10px;
-        border-top: 2px solid;
-        border-bottom: 2px solid;
-    }
-    table td { 
-        background-color: #fff9e9;
-
-        text-align: left; 
-        padding: 10px;
-    }
-    table td strong { background-color: #fff9e9; }
-    p code { background: #f1f7fa ; font-size: 90%;}
-    </style>
-    <center>some links on top</center>
+author: Detlef Groth, University of Potsdam, Germany
+date: 2025-11-02 17:58
 ---
 
+`tcl include tmdoc4r-vignette.toc`
+
 ## Introduction
+
+This a tutorial for the `tmdoc4r`  package  which can be seen as a lightweight
+replacement of more sophisticated R package like `knitr` or `rmarkdown`.
+
+The  install  size of the  `tmdoc4r`  package is less than 1MB and it does not
+have any dependencies except for the package `tcltk` which should be installed
+on most R basic  installations,  probably  except  on MacOS. On MacOS it might be
+installed  manually by the user with the standard  `install.packages('tcltk')`
+approach. In addition on MacOS it might be required to install the [XQuartz](https://www.xquartz.org) package. The package `tmdoc4r` itself provides the following features:
+
+- literate  programming  with R code chunks  embedded  within code fences with
+  triple  backticks  and  short  code  fragments  of R embeded  within  single
+  backticks
+- literate  programming as well with Python, Tcl, or Octave in the same way as
+  with R
+- embedding  shell code chunks for instance to create  graphics  using diagram
+  tools like  GraphViz  dot,  PlantUML or Ditaa or music tools for instance to
+  display sheet musing using ABC music with a tool like `abcm2ps`
+- using YAML defined abbreviations
+- embedding tables using CSV syntax
+- creating citations and list of references based on BiTeX files
+- including other text files using the 'tcl include  FILENAME' syntax (replace
+  single quotes here with backticks
+- embedding LaTeX equations are images usig the CodeCogs webservice
+- document support for Markdown, LaTex, Typst and AsciiDoc
+
+## Literate programming with R
+
+As this is a vignette  tutorial for the R package `tmdoc4r` we will focus here
+on the embedding of R code and other things which are related to writing research reports with R. For more information you might look at the documentation of the Tcl package [tmdoc](https://github.com/mittelmark/tmdoc).
+
+### Meta Information in the Document Header
+
+The package supports the addition of meta data in the document YAML header. Here an example for a YAML header:
+
+```
+---
+title: This is a title
+author: Max Musterman, University of Mustercity
+date: 2025-11-03
+---
+```
+
+### R Code Chunks
+
+R code chunks are started with triple backticks an an indicator r within curly braces which look like this:
+
+```
+' ```{r}
+' print("Hello R World!")
+' ```
+```
+
+> [!INFO]
+> Always Ignore the leading single quotes. They are added here only to avoid
+> interpretation of the text thereafter as this document is written and 
+> evaluated with the tmdoc4r package itself.
+
+Here is the output:
+
+```{r}
+print("Hello R World!")
+```
+
+To hide the R code and just display the output, the option  echo=FALSE  can be
+added within the curly braces like this:
+
+
+```
+' ```{r echo=FALSE}
+' print("Hello R World with echo=FALSE!")
+' ```
+```
+
+Here the output:
+
+```{r echo=FALSE}
+print("Hello R World with echo=FALSE!")
+```
+
+Here you can't see the code block, just the output.
+
+There are a few more options which are listed below in more detail.
+
+### Plot Generation
+
+Often we would like to add R plots to our  documents to  illustrate  the data.
+Here an example plot for the iris data set.
+
+Here an example (again remove the leading single quote):
+
+```
+' ```{r}
+' if (!dir.exists("r-images")) {
+'     dir.create("r-images")
+' }
+' png("r-images/iris.png")
+' with(iris,plot(Sepal.Width ~ Sepal.Length,col=as.numeric(Species)+1))
+' dev.off()
+' ```
+' 
+' ![ ](r-images/iris.png){width="400px"}
+'
+```
+
+And here the output:
+
+```{r}
+if (!dir.exists("r-images")) {
+    dir.create("r-images")
+}
+png("r-images/iris.png")
+with(iris,plot(Sepal.Width ~ Sepal.Length,col=as.numeric(Species)+1))
+dev.off()
+```
+
+![ ](r-images/iris.png){width="400px"}
+
+
+Beside of this manual  opening of a file using the `png`  function,  we can as
+well use the code chunk option `fig=TRUE` to automatically  open and close the
+png  device.  Often you like to store as well the images in a separate  folder
+within your project folder, for this purpose you can use the `fig.path` option
+which is set per default to the current directory. Here an example where we change this to the _r-images_ folder:
+
+```
+' ```{r label=iris2,fig=TRUE,fig.path="r-images",fig.width=500,fig.height=400}
+' with(iris,plot(Petal.Width ~ Petal.Length,col=as.numeric(Species)+1))
+' ```
+```
+
+And here the output:
+
+```{r label=iris2,fig=TRUE,fig.path="r-images",fig.width=500,fig.height=400}
+with(iris,plot(Petal.Width ~ Petal.Length,col=as.numeric(Species)+1))
+```
+
+### R Code Chunk Options
+
+- _echo_ - should the Tcl code itself been show, defaults to _TRUE_
+- _eval_ - should the code chunk be evaluated, defaults to _TRUE_
+- _fig_ - does the code chunks creates a figure, defaults to _FALSE_
+- _fig.path_ - the folder where R plots should be saved, defaults to `.` the current directory
+- _fig.height_ - the figure height of the produced image, default: 600
+- _fig.width_ - the figure width of the produced image, default: 600
+- _include_ - should a possible figure been included directly after the code chunk, defaults to _TRUE_
+- _label_ - text label for the code chunk, defaults to _"chunk-nn"_ where _nn_ is a counter.
+- _results_ - Should the results of code evaluation been show, either _"show"_, 
+   _"hide"_ or _"asis"_, the latter does include the ouptput not into a pre or verbatim code environment, dDefaults to _"show"_
+
+### Tables with R
+
+Often we would like to display  tables from our data within our  document. For
+this purpose the package comes with a function  `df2md` which can display data
+from data frames, matrices or tables. Here an example:
+
+```{r results="asis"}
+df2md(head(iris))
+```
+
+### Inline R Code
+
+Short R code  fragments  can be as well  include in normal  text using  single
+backticks and the r indication after the opening backtick. This can be used to include short information about the data or the results of some tests. Here an example.
+
+```
+The data set iris has data for `r nrow(iris)` plants, 
+where `r length(which(iris$Species=='setosa'))` are setosa plants.
+
+This document was compiled at `r Sys.Date()`.
+```
+
+And here the output:
+
+The data set iris has data for `r nrow(iris)` plants, 
+where `r length(which(iris$Species=='setosa'))` are setosa plants.
+
+This document was compiled at `r Sys.Date()`.
+
+## CSV Tables
+
+Sometimes  you would like just to embed a short table without using R or other
+programming languages, just by adding directly the code to the document. For this purpose you can use CSV code chunks, CSV stands for comma separated values. Here an example:
+Here an example:
+
+```
+' ```{.csv}
+' col1,col2,col3,col4
+' 1,2,3,4
+' 5,6,7,8
+' 9,10,11,12
+' ```
+```
+
+And here the output:
+
+```{.csv}
+col1,col2,col3,col4
+1,2,3,4
+5,6,7,8
+9,10,11,12
+```
+
+Again you can hide the input, by writing `echo=FALSE` as code chunk option:
+
+```
+' ```{.csv echo=FALSE}
+' col1,col2,col3,col4
+' 11,12,13,14
+' 15,16,17,18
+' 19,20,21,22
+' ```
+```
+
+And here the output:
+
+```{.csv echo=FALSE}
+col1,col2,col3,col4
+11,12,13,14
+15,16,17,18
+19,20,21,22
+```
+
+## Diagram Code
+
+Beside  of  the  inclusion  of R code  as we can do in R  knitr,  the  package
+`tmdoc4r` as well  supports  the  embedding  of diagram  code for  instance of
+GraphViz  dot, PlantUML or Ditaa. This can be done using the Kroki  webservice
+but the package checks for these three tools for local installations first. To
+get  a  list  of  possible   diagram  types  check  the  kroki  webservice  at
+[https://kroki.io](https://kroki.io).
+
+```{.kroki}
+A --> B
+```
+
+Here an example for a GraphViz dot diagram.
+
+```
+' ```{.kroki dia=graphviz ext=png fig.path=kroki,fig.width=150}
+' digraph g {
+'    rankdir="LR"
+'    node[shape=box,style=filled];
+'    "Hello" -> "World!"
+' }
+' ```
+```
+
+And here the output:
+
+```{.kroki dia=graphviz ext=png fig.path=kroki,fig.width=150}
+digraph g {
+    rankdir="LR"
+    node[shape=box,style=filled];
+    "Hello" -> "World!"
+}
+```
+
+Let's continue with an example for a PlantUML class diagram:
+
+```
+' ```{.kroki fig=true dia=plantuml ext=png fig.path=kroki,fig.width=150}
+' class A { 
+'     + pubprop
+'     - priprop
+'     # proprop
+'     + pubmeth()
+'     - primeth()
+'     # prometh()
+' }
+
+' class B extends A {
+'     - someprop
+'     + somemeth()
+' }
+' ```
+```
+
+And here the output:
+
+```{.kroki fig=true dia=plantuml ext=png fig.path=kroki,fig.width=150}
+@startuml
+class A { 
+    + pubprop
+    - priprop
+    # proprop
+    + pubmeth()
+    - primeth()
+    # prometh()
+}
+
+class B extends A {
+    - someprop
+    + somemeth()
+}
+@enduml
+```
+
+
+## Summary
+
+
+In this vignette for the `tmdoc4r`  package we discussed some main features of
+the  package  which are  useful for doing  reproducible  research  using R and
+Markdown with a little all-inclusive  package. For more informations about the
+possibilities  about the underlying Tcl package tmdoc have a look at the tmdoc
+project                                 page                                at
+[https://github.com/mittelmark/tmdoc](https://github.com/mittelmark/tmdoc) and
+at       the       tmdoc-tutorial       pages       at     
+[Tutorial](https://github.com/mittelmark/tmdoc/releases/latest/download/tmdoc-tutorial.pdf).
+
+
 

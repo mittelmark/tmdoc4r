@@ -4,7 +4,7 @@ exec tclsh "$0" "$@"
 ##############################################################################
 #  Author        : Dr. Detlef Groth
 #  Created       : Tue Feb 18 06:05:14 2020
-#  Last Modified : <251030.0931>
+#  Last Modified : <251102.1813>
 #
 # Copyright (c) 2020-2025  Detlef Groth, University of Potsdam, Germany
 #                          E-mail: dgroth(at)uni(minus)potsdam(dot)de
@@ -42,11 +42,14 @@ exec tclsh "$0" "$@"
 #                                            support for external declaration of abbreviations within Yaml files 
 #                  2025-10-26 version 0.15.1 fix for different user run tmdoc on the same machine
 #                  2025-10-29 version 0.15.2 fix for try as name of slave interp, naming it to itry to avoid clash with try command
-#
+#                  2025-11-01 version 0.15.3 fix for triple quotes within code chunks
+#                  2025-11-XX version 0.16.0 fig.path for R code chunk option 
+#                                            support for TOC inclusion for Markdown files
+#                                            renamed imagepath to fig.path option for kroki as well
 package require Tcl 8.6-
 package require fileutil
 package require yaml
-package provide tmdoc::tmdoc 0.15.2
+package provide tmdoc::tmdoc 0.16.0
 package provide tmdoc [package provide tmdoc::tmdoc]
 source [file join [file dirname [info script]] filter-r.tcl]
 source [file join [file dirname [info script]] filter-python.tcl]
@@ -398,15 +401,23 @@ proc tmdoc::block {txt inmode {style ""}} {
 proc tmdoc::iimage {} {
     uplevel 1 {
         if {$inmode eq "md"} {
-            puts $out "!\[ \]($imgsrc)"
+            if {$copt(fig.width) > 0} {
+                puts $out "!\[ \]($imgsrc){width=\"$copt(fig.width)\"}"
+            } else {
+                puts $out "!\[ \]($imgsrc)"
+            }
         } elseif {$inmode eq "man"} {
             puts $out "\n\[image [file rootname $imgsrc]\]\n"
         } elseif {$inmode eq "adoc"} {
             puts $out "\nimage::$imgsrc\[\]\n"
         } elseif {$inmode eq "typst"} {
           puts $out "\n#image(\"$imgsrc\")\n"
-          } elseif {$inmode eq "latex"} {
-            puts $out "\n\\includegraphics\[width=$copt(fig.width)\]{[file rootname $imgsrc]}\n"
+      } elseif {$inmode eq "latex"} {
+          if {$copt(fig.width) > 0} {
+              puts $out "\n\\includegraphics\[width=$copt(fig.width)\]{[file rootname $imgsrc]}\n"
+          } else {
+              puts $out "\n\\includegraphics{[file rootname $imgsrc]}\n"
+          }
         }
         
     }
@@ -449,7 +460,7 @@ proc ::tmdoc::tmdoc {filename outfile args} {
     }
     set ::inmode $inmode
     set yaml false
-    array set arg [list infile $filename outfile $outfile -mode weave -abbrev ""]
+    array set arg [list infile $filename outfile $outfile -mode weave -abbrev "" -toc false]
     if {[llength $args] > 0} {
         array set arg {*}$args
     }
@@ -511,17 +522,17 @@ proc ::tmdoc::tmdoc {filename outfile args} {
                     ext png chunk.ext txt]
     ## r, python, octave
     array set dopt [list eval true echo true results show fig false include true pipe python3 \
-        fig.width 600 fig.height 600 fig.cap {} label chunk-nn ext png chunk.ext txt]
+        fig.width 0 fig.height 0 fig.cap {} label chunk-nn ext png chunk.ext txt]
     ## bash / shell
     array set bdopt [list cmd "" echo true eval true results show fig true include true \
-        fig.width 12cm label chunk-nn ext png chunk.ext txt]
+        fig.width 0 label chunk-nn ext png chunk.ext txt]
     ## kroki
     array set kdopt [list echo true eval true results show fig true include true \
-                     fig.width 12cm label chunk-nn ext png dia ditaa \
-                     imagepath .]
+                     fig.width 0 label chunk-nn ext png dia ditaa \
+                     fig.path .]
     ## mtex
     array set tdopt [list echo true eval true results show fig true include true \
-        label chunk-nn imagepath mtexfig ext png]
+        label chunk-nn fig.path mtexfig ext png]
     interpReset
     interp eval intp "set ::inmode $inmode"
     if [catch {open $filename r} infh] {
@@ -531,8 +542,28 @@ proc ::tmdoc::tmdoc {filename outfile args} {
         set lnr 0
         set yamlflag false
         set yamltext ""
-        
+        set toc ""
+        if {$arg(-toc)} {
+            set tocfile [file rootname $filename].toc
+            if {![file exists $tocfile]} {
+                set tout [open $tocfile w 0600]
+                puts $tout "Hint: Run tmdoc twice on this document to get a correct TOC!"
+                close $tout
+            }
+        }
         while {[gets $infh line] >= 0} {
+            if {$arg(-toc)} {
+                if {[regexp {^## +(.+)} $line -> title]} {
+                    set anchor [string trim [string tolower [regsub -all {[^A-za-z]} $title ""]]]
+                    puts $out "<a name=\"$anchor\"> </a>"
+                    append toc "* \[$title\](#$anchor)\n"
+                } elseif {[regexp {^### +(.+)} $line -> title]} {
+                    set anchor [string trim [string tolower [regsub -all {[^A-za-z]} $title ""]]]
+                    puts $out "<a name=\"$anchor\"> </a>"
+                    append toc "    * \[$title\](#$anchor)\n"
+                }
+
+            }
             incr lnr
             if {$yamlflag && [regexp {^---} $line]} {
                 set yamlflag false
@@ -561,7 +592,7 @@ proc ::tmdoc::tmdoc {filename outfile args} {
                     set line [regsub -all "\{$key\}" $line [dict get $abbrev $key]]
                 }
             }
-            if {$mode eq "text" && [regexp {```\{\.?(r|oc|py).*\}} $line]} {
+            if {$mode eq "text" && [regexp {^ {0,2}```\{\.?(r|oc|py).*\}} $line]} {
                 set line [regsub -nocase {\{\.?r(.*)\}} $line "{.pipe pipe=R\\1}"]
                 set line [regsub -nocase {\{\.?oc[a-z]*(.*)\}} $line "{.pipe pipe=octave\\1}"]                
                 set line [regsub -nocase {\{\.?py[a-z]*(.*)\}} $line "{.pipe pipe=python3\\1}"]                                
@@ -589,11 +620,11 @@ proc ::tmdoc::tmdoc {filename outfile args} {
                 set alert [string tolower $alert 1 end]
                 set line "<div class=\"side-[string tolower $alert]\"><p><b>${alert}:</b> "
             }
-            if {$mode eq "text" && (![regexp {   ```} $line] && [regexp {```\s?\{\.?tcl\s*\}} $line -> opts])} {
+            if {$mode eq "text" && (![regexp {   ```} $line] && [regexp {^\s{0,2}```\s?\{\.?tcl\s*\}} $line -> opts])} {
                 set mode code
                 incr chunki
                 array set copt [array get dopt]
-            } elseif {$mode eq "text" && (![regexp {   ```} $line] && [regexp {```\s?\{\.?tcl\s+(.*)\}} $line -> opts])} {
+            } elseif {$mode eq "text" && (![regexp {   ```} $line] && [regexp {^\s{0,2}```\s?\{\.?tcl\s+(.*)\}} $line -> opts])} {
                 set mode code
                 incr chunki
                 array set copt [array get dopt]
@@ -601,27 +632,27 @@ proc ::tmdoc::tmdoc {filename outfile args} {
                 # TODO: spaces in fig.cap etc
                 ::tmdoc::GetOpts 
                 continue
-            } elseif {$mode eq "text" && (![regexp {   ```} $line] && [regexp {```\s?\{\.?(shell|cmd)\s+(.*)\}} $line -> tp opts])} {
+            } elseif {$mode eq "text" && (![regexp {   ```} $line] && [regexp {^\s{0,2}```\s?\{\.?(shell|cmd)\s+(.*)\}} $line -> tp opts])} {
                 set mode shell
                 incr chunki
                 array set copt [array get bdopt]
                 # TODO: spaces in fig.cap etc
                 ::tmdoc::GetOpts 
                 continue
-            } elseif {$mode eq "text" && (![regexp {   ```} $line] && [regexp {```\s?\{\.?(kroki)\s+(.*)\}} $line -> tp opts])} {
+            } elseif {$mode eq "text" && (![regexp {   ```} $line] && [regexp {^\s{0,2}```\s?\{\.?(kroki)\s*(.*)\}} $line -> tp opts])} {
                 set mode kroki
                 incr chunki
                 array set copt [array get kdopt]
                 # TODO: spaces in fig.cap etc
                 ::tmdoc::GetOpts 
                 continue
-            } elseif {$mode eq "text" && (![regexp {   ```} $line] && [regexp {```\s?\{\.?(mtex)(\s*.*)\}} $line -> tp opts])} {
+            } elseif {$mode eq "text" && (![regexp {   ```} $line] && [regexp {^\s{0,2}```\s?\{\.?(mtex)(\s*.*)\}} $line -> tp opts])} {
                 set mode mtex
                 incr chunki
                 array set copt [array get tdopt]
                 ::tmdoc::GetOpts 
                 continue
-            } elseif {$mode eq "text" && (![regexp {   ```} $line] && [regexp {```\s?\{\.?(pipe)(\s*.*)\}} $line -> tp opts])} {
+            } elseif {$mode eq "text" && (![regexp {   ```} $line] && [regexp {^\s{0,2}```\s?\{\.?(pipe)(\s*.*)\}} $line -> tp opts])} {
                 set mode pipe
                 incr chunki
                 array set copt [array get dopt]
@@ -631,9 +662,13 @@ proc ::tmdoc::tmdoc {filename outfile args} {
                 incr chunki
                 set mode $nmode
                 array set copt [array get mopt]
+                ### default is asis for csv
+                if {$mode eq "csv"} {
+                    set copt(results) "asis"
+                }
                 ::tmdoc::GetOpts 
                 continue
-            } elseif {$mode in [list csv pipe] && [regexp {```} $line]} {
+            } elseif {$mode in [list csv pipe] && [regexp {^ {0,2}```} $line]} {
                 if {$copt(echo)} {
                     if {$mode eq "pipe"} {
                         puts $out [tmdoc::block $ginput $inmode $copt(pipe)]
@@ -644,6 +679,8 @@ proc ::tmdoc::tmdoc {filename outfile args} {
                 if {$mode eq "csv"} {
                     if {$copt(results) eq "asis"}  {
                         puts $out [tmdoc::csv $ginput]
+                    } elseif {$copt(results) eq "show"} {
+                        puts $out [tmdoc::block $ginput $inmode]
                     }
                 } elseif {$mode eq "pipe"} {
                     
@@ -671,7 +708,7 @@ proc ::tmdoc::tmdoc {filename outfile args} {
                 set mode text
                 array unset copt
                 continue
-            } elseif {$mode eq "shell" && [regexp {```} $line]} {
+            } elseif {$mode eq "shell" && [regexp {^ {0,2}```} $line]} {
                 if {$copt(echo)} {
                     set cont [tmdoc::block $bashinput $inmode code]
                     puts $out $cont
@@ -729,16 +766,16 @@ proc ::tmdoc::tmdoc {filename outfile args} {
                 set bashinput ""
                 set mode text
                 array unset copt
-            } elseif {$mode eq "kroki" && [regexp {```} $line]} {
+            } elseif {$mode eq "kroki" && [regexp {^ {0,2}```} $line]} {
                 if {$copt(echo)} {
                     set cont [tmdoc::block $krokiinput $inmode kroki]
                     puts $out $cont
                 }
                 ## check local installs of kroki, ditaa or plantuml first
-                set filename [diacheck $krokiinput $copt(imagepath) $copt(dia) $copt(ext)]
+                set filename [diacheck $krokiinput $copt(fig.path) $copt(dia) $copt(ext)]
                 if {$filename eq ""} {
                     set url [dia2kroki $krokiinput $copt(dia) $copt(ext)] 
-                    set filename [url2crc32file $url $copt(imagepath) $copt(ext)]
+                    set filename [url2crc32file $url $copt(fig.path) $copt(ext)]
                 }
                 if {$copt(include)} {
                     set imgsrc $filename
@@ -747,14 +784,14 @@ proc ::tmdoc::tmdoc {filename outfile args} {
                 set krokiinput ""
                 set mode text
                 array unset copt                
-            } elseif {$mode eq "mtex" && [regexp {```} $line]} {
+            } elseif {$mode eq "mtex" && [regexp {^ {0,2}```} $line]} {
                 if {$copt(echo)} {
                     set cont [tmdoc::block $mtexinput $inmode mtex]
                     puts $out $cont
                 }
                 #set url https://math.vercel.app?from=[ue ${mtexinput}].svg
                 set url https://latex.codecogs.com/png.image?[ue ${mtexinput}]
-                set filename [url2crc32file $url $copt(imagepath) $copt(ext)]
+                set filename [url2crc32file $url $copt(fig.path) $copt(ext)]
                 #if {$copt(ext) eq "svg"} {
                 #    set filename [tmdoc::cairosvg $filename [array get copt]]
                 #}
@@ -773,7 +810,7 @@ proc ::tmdoc::tmdoc {filename outfile args} {
                 append mtexinput "$line\n"
             } elseif {$mode in [list csv pipe]} {
                 append ginput "$line\n"
-            } elseif {$mode eq "code" && [regexp {```} $line]} {
+            } elseif {$mode eq "code" && [regexp {^ {0,2}```} $line]} {
                 if {$copt(echo)} {
                     set cont [tmdoc::block $tclcode $inmode tclcode]
                     puts $out $cont
@@ -946,6 +983,13 @@ proc ::tmdoc::tmdoc {filename outfile args} {
         }
         close $infh
         close $out
+        if {$arg(-toc)} {
+            set tout [open $tocfile w 0600]
+            puts $tout "<div class='toc'>\n\n### Table of Contents\n\n"
+            puts $tout $toc
+            puts $tout "</div>"            
+            close $tout
+        }
         if {[interp exists intp]} {
             interp eval intp { catch {destroy . } }
             interp delete intp
@@ -1070,13 +1114,16 @@ proc ::tmdoc::main {argv} {
                      
         Optional arguments:
             
-           --help       - displays this help page, and exit
-           --version    - display version number, and exit
-           --license    - display license information, and exit
-           --mode       - either `weave` for evaluating the code chunks
-                          or `tangle` for extracting all Tcl code  
-           --abbrev     - an Yaml abbreviation file used to expand abbreviations
-                          within curly braces                         
+           --help               - displays this help page, and exit
+           --version            - display version number, and exit
+           --license            - display license information, and exit
+           --mode  weave|tangle - either `weave` for evaluating the code chunks
+                                  or `tangle` for extracting all Tcl code  
+           --abbrev  FILENAM E  - an Yaml abbreviation file used to expand abbreviations
+                                  within curly braces
+           --toc   false|true   - should a table of contents file (toc.md) 
+                                  ready for inclusion being generated
+                                  
                           
         Examples:
         
@@ -1113,8 +1160,20 @@ proc ::tmdoc::main {argv} {
     } else {
         set idxm [lsearch -exact $argv {--mode}]
         set idxa [lsearch -exact $argv {--abbrev}]
+        set idxt [lsearch -exact $argv {--toc}]        
         set mode weave
         set abbrevfile ""
+        set toc false
+        if {$idxt > -1} {
+            set toc [lindex $argv [expr {$idxt + 1}]]
+            if {![string is boolean $toc]} {
+                puts "Error: The argument for --toc must be either true or false!"
+                puts $usage
+                exit 0
+            }
+            set argv [lreplace $argv $idxt [expr {$idxt + 1}]]
+        }
+        
         if {$idxa > -1} {
             set abbrevfile [lindex $argv [expr {$idxa + 1}]]
             if {![file exists $abbrevfile]} {
@@ -1134,7 +1193,7 @@ proc ::tmdoc::main {argv} {
             }
             set argv [lreplace $argv $idxm [expr {$idxm + 1}]]
         }
-        tmdoc::tmdoc [lindex $argv 0] [lindex $argv 1] [list -mode $mode -abbrev $abbrevfile]
+        tmdoc::tmdoc [lindex $argv 0] [lindex $argv 1] [list -mode $mode -abbrev $abbrevfile -toc $toc]
     }
 }
 
