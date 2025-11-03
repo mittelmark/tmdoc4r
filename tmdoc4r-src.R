@@ -3,7 +3,7 @@
 #' Package: tmdoc4r
 #' Type: Package
 #' Title: R single file dummy package
-#' Version: 0.1.1
+#' Version: 0.1.2
 #' Date: 2025-11-03
 #' Author: Detlef Groth
 #' Authors@R: c(person("Detlef","Groth", role=c("aut", "cre"),
@@ -27,6 +27,7 @@
 #' COPYRIGHT HOLDER: Detlef Groth
 
 #' FILE: tmdoc4r/NEWS
+#' 2025-11-03: version 0.1.2 - mtex figure width fix, and fix toc for HTML
 #' 2025-11-03: version 0.1.1 - vignette fix (pdf file)
 #' 2025-11-03: version 0.1.0 - public release
 #' 2025-10-29: version 0.1.0 - startig tmdoc4r
@@ -123,7 +124,7 @@
 #' \description{
 #' Convert Markdown documents with R, Python, Octave or Diagram code to HTML output.
 #' }
-#' \usage{ tmdoc(infile, outfile=NULL, css=NULL, quiet=FALSE, mathjax=NULL, refresh=NULL, inline=TRUE, ...) }
+#' \usage{ tmdoc(infile, outfile=NULL, css=NULL, quiet=FALSE, mathjax=NULL, refresh=NULL, inline=TRUE, toc=FALSE, ...) }
 #' \arguments{
 #'   \item{infile}{
 #'     an infile with Markdown code and embedded Programming language code
@@ -146,6 +147,10 @@
 #'   \item{inline}{
 #'     should images and css files beeing inlined into the final HTML document to make it standalone, 
 #'     if not given or called with inline=TRUE,they are inlined, default: TRUE
+#'   }
+#'   \item{toc}{
+#'     should be a TOC file generated which can be included in the current document, 
+#'     using the `tcl include filename.toc` syntax, default: FALSE
 #'   }
 #'   \item{\ldots}{kept for compatibility with tmdoc, not used currently }
 #' }
@@ -179,7 +184,7 @@
 #' }
 
 #' FILE: tmdoc4r/R/tmdoc.R
-tmdoc <- function (infile, outfile=NULL, css=NULL, quiet=FALSE, mathjax=NULL, refresh=NULL, inline=TRUE,...) {
+tmdoc <- function (infile, outfile=NULL, css=NULL, quiet=FALSE, mathjax=NULL, refresh=NULL, inline=TRUE, toc=FALSE,...) {
     stopifnot(file.exists(infile))
     mdfile=gsub("\\..md$",".md",infile)
     if (is.null(outfile)) {
@@ -189,6 +194,11 @@ tmdoc <- function (infile, outfile=NULL, css=NULL, quiet=FALSE, mathjax=NULL, re
         css=""
     } else {
         css=paste("--css",css)
+    }
+    if (toc) {
+        tocx="--toc true"
+    } else {
+        tocx = ""
     }
     if (is.null(mathjax)) {
         mjx=""
@@ -205,7 +215,7 @@ tmdoc <- function (infile, outfile=NULL, css=NULL, quiet=FALSE, mathjax=NULL, re
     } else {
         inline="--base64 false"
     }
-    cmdline = paste("set ::argv [list",infile, mdfile,"]")        
+    cmdline = paste("set ::argv [list",infile, mdfile,tocx,"]")        
 
     tcltk::.Tcl("set ::quiet true")
     tcltk::.Tcl(paste(paste("cd",getwd())))

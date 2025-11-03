@@ -2,7 +2,7 @@
 ##############################################################################
 #  Author        : Dr. Detlef Groth
 #  Created       : Fri Nov 15 10:20:22 2019
-#  Last Modified : <251030.1012>
+#  Last Modified : <251030.1359>
 #
 #  Description	 : Command line utility and package to extract Markdown documentation 
 #                  from programming code if embedded as after comment sequence #' 
@@ -228,9 +228,8 @@ variable htmlstart [string map $deindent {
     variable mndocstyle [string map $deindent {
         body {
             padding: 30px;
-	    margin-left: 10%; margin-right: 10%;
-	    font-family: serif;
-	    max-width: 90%;
+            max-width: 1000px;
+            margin: 0 auto;
 	}
         div.document-header {
             max-width: 800px;

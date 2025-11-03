@@ -1,0 +1,43 @@
+---
+title: Example 11 - TOC example
+author: Detlef Groth
+date: 2025-11-03 16:30
+toc: true
+---
+
+`tcl include header.md`
+
+`tcl include ex-11.toc`
+
+## Introduction
+
+
+This is a Markdown file with a header  inclusion on top and a demonstration on
+how to create a table of contents in the file.
+
+`tcl include lipsum.txt`
+
+## Material and Methods
+
+`tcl include lipsum.txt`
+
+`tcl include lipsum.txt`
+
+## Results
+
+`tcl include lipsum.txt`
+
+`tcl include lipsum.txt`
+
+`tcl include lipsum.txt`
+
+## Discussion
+
+`tcl include lipsum.txt`
+
+`tcl include lipsum.txt`
+
+## Outlook
+
+`tcl include lipsum.txt`
+
