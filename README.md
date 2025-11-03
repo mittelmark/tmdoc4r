@@ -1,3 +1,9 @@
+[![license](https://img.shields.io/badge/license-BSD-lightgray.svg)](https://opensource.org/license/bsd)
+[![Release](https://img.shields.io/github/v/release/mittelmark/tmdoc4r.svg?label=current+release)](https://github.com/mittelmark/tmdoc4r/releases)
+![Downloads](https://img.shields.io/github/downloads/mittelmark/tmdoc4r/total)
+![Commits](https://img.shields.io/github/commits-since/mittelmark/tmdoc4r/latest)
+[![Vignette](https://img.shields.io/badge/Vignette-blue)](https://github.com/mittelmark/tmdoc4r/releases/latest/download/tmdoc4r-vignette.pdf)
+
 # tmdoc4r
 
 Lightweight alternative for Knitr/RMarkdown to do literate programming.
