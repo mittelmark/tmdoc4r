@@ -50,6 +50,19 @@ library(tmdoc4r)
 vignette("tmdoc4r-vignette")
 ```
 
+## Usage
+
+After loading the library Markdown documents with embedded code chunks can be evaluated and converted to HTML documents using the tmdoc function of the tmdoc4r package for instance like this:
+
+```
+library(tmdoc4r)
+tmdoc("infile.Rmd","outfile.html",css="tmdoc.css",toc=TRUE)
+```
+
+The Rmd file contains than code chunks or other Markup known by __tmdoc__. The [vignette](https://github.com/mittelmark/tmdoc4r/releases/download/v0.1.1/tmdoc4r-vignette.pdf) 
+has more examples. You can choose as well file extensions lile _.tmd_ or __.pmd__ (for Python code) etc for the input file. The input file should however not have a __.md__ extension as this will be the internediate output file extension during the processing to HTML.
+
+
 ## Examples
 
 Here a link to some examples:
