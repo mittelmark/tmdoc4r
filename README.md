@@ -54,8 +54,6 @@ vignette("tmdoc4r-vignette")
 
 Here a link to some examples:
 
-http://htmlpreview.github.io/?https://github.com/mittelmark/tmdoc4r/blob/master/modules/examples/ex-01.html
-
 | Description    | Code    | HTML output |
 |:---------------|:-------:|:----------:|
 | Simple example | [ex-01.tmd](examples/ex-01.tmd) | [ex-01.html](http://htmlpreview.github.io/?https://github.com/mittelmark/tmdoc4r/blob/master/examples/ex-01.html)
@@ -69,6 +67,8 @@ http://htmlpreview.github.io/?https://github.com/mittelmark/tmdoc4r/blob/master/
 | Shell commands | [ex-09.tmd](examples/ex-09.tmd) | [ex-09.html](http://htmlpreview.github.io/?https://github.com/mittelmark/tmdoc4r/blob/master/examples/ex-09.html)
 | LaTeX Math     | [ex-10.tmd](examples/ex-10.tmd) | [ex-10.html](http://htmlpreview.github.io/?https://github.com/mittelmark/tmdoc4r/blob/master/examples/ex-10.html)
 | TOC and Includes | [ex-11.tmd](examples/ex-11.tmd) | [ex-11.html](http://htmlpreview.github.io/?https://github.com/mittelmark/tmdoc4r/blob/master/examples/ex-11.html)
+
+More examples can be found at the [tmdoc tutorial](
 
 ## Author and Copyright
 
