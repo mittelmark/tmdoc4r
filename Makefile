@@ -32,6 +32,7 @@ build:
 	tmdoc tmdoc4r-vignette.Rmd - --toc true | mndoc - $(pkg)/inst/doc/$(pkg)-vignette.html --css examples/tmdoc.css 
 	weasyprint -q --stylesheet small.css $(pkg)/inst/doc/$(pkg)-vignette.html $(pkg)/vignettes/tmdoc4r-vignette.pdf
 	cp tmdoc4r-vignette.Rnw  $(pkg)/vignettes/
+	cp examples/tmdoc.css $(pkg)/inst/files/
 	rm $(pkg)/inst/doc/*.html
 	#cp tmdoc4r-examples.Rmd tmdoc4r-vignette.Rmd $(pkg)/vignettes/
 	R_LIBS=`pwd`/$(pkg).Rcheck/ Rscript $(pkg)-src.R --build $(pkg)

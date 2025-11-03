@@ -3,7 +3,7 @@
 #' Package: tmdoc4r
 #' Type: Package
 #' Title: R single file dummy package
-#' Version: 0.1.2
+#' Version: 0.1.3
 #' Date: 2025-11-03
 #' Author: Detlef Groth
 #' Authors@R: c(person("Detlef","Groth", role=c("aut", "cre"),
@@ -133,7 +133,7 @@
 #'     an HTML outfile, if not given the Markdown extension is simply exchanged by html, default: NULL
 #'   }
 #'   \item{css}{
-#'     an optional css fileHTML outfile, default: NULL
+#'     an optional css file, default: NULL
 #'   }
 #'   \item{quiet}{
 #'     should messages been hidden, default: FALSE
@@ -167,7 +167,8 @@
 #' \examples{
 #' print("tmdoc running")
 #' ## equation and R example:
-#' md="## Title\n\nHello World!\n\n## Equation examples\n\n"
+#' md="`tcl include hello.toc`\n\n"
+#' md=paste(md,"## Title\n\nHello World!\n\n## Equation examples\n\n",sep="")
 #' md=paste(md,"This is an inline equation: $ E = mc^2 $\n",sep="")
 #' md=paste(md,"\nAnd this is a block equation: \n$$x = {-b \\\\pm \\\\sqrt{b^2-4ac} \\\\over 2a}.$$\n\n",sep="")
 #' md=paste(md,"\n\n## R Code Example\n\n```{r eval=TRUE}\nprint('Hello World!')\n```\n",sep="")
@@ -179,6 +180,13 @@
 #' md = paste(md,"A -> B -> C\n}\n```\n\n",sep="")
 #' cat(md,file="hello.Rmd")
 #' tmdoc("hello.Rmd","hello.html",refresh=10,mathjax=TRUE)
+#' tmdoc("hello.Rmd","hello.html",refresh=10,mathjax=TRUE,
+#'  css=file.path(system.file(package="tmdoc4r"),"files", "tmdoc.css"),
+#'  toc=TRUE)
+#' ## we run it twice to get a real TOC
+#' tmdoc("hello.Rmd","hello.html",refresh=10,mathjax=TRUE,
+#'  css=file.path(system.file(package="tmdoc4r"),"files", "tmdoc.css"),
+#'  toc=TRUE)
 #' #file.remove("hello.Rmd")
 #' #file.remove("hello.html")
 #' }
