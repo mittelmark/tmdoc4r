@@ -68,7 +68,7 @@ Here a link to some examples:
 | LaTeX Math     | [ex-10.tmd](examples/ex-10.tmd) | [ex-10.html](http://htmlpreview.github.io/?https://github.com/mittelmark/tmdoc4r/blob/master/examples/ex-10.html)
 | TOC and Includes | [ex-11.tmd](examples/ex-11.tmd) | [ex-11.html](http://htmlpreview.github.io/?https://github.com/mittelmark/tmdoc4r/blob/master/examples/ex-11.html)
 
-More examples can be found at the [tmdoc tutorial](
+More examples can be found at the [tmdoc tutorial](https://github.com/mittelmark/tmdoc/releases/latest/download/tmdoc-tutorial.pdf)
 
 ## Author and Copyright
 
