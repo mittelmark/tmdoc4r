@@ -58,9 +58,9 @@ http://htmlpreview.github.io/?https://github.com/mittelmark/tmdoc4r/blob/master/
 
 | Description    | Code    | HTML output |
 |:--------------:|:-------:|:----------:|
-| Simple example | [ex-01.tmd](examples/ex-01.tmd) | [ex-01.html](http://htmlpreview.github.io/?https://github.com/mittelmark/tmdoc4r/blob/master/modules/examples/ex-01.html)
-| Tcl example    | [ex-02.tmd](examples/ex-02.tmd) | [ex-01.html](http://htmlpreview.github.io/?https://github.com/mittelmark/tmdoc4r/blob/master/modules/examples/ex-02.html)
-
+| Simple example | [ex-01.tmd](examples/ex-01.tmd) | [ex-01.html](http://htmlpreview.github.io/?https://github.com/mittelmark/tmdoc4r/blob/master/examples/ex-01.html)
+| Tcl example    | [ex-02.tmd](examples/ex-02.tmd) | [ex-02.html](http://htmlpreview.github.io/?https://github.com/mittelmark/tmdoc4r/blob/master/examples/ex-02.html)
+| R example    | [ex-02.Rmd](examples/ex-03.Rmd) | [ex-03.html](http://htmlpreview.github.io/?https://github.com/mittelmark/tmdoc4r/blob/master/examples/ex-03.html)
 
 ## Author and Copyright
 
