@@ -50,6 +50,18 @@ library(tmdoc4r)
 vignette("tmdoc4r-vignette")
 ```
 
+## Examples
+
+Here a link to some examples:
+
+http://htmlpreview.github.io/?https://github.com/mittelmark/tmdoc4r/blob/master/modules/examples/ex-01.html
+
+| Description    | Code    | HTML output |
+|:--------------:|:-------:|:----------:|
+| Simple example | [ex-01.tmd](examples/ex-01.tmd) | [ex-01.html](http://htmlpreview.github.io/?https://github.com/mittelmark/tmdoc4r/blob/master/modules/examples/ex-01.html)
+| Tcl example    | [ex-02.tmd](examples/ex-02.tmd) | [ex-01.html](http://htmlpreview.github.io/?https://github.com/mittelmark/tmdoc4r/blob/master/modules/examples/ex-02.html)
+
+
 ## Author and Copyright
 
 
