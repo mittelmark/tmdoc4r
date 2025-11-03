@@ -57,10 +57,18 @@ Here a link to some examples:
 http://htmlpreview.github.io/?https://github.com/mittelmark/tmdoc4r/blob/master/modules/examples/ex-01.html
 
 | Description    | Code    | HTML output |
-|:--------------:|:-------:|:----------:|
+|:---------------|:-------:|:----------:|
 | Simple example | [ex-01.tmd](examples/ex-01.tmd) | [ex-01.html](http://htmlpreview.github.io/?https://github.com/mittelmark/tmdoc4r/blob/master/examples/ex-01.html)
 | Tcl example    | [ex-02.tmd](examples/ex-02.tmd) | [ex-02.html](http://htmlpreview.github.io/?https://github.com/mittelmark/tmdoc4r/blob/master/examples/ex-02.html)
-| R example    | [ex-02.Rmd](examples/ex-03.Rmd) | [ex-03.html](http://htmlpreview.github.io/?https://github.com/mittelmark/tmdoc4r/blob/master/examples/ex-03.html)
+| R example      | [ex-03.Rmd](examples/ex-03.Rmd) | [ex-03.html](http://htmlpreview.github.io/?https://github.com/mittelmark/tmdoc4r/blob/master/examples/ex-03.html)
+| Python example | [ex-04.pmd](examples/ex-04.pmd) | [ex-04.html](http://htmlpreview.github.io/?https://github.com/mittelmark/tmdoc4r/blob/master/examples/ex-04.html)
+| Octave example | [ex-05.omd](examples/ex-05.omd) | [ex-05.html](http://htmlpreview.github.io/?https://github.com/mittelmark/tmdoc4r/blob/master/examples/ex-05.html)
+| Kroki example  | [ex-06.tmd](examples/ex-06.tmd) | [ex-06.html](http://htmlpreview.github.io/?https://github.com/mittelmark/tmdoc4r/blob/master/examples/ex-06.html)
+| Abbreviations  | [ex-07.tmd](examples/ex-07.tmd) | [ex-07.html](http://htmlpreview.github.io/?https://github.com/mittelmark/tmdoc4r/blob/master/examples/ex-07.html)
+| CSV tables     | [ex-08.tmd](examples/ex-08.tmd) | [ex-08.html](http://htmlpreview.github.io/?https://github.com/mittelmark/tmdoc4r/blob/master/examples/ex-08.html)
+| Shell commands | [ex-09.tmd](examples/ex-09.tmd) | [ex-09.html](http://htmlpreview.github.io/?https://github.com/mittelmark/tmdoc4r/blob/master/examples/ex-09.html)
+| LaTeX Math     | [ex-10.tmd](examples/ex-10.tmd) | [ex-10.html](http://htmlpreview.github.io/?https://github.com/mittelmark/tmdoc4r/blob/master/examples/ex-10.html)
+| TOC and Includes | [ex-11.tmd](examples/ex-11.tmd) | [ex-11.html](http://htmlpreview.github.io/?https://github.com/mittelmark/tmdoc4r/blob/master/examples/ex-11.html)
 
 ## Author and Copyright
 
