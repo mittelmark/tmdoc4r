@@ -27,8 +27,13 @@ build:
 	Rscript $(pkg)-src.R --vignettex $(pkg)-src.R
 	mv $(pkg)/vignettes temp
 	mkdir $(pkg)/inst/doc
+	mkdir $(pkg)/vignettes
 	tmdoc tmdoc4r-examples.Rmd - | mndoc - $(pkg)/inst/doc/$(pkg)-examples.html --css examples/tmdoc.css
 	tmdoc tmdoc4r-vignette.Rmd - --toc true | mndoc - $(pkg)/inst/doc/$(pkg)-vignette.html --css examples/tmdoc.css 
+	weasyprint -q --stylesheet small.css $(pkg)/inst/doc/$(pkg)-vignette.html $(pkg)/vignettes/tmdoc4r-vignette.pdf
+	cp tmdoc4r-vignette.Rnw  $(pkg)/vignettes/
+	rm $(pkg)/inst/doc/*.html
+	#cp tmdoc4r-examples.Rmd tmdoc4r-vignette.Rmd $(pkg)/vignettes/
 	R_LIBS=`pwd`/$(pkg).Rcheck/ Rscript $(pkg)-src.R --build $(pkg)
 	R_LIBS=`pwd`/$(pkg).Rcheck/ Rscript $(pkg)-src.R --check $(pkg)_$(VERSION).tar.gz
 vignette:

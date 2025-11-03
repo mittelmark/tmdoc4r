@@ -39,15 +39,15 @@ The package should be installed in an interactive R session like this:
 
 ```
 install.packages(
-  "https://github.com/mittelmark/tmdoc4r/releases/download/v0.1.0/tmdoc_0.1.0.tar.gz",
+  "https://github.com/mittelmark/tmdoc4r/releases/download/v0.1.1/tmdoc4r_0.1.1.tar.gz",
   repos=NULL);
 ```
 
-Therafter you can load the package and the vignette of the package like this:
+Thereafter you can load the package and the vignette of the package like this:
 
 ```
 library(tmdoc4r)
-vignette("tmdoc4r-tutorial")
+vignette("tmdoc4r-vignette")
 ```
 
 ## Author and Copyright

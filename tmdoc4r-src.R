@@ -3,8 +3,8 @@
 #' Package: tmdoc4r
 #' Type: Package
 #' Title: R single file dummy package
-#' Version: 0.1.0
-#' Date: 2025-10-16
+#' Version: 0.1.1
+#' Date: 2025-11-03
 #' Author: Detlef Groth
 #' Authors@R: c(person("Detlef","Groth", role=c("aut", "cre"),
 #'                   email = "dgroth@uni-potsdam.de",
@@ -12,7 +12,7 @@
 #' Maintainer: Detlef Groth <dgroth@uni-potsdam.de>
 #' Description: 
 #'    This is lightweight package to perform literate programming with R,
-#'    Python, Octave, Tcl or diagram tools like GraphViz or PlantUML.
+#'    Julia, Python, Octave, Tcl or diagram tools like GraphViz or PlantUML.
 #' URL:  https://github.com/mittelmark/tmdoc4r
 #' BugReports: https://github.com/mittelmark/tmdoc4r/issues
 #' Depends: R (>= 3.5.0)
@@ -27,6 +27,8 @@
 #' COPYRIGHT HOLDER: Detlef Groth
 
 #' FILE: tmdoc4r/NEWS
+#' 2025-11-03: version 0.1.1 - vignette fix (pdf file)
+#' 2025-11-03: version 0.1.0 - public release
 #' 2025-10-29: version 0.1.0 - startig tmdoc4r
 #' 2025-10-16: Version 0.0.4 - Fixes for tag backgrounds in vignette stylesheet
 #' 2025-09-12: Version 0.0.3 - Support for images at the end of example block with %## ![](`r imgname`)

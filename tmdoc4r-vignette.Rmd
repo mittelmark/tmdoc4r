@@ -1,14 +1,14 @@
 ---
-title: tmdoc4r tutorial
+title: tmdoc4r vignette
 author: Detlef Groth, University of Potsdam, Germany
-date: 2025-11-03 14:08
+date: 2025-11-03 15:30
 ---
 
 `tcl include tmdoc4r-vignette.toc`
 
 ## Introduction
 
-This a tutorial for the `tmdoc4r`  package  which can be seen as a lightweight
+This is a tutorial for the `tmdoc4r`  package  which can be seen as a lightweight
 replacement of more sophisticated R package like `knitr` or `rmarkdown`.
 
 The  install  size of the  `tmdoc4r`  package is less than 1MB and it does not
