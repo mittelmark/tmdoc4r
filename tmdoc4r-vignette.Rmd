@@ -1,7 +1,7 @@
 ---
 title: tmdoc4r tutorial
 author: Detlef Groth, University of Potsdam, Germany
-date: 2025-11-02 17:58
+date: 2025-11-03 14:08
 ---
 
 `tcl include tmdoc4r-vignette.toc`
@@ -237,11 +237,27 @@ Beside  of  the  inclusion  of R code  as we can do in R  knitr,  the  package
 GraphViz  dot, PlantUML or Ditaa. This can be done using the Kroki  webservice
 but the package checks for these three tools for local installations first. To
 get  a  list  of  possible   diagram  types  check  the  kroki  webservice  at
-[https://kroki.io](https://kroki.io).
+[https://kroki.io](https://kroki.io). Per default [Ditaa](https://github.com/stathissideris/ditaa) diagrams are created. Here an example:
+
+
+```
+' ```{.kroki}
+' +--------+      /--------\
+' |  AcEFF +--->--+  BcFEE |
+' +--------+      \--------/`
+' ```
+```
+
+And here the output:
 
 ```{.kroki}
-A --> B
++--------+      /--------\
+|  AcEFF +--->--+  BcFEE |
++--------+      \--------/
 ```
+
+To change the default  diagram  type you should give the code chunk option dia
+with a value for other diagram types supported by kroki.
 
 Here an example for a GraphViz dot diagram.
 
@@ -315,8 +331,7 @@ Markdown with a little all-inclusive  package. For more informations about the
 possibilities  about the underlying Tcl package tmdoc have a look at the tmdoc
 project                                 page                                at
 [https://github.com/mittelmark/tmdoc](https://github.com/mittelmark/tmdoc) and
-at       the       tmdoc-tutorial       pages       at     
-[Tutorial](https://github.com/mittelmark/tmdoc/releases/latest/download/tmdoc-tutorial.pdf).
+at       the       [tmdoc-tutorial](https://github.com/mittelmark/tmdoc/releases/latest/download/tmdoc-tutorial.pdf) pages.
 
 
 
