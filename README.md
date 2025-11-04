@@ -7,7 +7,8 @@
 # tmdoc4r
 
 Lightweight alternative for Knitr/RMarkdown to do literate programming.
-This R package is a R version of the Tcl application [tmdoc](https://github.com/mittelmark/tmdoc).
+This R package is a R version of the Tcl applications [tmdoc](https://github.com/mittelmark/tmdoc) for literate programming and
+[mndoc](https://github.com/mittelmark/mndoc) for coverting the resulting Markdown files to HTML..
 
 This package supports the following programming and Markup languages.
 
@@ -19,7 +20,7 @@ Programming languages:
 - R
 - Tcl
 
-with fenced code blocks and inline single backtick code evaluations.
+with fenced code blocks and inline single backtick code evaluations. 
 
 Markup Languages:
 
@@ -31,13 +32,19 @@ Markup Languages:
 Features:
 
 - Shell code emmbedding using terminal tools (Music sheets, Diagrams, ...)
-- include other files 
+- include other files using the syntax ``tcl include filename.md``
 - abbreviations based on YAML header and external YAML files
-- kroki diagram support
+- [Kroki](https://kroki.io) diagram support
 - references using BibTeX files
 - CSV data display as tables
-- alert messages
-- embedding LaTeX equations as images
+- [alert messages](https://blog.jakelee.co.uk/github-alert-experiments/) if tmdoc.css is used
+- embedding LaTeX equations as images using
+
+<a title="CodeCogs.com" href="https://www.codecogs.com">
+<img src="https://www.codecogs.com/images/poweredbycodecogs.png" border="0" 
+title="CodeCogs - An Open Source Scientific Library" 
+alt="Powered by CodeCogs"></a>
+		
 
 ## INSTALLATION
 
