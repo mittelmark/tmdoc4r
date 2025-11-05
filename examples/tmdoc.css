@@ -1,11 +1,17 @@
-@import url('https://fonts.bunny.net/css?family=Andika&display=swap'); 
+/* @import url('https://fonts.bunny.net/css?family=Andika&display=swap');  */
+@import url('https://fonts.bunny.net/css?family=andika:400,400i,700,700i');
 @import url('https://fonts.bunny.net/css?family=Ubuntu+Mono&display=swap'); /* ' */
-
+@import url(https://fonts.bunny.net/css?family=ubuntu-mono:400,400i,700,700i);
 body {
   padding: 30px;
-  max-width: 1000px;
+  max-width: 800px;
   font-family: Andika, sans-serif;
   margin: 0 auto;
+}
+
+div.document-header {
+  max-width: 700px;
+  text-align: center;
 }
 div.toc {
     background: #eee;
@@ -19,18 +25,25 @@ div.toc h3 {
     padding-left: 20px;
 }
 
+hr { max-width: 700px; }
+p, ul { max-width: 700px; }
+
+img { margin-left: 25px; }
+
 h1.title, p.author, p.date, h2.author, h2.date {
     text-align: center;
 }
 a { text-decoration: none ; }
-code { font-size: 90% }
 pre {
-    padding: 10px ;
-    border-top: 2px solid #CCCCCC;
-    border-bottom: 2px solid #CCCCCC; 
-    font-family: "Ubuntu Mono", monospace;
-    
+  padding: 10px ;
+  border-top: 2px solid #CCCCCC;
+  border-bottom: 2px solid #CCCCCC; 
+  font-family: "Ubuntu Mono", monospace;
+  margin-left: 30px;
+  max-width: 600px;
 }
+
+code { font-size: 80% ;}
 pre:has(code) {
     background: #efefef;
 }
@@ -53,6 +66,7 @@ table {
   border-bottom: 2px solid;
   border-spacing: 5px;
   min-width: 500px;
+  margin-left: 25px;
 }
 table thead tr th { 
   background-color: #fde9d9;
@@ -69,7 +83,7 @@ table tr td {
 
 /* Alerts: */
 
-.side-warning, .side-caution, .side-info, .side-question, .side-error, .side-note, .side-tip, .side-important {
+.side-warning, .side-caution, .side-info, .side-question, .side-error, .side-note, .side-tip, .side-important, .side-hint {
   color: var(--used-color);
   margin-bottom: 32px;
   margin-top: 16px;
@@ -77,6 +91,8 @@ table tr td {
   padding-left: 48px;
   border-radius: 5px 0 0 5px;
   position: relative;  
+  max-width: 550px;
+  margin-left: 30px;
 }
 .side-error, .side-caution {
   border-left: solid 7px #aa3322;
@@ -84,7 +100,6 @@ table tr td {
   border-right: solid 1px #fff0f0; 
   border-bottom: solid 1px #fff0f0; 
   background-color: #fff0f0;
-  
 }
 
 .side-important {
@@ -93,6 +108,14 @@ table tr td {
   border-right: solid 1px #fff0ff; 
   border-bottom: solid 1px #fff0ff; 
   background-color: #fff0ff;
+}
+
+.side-hint {
+  border-left: solid 7px #33aaaa;
+  border-top: solid 1px #f0ffff; 
+  border-right: solid 1px #f0ffff; 
+  border-bottom: solid 1px #f0ffff; 
+  background-color: #f0ffff;
 }
 
 .side-note, .side-tip {
@@ -127,11 +150,11 @@ table tr td {
   background-color: #fff7f0;
 }
 
-.side-info::before, .side-warning::before, .side-caution::before, .side-question::before, .side-error::before, .side-note::before, .side-tip::before, .side-important::before {
+.side-info::before, .side-warning::before, .side-caution::before, .side-question::before, .side-error::before, .side-note::before, .side-tip::before, .side-important::before, .side-hint::before {
   align-items: center;
   border-radius: 50%;
   display: flex;
-  font-family: "Ubuntu Mono", monospace;
+  font-family: monospace;
   font-size: 16px;
   font-weight: 700;
   height: 24px;
@@ -147,6 +170,12 @@ table tr td {
   background-color: #223399;
   color: #fff;
   content: "N";
+  
+}
+.side-hint::before {
+  background-color: #f7fff0;
+  color: #fff;
+  content: "H";
   
 }
 
@@ -194,5 +223,7 @@ table tr td {
   content: "!";
   
 }
-/* fix for AsciiDoc tables with paragraphs */
-p.tableblock { padding: 0px; margin: 0px;}
+
+img {
+    max-width: 650px;
+}
