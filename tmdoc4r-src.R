@@ -3,8 +3,8 @@
 #' Package: tmdoc4r
 #' Type: Package
 #' Title: R single file dummy package
-#' Version: 0.1.4
-#' Date: 2025-11-05
+#' Version: 0.1.5
+#' Date: 2025-11-06
 #' Author: Detlef Groth
 #' Authors@R: c(person("Detlef","Groth", role=c("aut", "cre"),
 #'                   email = "dgroth@uni-potsdam.de",
@@ -27,6 +27,8 @@
 #' COPYRIGHT HOLDER: Detlef Groth
 
 #' FILE: tmdoc4r/NEWS
+#' 2025-11-06: version 0.1.5 - fixing issue with spaces around = in code chunk options and
+#'                             ignoring headers in the YAML and in code chunk sections for TOC
 #' 2025-11-05: version 0.1.4 - fixing fixing issues with single quotes in code chunk arguments 
 #'                             and width=0 settings if fig=true in R code chunk
 #' 2025-11-04: version 0.1.3 - adding tmdoc.css as example, toc support
