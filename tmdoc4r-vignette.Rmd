@@ -1,7 +1,7 @@
 ---
 title: tmdoc4r vignette
 author: Detlef Groth, University of Potsdam, Germany
-date: 2025-11-03 15:30
+date: 2025-11-05 07:55
 ---
 
 `tcl include tmdoc4r-vignette.toc`
@@ -332,6 +332,27 @@ possibilities  about the underlying Tcl package tmdoc have a look at the tmdoc
 project                                 page                                at
 [https://github.com/mittelmark/tmdoc](https://github.com/mittelmark/tmdoc) and
 at       the       [tmdoc-tutorial](https://github.com/mittelmark/tmdoc/releases/latest/download/tmdoc-tutorial.pdf) pages.
+
+
+## Processing Information
+
+```{.tcl echo=FALSE,results=hide}
+set os $tcl_platform(os)
+set osversion $tcl_platform(osVersion)
+set tclversion $tcl_patchLevel
+```
+
+```{r echo=FALSE,results=hide}
+version = gsub(" ","&nbsp;",substr(R.version.string,11,28))
+```
+
+This document was processed at `r Sys.Date()` 
+on `tcl set os`
+`tcl set osversion` with:
+
+- Tcl: `tcl set tclversion`
+- R: `r version`
+- R package tmdoc4r: `r packageVersion("tmdoc4r")`
 
 
 
