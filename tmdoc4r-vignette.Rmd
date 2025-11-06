@@ -1,7 +1,7 @@
 ---
 title: tmdoc4r vignette
 author: Detlef Groth, University of Potsdam, Germany
-date: 2025-11-06 07:31
+date: 2025-11-06 13:38
 bibliography: assets/literature.bib
 ---
 
@@ -397,7 +397,7 @@ The output looks like this:
 > Alert message are nice, but do not overuse them!
 
 The following  type of alert  messages are possible:  !CAUTION, !HINT, !INFO,  !WARNING,
-!NOTE, °QUESTION, !TIP.
+!NOTE, !QUESTION, !TIP.
 
 Here an example for a warning:
 
