@@ -1,7 +1,7 @@
 ---
 title: tmdoc4r vignette
 author: Detlef Groth, University of Potsdam, Germany
-date: 2025-11-06 13:38
+date: 2025-11-06 14:45
 bibliography: assets/literature.bib
 ---
 
@@ -21,14 +21,14 @@ approach. In addition on MacOS it might be required to install the [XQuartz](htt
 - literate  programming  with R code chunks  embedded  within code fences with
   triple  backticks  and  short  code  fragments  of R embeded  within  single
   backticks
-- literate  programming as well with Python, Tcl, or Octave in the same way as
+- literate  programming as well with Julia, Python, Tcl, or Octave in the same way as
   with R
 - embedding  shell code chunks for instance to create  graphics  using diagram
   tools like  GraphViz  dot,  PlantUML or Ditaa or music tools for instance to
   display sheet musing using ABC music with a tool like `abcm2ps`
 - using YAML defined abbreviations
 - embedding tables using CSV syntax
-- creating citations and list of references based on BiTeX files
+- creating citations and list of references based on BiBTeX files
 - including other text files using the 'tcl include  FILENAME' syntax (replace
   single quotes here with backticks
 - embedding LaTeX equations are images usig the CodeCogs webservice
@@ -216,7 +216,7 @@ Further  column with no header could be  introduced by using an
 empty space. Also Markdown styling is supported. Here data from an other table:
 
 ```
-' ```{.csv results=asis echo=false}
+' ```{.csv results="asis",echo=FALSE}
 '  ,col1,col2,col3,col4
 ' __R1__,11,12,13,14
 ' __R2__,15,16,17,18
@@ -227,7 +227,7 @@ empty space. Also Markdown styling is supported. Here data from an other table:
 
 And here the output:
 
-```{.csv results=asis echo=false}
+```{.csv results="asis",echo=FALSE}
  ,col1,col2,col3,col4
 __R1__,11,12,13,14
 __R2__,15,16,17,18
@@ -268,7 +268,7 @@ with a value for other diagram types supported by kroki.
 Here an example for a [GraphViz dot](https://www.graphviz.org) diagram.
 
 ```
-' ```{.kroki dia=graphviz ext=png fig.path=kroki,fig.width=150}
+' ```{.kroki dia="graphviz",ext="png",fig.path="kroki",fig.width=150}
 ' digraph g {
 '    rankdir="LR"
 '    node[shape=box,style=filled];
@@ -279,7 +279,7 @@ Here an example for a [GraphViz dot](https://www.graphviz.org) diagram.
 
 And here the output:
 
-```{.kroki dia=graphviz ext=png fig.path=kroki,fig.width=150}
+```{.kroki dia="graphviz",ext="png",fig.path="kroki",fig.width=150}
 digraph g {
     rankdir="LR"
     node[shape=box,style=filled];
@@ -290,7 +290,7 @@ digraph g {
 Let's continue with an example for a [PlantUML class diagram](https://blog.planttext.com/2023/04/05/class-diagrams/):
 
 ```
-' ```{.kroki fig=true dia=plantuml ext=png fig.path=kroki,fig.width=150}
+' ```{.kroki fig=TRUE,dia="plantuml",ext="png",fig.path="kroki",fig.width=150}
 ' class A { 
 '     + pubprop
 '     - priprop
@@ -309,7 +309,7 @@ Let's continue with an example for a [PlantUML class diagram](https://blog.plant
 
 And here the output:
 
-```{.kroki fig=true dia=plantuml ext=png fig.path=kroki,fig.width=150}
+```{.kroki fig=TRUE,dia="plantuml",ext="png",fig.path="kroki",fig.width=150}
 @startuml
 class A { 
     + pubprop
@@ -427,6 +427,20 @@ tmdoc('infile.Rmd','outfile.html',
   css=file.path(system.file(package="tmdoc4r"),"files", "tmdoc.css"))
 ```
 
+## LaTeX Equations
+
+You can as well include LaTeX math code like equations or matrices into your documents.
+This functionality is provided by the CodeCogs 
+
+<a title="CodeCogs.com" href="https://www.codecogs.com">
+<img src="https://www.codecogs.com/images/poweredbycodecogs.png" border="0" 
+title="CodeCogs - An Open Source Scientific Library" 
+alt="Powered by CodeCogs"></a>
+
+Here an example: $ E = mc^2 $
+
+
+
 ## Summary
 
 
@@ -441,13 +455,13 @@ at       the       [tmdoc-tutorial](https://github.com/mittelmark/tmdoc/releases
 
 ## Processing Information
 
-```{.tcl echo=FALSE,results=hide}
+```{.tcl echo=FALSE,results="hide"}
 set os $tcl_platform(os)
 set osversion $tcl_platform(osVersion)
 set tclversion $tcl_patchLevel
 ```
 
-```{r echo=FALSE,results=hide}
+```{r echo=FALSE,results="hide"}
 version = gsub(" ","&nbsp;",substr(R.version.string,11,28))
 ```
 
