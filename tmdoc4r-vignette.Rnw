@@ -4,5 +4,5 @@
 %\VignetteIndexEntry{tmdoc4r-vignette}
 
 \begin{document}
-\includepdf[pages=-, fitpaper=true]{/home/dgroth/workspace/tmdoc4r/tmdoc4r/vignettes/tmdoc4r-vignette.pdf}
+\includepdf[pages=-, fitpaper=true]{../../../../../tmdoc4r/tmdoc4r/vignettes/tmdoc4r-vignette.pdf}
 \end{document}
