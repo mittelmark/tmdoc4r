@@ -1,7 +1,8 @@
 ---
 title: tmdoc4r vignette
 author: Detlef Groth, University of Potsdam, Germany
-date: 2025-11-05 22:10
+date: 2025-11-06 07:31
+bibliography: assets/literature.bib
 ---
 
 `tcl include tmdoc4r-vignette.toc`
@@ -326,6 +327,60 @@ class B extends A {
 @enduml
 ```
 
+## Citations
+
+The package as well  supports  basic embedding  of citations  using BibTeX files and
+citing these articles in the document using brackets and the @ sign within the text.
+To use the Bibliography you should link the BibTeX file in the YAML section like this:
+
+```
+---
+title: Some Title
+author: Some Author
+date: 2025-11-05
+bibliography: literature.bib
+---
+```
+
+Here an example the to use this citations within the text:
+
+```
+There is a nice PCA review you can use to understand this multivariate ordination
+approach [@Groth2013]. In contrast  Sievers et. al. described the Clustal Omega command
+line application to align multiple sequences [@Sievers2011]. Missing citations like
+this from [@Dummy2025] are as well listed but with the hint that they do not exists 
+the given BibTeX file.
+```
+
+Here the output:
+
+There is a nice PCA review you can use to understand this multivariate ordination
+approach [@Groth2013]. In contrast  Sievers et. al. described the Clustal Omega command
+line application to align multiple sequences [@Sievers2011]. Missing citations like
+this from [@Dummy2025] are as well listed but with the hint that they do not exists 
+the given BibTeX file.
+
+The  list  of  citations  can be  then  displayed  using  the string [ @references ] alone on a line like this:
+
+```
+__References:__
+
+[@references]
+```
+
+Here the output:
+
+__References:__
+
+[@references]
+
+> [!WARNING]
+> The citations part of the package is experimental. 
+> The BibTeX files must be "properly" formatted. Have a look at <a href="https://github.com/mittelmark/tmdoc4r/blob/main/assets/literature.bib">literature.bib</a>
+> for an example. In case of errors add an issue to the <a href="https://github.com/mittelmark/tmdoc4r/issues">Issues</a>
+> section of the project.
+
+  
 ## Alert Messages
 
 [Alert messages](https://blog.jakelee.co.uk/github-alert-experiments/)  are  special  info  boxes  which  can   highlight   specific
