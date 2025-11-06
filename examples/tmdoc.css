@@ -173,7 +173,7 @@ table tr td {
   
 }
 .side-hint::before {
-  background-color: #f7fff0;
+  background-color: #33aaaa;
   color: #fff;
   content: "H";
   
