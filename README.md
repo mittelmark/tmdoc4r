@@ -96,6 +96,14 @@ Here a link to some examples:
 
 More examples can be found at the [tmdoc tutorial](https://github.com/mittelmark/tmdoc/releases/latest/download/tmdoc-tutorial.pdf)
 
+## Changes
+
+- __v0.1.4 - 2025-11-05:__ fixes an issue with single quotes in code chunks, makes code block output compatible with pandoc processor, and fixing an issue with fig=TRUE but default width of 0 for R code chunks
+- __v0.1.3 - 2025-11-03:__ adding stylsheet tmdoc.css within the package folder and fix for output code chunks to make the pandoc compatible
+- __v0.1.2 - 2025-11-02:__ fixing fig.width issue for LaTeX equations and adding toc option for tmdoc command
+- __v0.1.1 - 2025-11-02:__ fixing vignette install as we have a chicken and egg problem ...
+- __v0.1.0 - 2025-11-02:__ This is the initial release for the package tmdoc4r
+
 ## Author and Copyright
 
 
