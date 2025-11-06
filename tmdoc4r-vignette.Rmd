@@ -430,19 +430,84 @@ tmdoc('infile.Rmd','outfile.html',
 ## LaTeX Equations
 
 You can as well include LaTeX math code like equations or matrices into your documents.
-This functionality is provided by the CodeCogs 
+This functionality is provided by the [CodeCogs](https://latex.codecogs.com/) webservice.
 
 <a title="CodeCogs.com" href="https://www.codecogs.com">
 <img src="https://www.codecogs.com/images/poweredbycodecogs.png" border="0" 
 title="CodeCogs - An Open Source Scientific Library" 
 alt="Powered by CodeCogs"></a>
 
-Here an example: $ E = mc^2 $
+Here an example: 
 
+```
+' ```{.mtex}
+' E = mc^2
+' ```
+```
+
+And here the output:
+
+```{.mtex}
+E = mc^2 
+```
+
+And here a more sophisticated equation:
+
+```{.mtex}
+\int \frac{1}{x} dx = \ln \left| x \right| + C \tag{1}
+```
+
+We can as well display matrices. Here an example for a matrix:
+
+```
+'``{.mtex}
+\begin{bmatrix}
+1 & 2 & 3 \\      \tag{2}
+4 & 5 & 6 
+\end{bmatrix}
+'``
+```
+
+and here the output again:
+
+```{.mtex}
+\begin{bmatrix}
+1 & 2 & 3 \\      \tag{2}
+4 & 5 & 6 
+\end{bmatrix}
+```
+
+Using the option `echo=FALSE` you can hide the LaTeX code:
+
+```
+'``{.mtex echo=FALSE}
+\begin{bmatrix}
+1 & 2 & 3 \\
+4 & 5 & 6 \\  \tag{3}
+5 & 6 & 7
+\end{bmatrix}
+'``
+```
+
+And here the output  where you only should see the  equation but not the LaTeX
+code as `echo` was set to false:
+
+```{.mtex echo=false}
+\begin{bmatrix}
+1 & 2 & 3 \\
+4 & 5 & 6 \\  \tag{3}
+5 & 6 & 7
+\end{bmatrix}
+```
+
+> [!CAUTION]
+> Please note that the files are cached locally but the filenames are based
+> on the CRC32 hash to avoid fetching and overusing the web service. So files are only
+> fetched if the code updates. To include the files on your own, you have to find
+> out the filename by inspecting the generated Png files.
 
 
 ## Summary
-
 
 In this vignette for the `tmdoc4r`  package we discussed some main features of
 the  package  which are  useful for doing  reproducible  research  using R and
@@ -452,6 +517,13 @@ project                                 page                                at
 [https://github.com/mittelmark/tmdoc](https://github.com/mittelmark/tmdoc) and
 at       the       [tmdoc-tutorial](https://github.com/mittelmark/tmdoc/releases/latest/download/tmdoc-tutorial.pdf) pages.
 
+## Links
+
+- [tmdoc4 project page https://github.com/mittelmark/tmdoc4r](https://github.com/mittelmark/tmdoc4r)
+- [Kroki webservice https://kroki.io](https://kroki.io)
+- [LaTeX CodeCogs webservice https://latex.codecogs.com/](https://latex.codecogs.com/)
+- [Tmdoc command line application https://github.com/mittelmark/tmdoc](https://github.com/mittelmark/tmdoc)
+- [Mndoc command line application https://github.com/mittelmark/mndoc](https://github.com/mittelmark/mndoc)
 
 ## Processing Information
 
