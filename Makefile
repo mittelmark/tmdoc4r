@@ -36,7 +36,7 @@ build:
 	rm $(pkg)/inst/doc/*.html
 	#cp tmdoc4r-examples.Rmd tmdoc4r-vignette.Rmd $(pkg)/vignettes/
 	TMPDIR=`pwd`/Rbuild R_LIBS=`pwd`/$(pkg).Rcheck Rscript $(pkg)-src.R --build $(pkg)
-	TNPDIR=`pwd`/Rbuild R_LIBS=`pwd`/$(pkg).Rcheck Rscript $(pkg)-src.R --check $(pkg)_$(VERSION).tar.gz
+	R_LIBS=`pwd`/$(pkg).Rcheck Rscript $(pkg)-src.R --check $(pkg)_$(VERSION).tar.gz
 vignette:
 	tmdoc tmdoc4r-vignette.Rmd - --toc true | mndoc - $(pkg)/inst/doc/$(pkg)-vignette.html --css examples/tmdoc.css 
 install: build	

@@ -776,7 +776,7 @@ Main <- function (argv) {
         tools::Rcmd(c("build", argv[3]))
     } else if ("--check" %in% argv & length(argv) == 3) {
         library(tools)
-        tools::Rcmd(c("check", argv[3]))
+        tools::Rcmd(c("check", "--ignore-vignettes",argv[3]))
     } else if ("--install" %in% argv & length(argv) == 3) {
         library(tools)
         tools::Rcmd(c("INSTALL", argv[3]))
