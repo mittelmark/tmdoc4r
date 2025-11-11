@@ -1,0 +1,38 @@
+#!/bin/bash
+########################################################
+##
+##  Copyright (c) 2025, Detlef Groth, University of Potsdam, Germany
+##  License       : BSD
+##  Created By    : Detlef Groth
+##  Created       : 2025-11-05 09:37:57
+##  Last Modified : <251111.1040>
+##
+##  Description	  : Bash script for using the tmdoc4r package
+##                  to convert RMarkdown documents to HTML
+##
+##  Installation  : Copy the file as tmdo4r to your ~/.local/bin
+##                  or ~/bin folder or to any other folder
+##                  belonging to your PATH variable
+##                  make the file executable using for example
+##                  chmod 755 ~/.local/bin/tmdoc4r
+########################################################
+
+function tmdoc4r {
+    if [ -z $2 ]; then
+        echo "Usage: tmdoc4r INFILE.Rmd OUTFILE.html ?CSSFILE??"
+    elif [ ! -f "$1" ]; then
+        echo "Error: INFILE '$1' does not exists!"; return
+    elif [ "${2##*.}" == "html" ]; then
+        if [ -z $3 ]; then 
+            CSSFILE= "file.path(system.file(package='tmdoc4r'), 'files','tmdoc.css')"
+        else
+            CSSFILE="'$3'"
+        fi
+        echo $CSSFILE
+        Rscript -e "library(tmdoc4r);tmdoc('$1','$2',css=$CSSFILE,toc=TRUE);"
+    else
+      echo "Error: currently only HTML output is supported!"
+    fi        
+}
+
+tmdoc4r "$@"
