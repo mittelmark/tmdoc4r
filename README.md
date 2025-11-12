@@ -52,7 +52,7 @@ The package should be installed in an interactive R session like this:
 
 ```
 install.packages(
-  "https://github.com/mittelmark/tmdoc4r/releases/download/v0.1.5/tmdoc4r_0.1.5.tar.gz",
+  "https://github.com/mittelmark/tmdoc4r/releases/download/v0.1.6/tmdoc4r_0.1.6.tar.gz",
   repos=NULL);
 ```
 
@@ -72,7 +72,7 @@ library(tmdoc4r)
 tmdoc("infile.Rmd","outfile.html",css="tmdoc.css",toc=TRUE)
 ```
 
-The Rmd file contains than code chunks or other Markup known by __tmdoc__. The [vignette](https://github.com/mittelmark/tmdoc4r/releases/download/v0.1.5/tmdoc4r-vignette.pdf) 
+The Rmd file contains than code chunks or other Markup known by __tmdoc__. The [vignette](https://github.com/mittelmark/tmdoc4r/releases/download/v0.1.6/tmdoc4r-vignette.pdf) 
 has more examples. You can choose as well file extensions lile _.tmd_ or __.pmd__ (for Python code) etc for the input file. The input file should however not have a __.md__ extension as this will be the internediate output file extension during the processing to HTML.
 
 
@@ -98,6 +98,7 @@ More examples can be found at the [tmdoc tutorial](https://github.com/mittelmark
 
 ## Changes
 
+- __v0.1.6 .  2025-11-12:__ fixing an issue with inline R code, now allowing more than number or word as ouput
 - __v0.1.5 . 2025-11-06:__ fixing an issue with spaces in code chunk options, toc issues if headers appear within code chunks or the YAML section, extending vignette
 - __v0.1.4 - 2025-11-05:__ fixes an issue with single quotes in code chunks, makes code block output compatible with pandoc processor, and fixing an issue with fig=TRUE but default width of 0 for R code chunks
 - __v0.1.3 - 2025-11-03:__ adding stylsheet tmdoc.css within the package folder and fix for output code chunks to make the pandoc compatible
