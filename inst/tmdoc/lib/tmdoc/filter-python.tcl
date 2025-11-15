@@ -41,7 +41,7 @@ namespace eval tmdoc::python {
         variable dict
         set res ""
         if {$pipe eq ""} {
-            set pipe [open "|python3 -qui" r+]
+            set pipe [open "|python3 -qui 2>@1" r+]
             fconfigure $pipe -buffering line -blocking 0
             fileevent $pipe readable [list ::tmdoc::python::piperead $pipe]
             set res ""
@@ -84,6 +84,9 @@ namespace eval tmdoc::python {
         if {[dict get $dict eval]} {
             set res [pipestart $codeLines]
         } 
+        #set res [string trim [regsub -all {(>>> >>>|>>> >>> >>>) } $res {>>> }]]
+        set res [string trim [regsub {>>> >>> } [regsub {>>> >>> >>> } $res ""] ""]]
+        set res [string trim [regsub {>>> \.\.\. \.\.\. >>> } $res ""]]
         return [list $res ""]
     }
 

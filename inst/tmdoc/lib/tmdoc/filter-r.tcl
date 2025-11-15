@@ -98,6 +98,9 @@ namespace eval tmdoc::r {
             if {[auto_execok Rterm] != ""} {
                 # Windows, MSYS
                 set pipe [open "|Rterm -q --vanilla 2>@1" r+]
+                puts $pipe "### SHOW OFF"
+                puts $pipe "options(error=print)"
+                puts $pipe "### SHOW ON"
             } else {
                 set pipe [open "|R -q --vanilla --interactive 2>@1" r+]
             }
@@ -178,7 +181,7 @@ namespace eval tmdoc::r {
             set res [string trim [string trim [regsub {^> .+\[1\] } $res ""]] {"}] ;#"
             set res [regsub -all {\\n} $res "\n"]
         }
-        
+        set res [string trim $res]
         return [list "$res" "$img"]
     }
 

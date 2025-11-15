@@ -4,7 +4,7 @@ exec tclsh "$0" "$@"
 ##############################################################################
 #  Author        : Dr. Detlef Groth
 #  Created       : Tue Feb 18 06:05:14 2020
-#  Last Modified : <251112.0816>
+#  Last Modified : <251115.1117>
 #
 # Copyright (c) 2020-2025  Detlef Groth, University of Potsdam, Germany
 #                          E-mail: dgroth(at)uni(minus)potsdam(dot)de
@@ -52,11 +52,13 @@ exec tclsh "$0" "$@"
 #                                            fix for width=0 as default for R plot 
 #                  2025-11-06 version 0.16.2 fixes code chunk options with spaces around = signs, fixing toc generation if header code is within code chunks or the YAML section 
 #                  2025-11-12 version 0.16.3 fix for `r code` chunks, not returning just last word
+#                  2025-11-15 version 0.16.4 fix for Windows were errors break the pipe
+#                                            better error handling for Python by redirecting stderr to stdout
 #
 package require Tcl 8.6-
 package require fileutil
 package require yaml
-package provide tmdoc::tmdoc 0.16.3
+package provide tmdoc::tmdoc 0.16.4
 package provide tmdoc [package provide tmdoc::tmdoc]
 source [file join [file dirname [info script]] filter-r.tcl]
 source [file join [file dirname [info script]] filter-python.tcl]
@@ -384,19 +386,19 @@ proc tmdoc::block {txt inmode {style ""}} {
     if {$inmode eq "md"} {
         set mstyle [regsub 3 $mstyle ""]
         append res "```${mstyle}\n${txt}"
-        append res "```\n"
+        append res "\n```\n"
     } elseif {$inmode eq "typst"} {
         set style [regsub python3 $style python]
         set style [regsub tclcode $style tcl]
         append res "```${style}\n${txt}"
-        append res "```\n"
+        append res "\n```\n"
     } elseif {$inmode eq "man"} {
         append res "\n"
         append res "\[example_begin\]\n\n$txt\n\n\[example_end\]\n"
         append res "\n"
     } elseif {$inmode eq "adoc"} {
         append res "\n"
-        append res "\[,${style}]\n----\n$txt----\n"
+        append res "\[,${style}]\n----\n$txt\n----\n"
         append res "\n"
     } else {
         append res "\\begin{lcverbatim}\n"
@@ -683,7 +685,7 @@ proc ::tmdoc::tmdoc {filename outfile args} {
             } elseif {$mode in [list csv pipe] && [regexp {^ {0,2}```} $line]} {
                 if {$copt(echo)} {
                     if {$mode eq "pipe"} {
-                        puts $out [tmdoc::block $ginput $inmode $copt(pipe)]
+                        puts $out [tmdoc::block [string trim $ginput] $inmode $copt(pipe)]
                     } else {
                         puts $out [tmdoc::block $ginput $inmode]
                     }
@@ -826,7 +828,7 @@ proc ::tmdoc::tmdoc {filename outfile args} {
                 append ginput "$line\n"
             } elseif {$mode eq "code" && [regexp {^ {0,2}```} $line]} {
                 if {$copt(echo)} {
-                    set cont [tmdoc::block $tclcode $inmode tclcode]
+                    set cont [tmdoc::block [string trim $tclcode] $inmode tclcode]
                     puts $out $cont
                 }
                 if {$copt(eval)} {
@@ -970,7 +972,8 @@ proc ::tmdoc::tmdoc {filename outfile args} {
                 }
                 while {[regexp {(.*?)`py ([^`]+)`(.*)$} $line -> pre t post]} {
                     set res [python::filter $t [dict create pipe python3 eval true echo false terminal false]]
-                    set res [lindex [split [lindex [lindex $res 0] 0] " "] end]
+                    #qset res [lindex [split [lindex [lindex $res 0] 0] " "] end]
+                    set res [regsub {.+> } [lindex $res 0] ""]
                     set line [regsub -all {_}  "$pre$res$post" {\\_}]
                 }
                 while {[regexp {(.*?)`oc ([^`]+)`(.*)$} $line -> pre t post]} {

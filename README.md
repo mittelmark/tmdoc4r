@@ -98,8 +98,9 @@ More examples can be found at the [tmdoc tutorial](https://github.com/mittelmark
 
 ## Changes
 
-- __v0.1.6 .  2025-11-12:__ fixing an issue with inline R code, now allowing more than number or word as ouput
-- __v0.1.5 . 2025-11-06:__ fixing an issue with spaces in code chunk options, toc issues if headers appear within code chunks or the YAML section, extending vignette
+- __v0.1.7 - 2025-11-15:__ fixing an issue with broken pipe on Windows if R code has errors, display of errors in Python code chunks
+- __v0.1.6 - 2025-11-12:__ fixing an issue with inline R code, now allowing more than number or word as ouput
+- __v0.1.5 - 2025-11-06:__ fixing an issue with spaces in code chunk options, toc issues if headers appear within code chunks or the YAML section, extending vignette
 - __v0.1.4 - 2025-11-05:__ fixes an issue with single quotes in code chunks, makes code block output compatible with pandoc processor, and fixing an issue with fig=TRUE but default width of 0 for R code chunks
 - __v0.1.3 - 2025-11-03:__ adding stylsheet tmdoc.css within the package folder and fix for output code chunks to make the pandoc compatible
 - __v0.1.2 - 2025-11-02:__ fixing fig.width issue for LaTeX equations and adding toc option for tmdoc command

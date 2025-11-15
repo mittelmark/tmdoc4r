@@ -1,7 +1,7 @@
 ---
 title: tmdoc4r vignette
 author: Detlef Groth, University of Potsdam, Germany
-date: 2025-11-06 14:45
+date: 2025-11-15 11:53
 bibliography: assets/literature.bib
 ---
 

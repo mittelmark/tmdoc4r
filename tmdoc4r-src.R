@@ -3,8 +3,8 @@
 #' Package: tmdoc4r
 #' Type: Package
 #' Title: R single file dummy package
-#' Version: 0.1.6
-#' Date: 2025-11-12
+#' Version: 0.1.7
+#' Date: 2025-11-15
 #' Author: Detlef Groth
 #' Authors@R: c(person("Detlef","Groth", role=c("aut", "cre"),
 #'                   email = "dgroth@uni-potsdam.de",
@@ -27,7 +27,9 @@
 #' COPYRIGHT HOLDER: Detlef Groth
 
 #' FILE: tmdoc4r/NEWS
-#' 2025-11-06: version 0.1.6 - fixing for inline r code supporting more than one number or word
+#' 2025-11-15: version 0.1.7 - fixing an issue with broken pipe on Windows if R code has errors, 
+#'                             display of errors in Python code chunks
+#' 2025-11-12: version 0.1.6 - fixing for inline r code supporting more than one number or word
 #' 2025-11-06: version 0.1.5 - fixing issue with spaces around = in code chunk options and
 #'                             ignoring headers in the YAML and in code chunk sections for TOC
 #' 2025-11-05: version 0.1.4 - fixing fixing issues with single quotes in code chunk arguments 
