@@ -52,7 +52,7 @@ The package should be installed in an interactive R session like this:
 
 ```
 install.packages(
-  "https://github.com/mittelmark/tmdoc4r/releases/download/v0.1.6/tmdoc4r_0.1.6.tar.gz",
+  "https://github.com/mittelmark/tmdoc4r/releases/download/v0.1.7/tmdoc4r_0.1.7.tar.gz",
   repos=NULL);
 ```
 
@@ -72,7 +72,7 @@ library(tmdoc4r)
 tmdoc("infile.Rmd","outfile.html",css="tmdoc.css",toc=TRUE)
 ```
 
-The Rmd file contains than code chunks or other Markup known by __tmdoc__. The [vignette](https://github.com/mittelmark/tmdoc4r/releases/download/v0.1.6/tmdoc4r-vignette.pdf) 
+The Rmd file contains than code chunks or other Markup known by __tmdoc__. The [vignette](https://github.com/mittelmark/tmdoc4r/releases/download/v0.1.7/tmdoc4r-vignette.pdf) 
 has more examples. You can choose as well file extensions lile _.tmd_ or __.pmd__ (for Python code) etc for the input file. The input file should however not have a __.md__ extension as this will be the internediate output file extension during the processing to HTML.
 
 
