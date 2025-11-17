@@ -3,8 +3,8 @@
 #' Package: tmdoc4r
 #' Type: Package
 #' Title: R single file dummy package
-#' Version: 0.1.7
-#' Date: 2025-11-15
+#' Version: 0.1.8
+#' Date: 2025-11-18
 #' Author: Detlef Groth
 #' Authors@R: c(person("Detlef","Groth", role=c("aut", "cre"),
 #'                   email = "dgroth@uni-potsdam.de",
@@ -27,6 +27,8 @@
 #' COPYRIGHT HOLDER: Detlef Groth
 
 #' FILE: tmdoc4r/NEWS
+#' 2025-11-18: version 0.1.8 - adding LaTeX style file tmdoc.sty to support LaTex compilation
+#'                           - adding script exec/tmdoc4r  
 #' 2025-11-15: version 0.1.7 - fixing an issue with broken pipe on Windows if R code has errors, 
 #'                             display of errors in Python code chunks
 #' 2025-11-12: version 0.1.6 - fixing for inline r code supporting more than one number or word
@@ -83,6 +85,48 @@
 #' 31	31.4961	6.22	13.98	1.91	28.0976	24.937	46.18	4.6	57.84	18.3057
 #' 32	31.3862	6.43	12.33	1.94	28.6282	26.4	38.72	4	57.26	18.3849
 #' 33	31.115	7.19	10.27	1.91	28.3968	24.4444	34.36	4.1	54.94	20.0015
+
+#' FILE: tmdoc4r/exec/tmdoc4r
+#' 
+#' #!/bin/sh
+#' ########################################################
+#' ##
+#' ##  Copyright (c) 2025, Detlef Groth, University of Potsdam, Germany
+#' ##  License       : BSD
+#' ##  Created By    : Detlef Groth
+#' ##  Created       : 2025-11-05 09:37:57
+#' ##  Last Modified : <251117.1841>
+#' ##
+#' ##  Description   : Bash script for using the tmdoc4r package
+#' ##                  to convert RMarkdown documents to HTML
+#' ##
+#' ##  Installation  : Copy the file as tmdoc4r to your ~/.local/bin
+#' ##                  or ~/bin folder or to any other folder
+#' ##                  belonging to your PATH variable
+#' ##                  make the file executable using for example
+#' ##                  chmod 755 ~/.local/bin/tmdoc4r
+#' ########################################################
+#' 
+#' function tmdoc4r {
+#'   if [ -z $2 ]; then
+#'     echo "Usage: tmdoc4r INFILE.Rmd OUTFILE.html ?CSSFILE?"
+#'   elif [ ! -f "$1" ]; then
+#'     echo "Error: INFILE '$1' does not exists!"; return
+#'   else
+#'     if [ "${2##*.}" == "html" ]; then
+#'       if [ -z $3 ]; then
+#'         CSS=$3
+#'       else
+#'         CSS="file.path(system.file(package='tmdoc4r'),'files','tmdoc.css')"
+#'       fi
+#'       Rscript -e "library(tmdoc4r);tmdoc('$1','$2',css=CSS,toc=TRUE);"
+#'     else
+#'       echo "Error: currently only HTML output is supported!"
+#'     fi        
+#'   fi
+#' }
+#' 
+#' tmdoc4r "$@"
 
 #' FILE: tmdoc4r/man/tmdoc4r-package.Rd
 #' \name{tmdoc4r-package}
