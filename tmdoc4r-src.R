@@ -87,15 +87,14 @@
 #' 33	31.115	7.19	10.27	1.91	28.3968	24.4444	34.36	4.1	54.94	20.0015
 
 #' FILE: tmdoc4r/exec/tmdoc4r
-#' 
-#' #!/bin/sh
+#' #!/bin/bash
 #' ########################################################
 #' ##
 #' ##  Copyright (c) 2025, Detlef Groth, University of Potsdam, Germany
 #' ##  License       : BSD
 #' ##  Created By    : Detlef Groth
 #' ##  Created       : 2025-11-05 09:37:57
-#' ##  Last Modified : <251117.1841>
+#' ##  Last Modified : <251117.1922>
 #' ##
 #' ##  Description   : Bash script for using the tmdoc4r package
 #' ##                  to convert RMarkdown documents to HTML
@@ -119,7 +118,7 @@
 #'       else
 #'         CSS="file.path(system.file(package='tmdoc4r'),'files','tmdoc.css')"
 #'       fi
-#'       Rscript -e "library(tmdoc4r);tmdoc('$1','$2',css=CSS,toc=TRUE);"
+#'       Rscript -e "library(tmdoc4r);tmdoc('$1','$2',css=${CSS},toc=TRUE);"
 #'     else
 #'       echo "Error: currently only HTML output is supported!"
 #'     fi        
