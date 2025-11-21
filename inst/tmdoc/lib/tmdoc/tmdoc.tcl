@@ -4,7 +4,7 @@ exec tclsh "$0" "$@"
 ##############################################################################
 #  Author        : Dr. Detlef Groth
 #  Created       : Tue Feb 18 06:05:14 2020
-#  Last Modified : <251117.1810>
+#  Last Modified : <251121.0349>
 #
 # Copyright (c) 2020-2025  Detlef Groth, University of Potsdam, Germany
 #                          E-mail: dgroth(at)uni(minus)potsdam(dot)de
@@ -54,7 +54,10 @@ exec tclsh "$0" "$@"
 #                  2025-11-12 version 0.16.3 fix for `r code` chunks, not returning just last word
 #                  2025-11-15 version 0.16.4 fix for Windows were errors break the pipe
 #                                            better error handling for Python by redirecting stderr to stdout
-#                  2025-11-XX version 0.16.5 embedding tmdoc.sty for inclusion into LaTeX output
+#                  2025-11-21 version 0.16.5 embedding tmdoc.sty for inclusion into LaTeX output
+#                                            fixing empty code chunk displays
+#                                            fixing empty lines at the end of code chunks
+#                                            fixing encoding language trouble in testing
 #
 package require Tcl 8.6-
 package require fileutil
@@ -383,32 +386,46 @@ proc ::tmdoc::extractAbbreviations {str} {
 proc tmdoc::block {txt inmode {style ""}} {
     set res ""
     set mstyle $style
-    if {$style ne ""} {
-        set mstyle "${style}"
-    }
-    if {$inmode eq "md"} {
-        set mstyle [regsub 3 $mstyle ""]
-        append res "```${mstyle}\n${txt}"
-        append res "\n```\n"
-    } elseif {$inmode eq "typst"} {
-        set style [regsub python3 $style python]
-        set style [regsub tclcode $style tcl]
-        append res "```${style}\n${txt}"
-        append res "\n```\n"
-    } elseif {$inmode eq "man"} {
-        append res "\n"
-        append res "\[example_begin\]\n\n$txt\n\n\[example_end\]\n"
-        append res "\n"
-    } elseif {$inmode eq "adoc"} {
-        append res "\n"
-        append res "\[,${style}]\n----\n$txt\n----\n"
-        append res "\n"
+    if {$txt eq ""} {
+        return ""
     } else {
-        append res "\\begin{lcverbatim}\n"
-        append res "$txt"
-        append res "\n\\end{lcverbatim}"
+        if {$style ne ""} {
+            set mstyle "${style}"
+        }
+        if {$inmode eq "md"} {
+            set txt [string trim $txt]
+            set mstyle [regsub 3 $mstyle ""]
+            append res "```${mstyle}\n${txt}"
+            if {![regexp {\n$} $txt]} {
+                append res "\n"
+            }
+            append res "```\n"
+        } elseif {$inmode eq "typst"} {
+            set style [regsub python3 $style python]
+            set style [regsub tclcode $style tcl]
+            append res "```${style}\n${txt}"
+            if {![regexp {\n$} $txt]} {
+                append res "\n"
+            }
+            append res "```\n"
+        } elseif {$inmode eq "man"} {
+            append res "\n"
+            append res "\[example_begin\]\n\n$txt\n\n\[example_end\]\n"
+            append res "\n"
+        } elseif {$inmode eq "adoc"} {
+            append res "\n"
+            if {![regexp {\n$} $txt]} {
+                set txt "$txt\n"
+            }
+            append res "\[,${style}]\n----\n$txt----\n"
+            append res "\n"
+        } else {
+            append res "\\begin{lcverbatim}\n"
+            append res "$txt"
+            append res "\\end{lcverbatim}"
+        }
+        return $res
     }
-    return $res
 }
 
 proc tmdoc::iimage {} {

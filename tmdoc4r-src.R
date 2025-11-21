@@ -4,7 +4,7 @@
 #' Type: Package
 #' Title: R single file dummy package
 #' Version: 0.1.8
-#' Date: 2025-11-18
+#' Date: 2025-11-21
 #' Author: Detlef Groth
 #' Authors@R: c(person("Detlef","Groth", role=c("aut", "cre"),
 #'                   email = "dgroth@uni-potsdam.de",
@@ -27,8 +27,10 @@
 #' COPYRIGHT HOLDER: Detlef Groth
 
 #' FILE: tmdoc4r/NEWS
-#' 2025-11-18: version 0.1.8 - adding LaTeX style file tmdoc.sty to support LaTex compilation
-#'                           - adding script exec/tmdoc4r  
+#' 2025-11-21: version 0.1.8 - adding LaTeX style file tmdoc.sty to support LaTex compilation
+#'                           - adding script exec/tmdoc4r
+#'                           - embedding tmdoc.sty for LaTeX conversion
+#'                           - fixing empty code chunk display if eval=FALSE
 #' 2025-11-15: version 0.1.7 - fixing an issue with broken pipe on Windows if R code has errors, 
 #'                             display of errors in Python code chunks
 #' 2025-11-12: version 0.1.6 - fixing for inline r code supporting more than one number or word
@@ -94,7 +96,7 @@
 #' ##  License       : BSD
 #' ##  Created By    : Detlef Groth
 #' ##  Created       : 2025-11-05 09:37:57
-#' ##  Last Modified : <251117.1922>
+#' ##  Last Modified : <251121.0538>
 #' ##
 #' ##  Description   : Bash script for using the tmdoc4r package
 #' ##                  to convert RMarkdown documents to HTML
