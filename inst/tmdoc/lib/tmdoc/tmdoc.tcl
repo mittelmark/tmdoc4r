@@ -4,7 +4,7 @@ exec tclsh "$0" "$@"
 ##############################################################################
 #  Author        : Dr. Detlef Groth
 #  Created       : Tue Feb 18 06:05:14 2020
-#  Last Modified : <251121.0349>
+#  Last Modified : <251123.1551>
 #
 # Copyright (c) 2020-2025  Detlef Groth, University of Potsdam, Germany
 #                          E-mail: dgroth(at)uni(minus)potsdam(dot)de
@@ -58,11 +58,12 @@ exec tclsh "$0" "$@"
 #                                            fixing empty code chunk displays
 #                                            fixing empty lines at the end of code chunks
 #                                            fixing encoding language trouble in testing
-#
+#                  2025-11-XX version 0.16.6 bold column headers 
+#                                            fixing issues with long computations in R and Python
 package require Tcl 8.6-
 package require fileutil
 package require yaml
-package provide tmdoc::tmdoc 0.16.5
+package provide tmdoc::tmdoc 0.16.6
 package provide tmdoc [package provide tmdoc::tmdoc]
 source [file join [file dirname [info script]] filter-r.tcl]
 source [file join [file dirname [info script]] filter-python.tcl]
@@ -70,6 +71,14 @@ source [file join [file dirname [info script]] filter-octave.tcl]
 source [file join [file dirname [info script]] filter-julia.tcl]
 namespace eval ::tmdoc {
     variable script [info script]
+    variable pipedone
+    ## current chunk number
+    variable chunkn
+    ## current chunk done number
+    variable chunkd
+    set chunkn 0
+    set chunkd 0
+    set pipedone ""
 }
 
 # clear all variables and defintions
@@ -473,6 +482,16 @@ proc tmdoc::cairosvg {filename dict} {
     }
 }
 
+proc tmdoc::waitchunk {} {
+    set x 0
+    while {$::tmdoc::chunkn != $::tmdoc::chunkd} {
+        after 100
+        if {[incr x] > 20} {
+            break
+        }
+    }
+    #puts stderr "x was $x"
+}
 # public functions - the main function process the files
 
 proc ::tmdoc::tmdoc {filename outfile args} {
@@ -724,14 +743,18 @@ proc ::tmdoc::tmdoc {filename outfile args} {
                 } elseif {$mode eq "pipe"} {
                     
                     if {$copt(pipe) eq "python" || $copt(pipe) eq "python3"} {
+                        #incr ::tmdoc::chunkn
                         set res [tmdoc::python::filter $ginput [dict create {*}[array get copt]]]
+                        #waitchunk
                     } elseif {$copt(pipe) eq "octave"} {
                         set res [tmdoc::octave::filter $ginput [dict create {*}[array get copt]]]
                     } elseif {$copt(pipe) eq "julia"} {
                         set res [tmdoc::julia::filter $ginput [dict create {*}[array get copt]]]
                     } else {
                         ## R
+                        #incr ::tmdoc::chunkn
                         set res [tmdoc::r::filter $ginput [dict create {*}[array get copt]]]
+                        #waitchunk
                     }
                     if {$copt(results) eq "show"} {
                         puts $out [tmdoc::block [lindex $res 0] $inmode $copt(pipe)]
@@ -991,12 +1014,16 @@ proc ::tmdoc::tmdoc {filename outfile args} {
 
                 }
                 while {[regexp {(.*?)`r ([^`]+)`(.*)$} $line -> pre t post]} {
+                    #incr ::tmdoc::chunkn
                     set res [r::filter $t [dict create pipe R eval true echo false terminal false]]
+                    #waitchunk
                     set res [string trim [lindex $res 0] end]
                     set line [regsub -all {_}  "$pre$res$post" {\\_}]
                 }
                 while {[regexp {(.*?)`py ([^`]+)`(.*)$} $line -> pre t post]} {
+                    #incr ::tmdoc::chunkn
                     set res [python::filter $t [dict create pipe python3 eval true echo false terminal false]]
+                    #waitchunk
                     #qset res [lindex [split [lindex [lindex $res 0] 0] " "] end]
                     set res [regsub {.+> } [lindex $res 0] ""]
                     set line [regsub -all {_}  "$pre$res$post" {\\_}]

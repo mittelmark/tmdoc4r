@@ -3,7 +3,7 @@
 #' Package: tmdoc4r
 #' Type: Package
 #' Title: R single file dummy package
-#' Version: 0.1.8
+#' Version: 0.1.9
 #' Date: 2025-11-21
 #' Author: Detlef Groth
 #' Authors@R: c(person("Detlef","Groth", role=c("aut", "cre"),
@@ -27,6 +27,8 @@
 #' COPYRIGHT HOLDER: Detlef Groth
 
 #' FILE: tmdoc4r/NEWS
+#' 2025-11-XX: version 0.1.9 - bold df2md table headers, required for LaTeX output with pandoc
+#'                             fixing wait issues on R mode, use wait=2000 for 2 seconds time
 #' 2025-11-21: version 0.1.8 - adding LaTeX style file tmdoc.sty to support LaTex compilation
 #'                           - adding script exec/tmdoc4r
 #'                           - embedding tmdoc.sty for LaTeX conversion
@@ -96,7 +98,7 @@
 #' ##  License       : BSD
 #' ##  Created By    : Detlef Groth
 #' ##  Created       : 2025-11-05 09:37:57
-#' ##  Last Modified : <251121.0538>
+#' ##  Last Modified : <251121.1859>
 #' ##
 #' ##  Description   : Bash script for using the tmdoc4r package
 #' ##                  to convert RMarkdown documents to HTML
@@ -385,11 +387,11 @@ df2md <- function(df,caption="",rownames=TRUE) {
         rn=as.character(1:nrow(df))
     }
     if (rownames) {
-        headr <- paste0(c("","", cn),  sep = "|", collapse='')
+        headr <- paste0(c("","", paste("**",cn,"**",sep="")),  sep = "|", collapse='')
         sepr <- paste0(c('|', rep(paste0(c(rep('-',3), "|"), 
                                          collapse=''),length(cn)+1)), collapse ='')
     } else {
-        headr <- paste0(c("", cn),  sep = "|", collapse='')
+        headr <- paste0(c("", paste("**",cn,"**",sep="")),  sep = "|", collapse='')
         sepr <- paste0(c('|', rep(paste0(c(rep('-',3), "|"), 
                                          collapse=''),length(cn))), collapse ='')
         
