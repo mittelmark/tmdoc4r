@@ -28,7 +28,7 @@
 
 #' FILE: tmdoc4r/NEWS
 #' 2025-11-XX: version 0.1.9 - bold df2md table headers, required for LaTeX output with pandoc
-#'                             fixing wait issues on R mode, use wait=2000 for 2 seconds time
+#'                             fixing wait issues on R mode and Python
 #' 2025-11-21: version 0.1.8 - adding LaTeX style file tmdoc.sty to support LaTex compilation
 #'                           - adding script exec/tmdoc4r
 #'                           - embedding tmdoc.sty for LaTeX conversion
