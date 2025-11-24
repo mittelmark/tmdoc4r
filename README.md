@@ -52,7 +52,7 @@ The package should be installed in an interactive R session like this:
 
 ```
 install.packages(
-  "https://github.com/mittelmark/tmdoc4r/releases/download/v0.1.8/tmdoc4r_0.1.8.tar.gz",
+  "https://github.com/mittelmark/tmdoc4r/releases/download/v0.1.9/tmdoc4r_0.1.9.tar.gz",
   repos=NULL);
 ```
 
@@ -72,7 +72,7 @@ library(tmdoc4r)
 tmdoc("infile.Rmd","outfile.html",css="tmdoc.css",toc=TRUE)
 ```
 
-The Rmd file contains than code chunks or other Markup known by __tmdoc__. The [vignette](https://github.com/mittelmark/tmdoc4r/releases/download/v0.1.8/tmdoc4r-vignette.pdf) 
+The Rmd file contains than code chunks or other Markup known by __tmdoc__. The [vignette](https://github.com/mittelmark/tmdoc4r/releases/download/v0.1.9/tmdoc4r-vignette.pdf) 
 has more examples. You can choose as well file extensions lile _.tmd_ or __.pmd__ (for Python code) etc for the input file. The input file should however not have a __.md__ extension as this will be the internediate output file extension during the processing to HTML.
 
 
@@ -98,6 +98,8 @@ More examples can be found at the [tmdoc tutorial](https://github.com/mittelmark
 
 ## Changes
 
+- __v0.1.9 - 2025-11-24:__  fixes issues with long  computations in R, Python,
+  Julia and Octave, bold headers for tables
 - __v0.1.8 - 2025-11-21:__ fixes issues with empty output chunks if eval=FALSE
 and includes the tmdoc.sty LaTeX  stylesheet for LaTeX documents and empty end
 lines of output chunks
