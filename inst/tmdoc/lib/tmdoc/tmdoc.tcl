@@ -4,7 +4,7 @@ exec tclsh "$0" "$@"
 ##############################################################################
 #  Author        : Dr. Detlef Groth
 #  Created       : Tue Feb 18 06:05:14 2020
-#  Last Modified : <251124.0757>
+#  Last Modified : <251126.1733>
 #
 # Copyright (c) 2020-2025  Detlef Groth, University of Potsdam, Germany
 #                          E-mail: dgroth(at)uni(minus)potsdam(dot)de
@@ -60,11 +60,13 @@ exec tclsh "$0" "$@"
 #                                            fixing encoding language trouble in testing
 #                  2025-11-24 version 0.16.6 bold column headers 
 #                                            fixing issues with long computations in R, Octave, Julia and Python
+#                  2025-11-XX version 0.16.7 fixing issues with Octave mode and fig=true
+#                                            fixing encoding issues if text contains umlauts and other non-latin letters
 #
 package require Tcl 8.6-
 package require fileutil
 package require yaml
-package provide tmdoc::tmdoc 0.16.6
+package provide tmdoc::tmdoc 0.16.7
 package provide tmdoc [package provide tmdoc::tmdoc]
 source [file join [file dirname [info script]] filter-r.tcl]
 source [file join [file dirname [info script]] filter-python.tcl]
@@ -208,10 +210,29 @@ proc ::tmdoc::interpReset {} {
             }
             return $res
         }
+        proc get_encoding {filename} {
+            set encodings {utf-8 iso8859-1 iso8859-15 iso8859-16 cp1252 cp850}
+            foreach enc $encodings {
+                catch {
+                    set f [open $filename "r"]
+                    fconfigure $f -encoding $enc
+                    set data [read $f]
+                    close $f
+                } err
+                if {$err eq ""} {
+                    return $enc
+                }
+            }
+        }
         proc include {filename} {
+            if {![file exists $filename]} {
+                return "Error: file '$filename' does not exists!"
+            }
+            set enc [get_encoding $filename]
             if [catch {open $filename r} infh] {
                 return "Cannot open $filename"
             } else {
+                fconfigure $infh -encoding $enc
                 set res ""
                 while {[gets $infh line] >= 0} {
                     append res "$line\n"
@@ -437,6 +458,21 @@ proc tmdoc::block {txt inmode {style ""}} {
         return $res
     }
 }
+proc tmdoc::get_encoding {filename} {
+    set encodings {utf-8 iso8859-1 iso8859-15 iso8859-16 cp1252 cp850}
+    foreach enc $encodings {
+        catch {
+            set f [open $filename "r"]
+            fconfigure $f -encoding $enc
+            set data [read $f]
+            close $f
+        } err
+        if {$err eq ""} {
+            return $enc
+        }
+    }
+}
+
 
 proc tmdoc::iimage {} {
     uplevel 1 {
@@ -521,9 +557,11 @@ proc ::tmdoc::tmdoc {filename outfile args} {
     }
     set abbrev [dict create default ""]
     if {$arg(-abbrev) ne "" && [file exists $arg(-abbrev)]} {
+        set enc [get_encoding $arg(-abbrev)]
         if [catch {open $arg(-abbrev) r} infha] {
             return code -error "Cannot open $arg(-abbrev)"
         } else {
+            fconfigure $infha -encoding $enc
             set yamltext [read $infha]
             close $infha
             set abbrev [dict create {*}[yaml::yaml2dict $yamltext]]
@@ -543,10 +581,12 @@ proc ::tmdoc::tmdoc {filename outfile args} {
         set out stdout
     }
     if {$arg(-mode) eq "tangle"} {
+        set enc [::tmdoc::get_encoding $filename]
         if [catch {open $filename r} infh] {
             return -code error "Cannot open $filename: $infh"
         } else {
             set flag false
+            fconfigure $infh -encoding $enc
             while {[gets $infh line] >= 0} {
                 if {[regexp {^[> ]{0,2}```\{\.?tcl[^a-zA-Z]} $line]} {
                     set flag true
@@ -590,9 +630,11 @@ proc ::tmdoc::tmdoc {filename outfile args} {
         label chunk-nn fig.path . fig.width 0 ext png]
     interpReset
     interp eval intp "set ::inmode $inmode"
+    set enc [::tmdoc::get_encoding $filename]
     if [catch {open $filename r} infh] {
         return -code error "Cannot open $filename: $infh"
     } else {
+        fconfigure $infh -encoding $enc
         set chunki 0
         set lnr 0
         set yamlflag false

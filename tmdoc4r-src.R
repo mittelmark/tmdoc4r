@@ -3,8 +3,8 @@
 #' Package: tmdoc4r
 #' Type: Package
 #' Title: R single file dummy package
-#' Version: 0.1.9
-#' Date: 2025-11-21
+#' Version: 0.1.10
+#' Date: 2025-11-27
 #' Author: Detlef Groth
 #' Authors@R: c(person("Detlef","Groth", role=c("aut", "cre"),
 #'                   email = "dgroth@uni-potsdam.de",
@@ -27,7 +27,9 @@
 #' COPYRIGHT HOLDER: Detlef Groth
 
 #' FILE: tmdoc4r/NEWS
-#' 2025-11-XX: version 0.1.9 - bold df2md table headers, required for LaTeX output with pandoc
+#' 2025-11-XX: version 0.1.10 - fix for Octave with fig=TRUE and for encoding problems
+#'                              incase of non ASCII letters
+#' 2025-11-24: version 0.1.9 - bold df2md table headers, required for LaTeX output with pandoc
 #'                             fixing wait issues on R mode and Python
 #' 2025-11-21: version 0.1.8 - adding LaTeX style file tmdoc.sty to support LaTex compilation
 #'                           - adding script exec/tmdoc4r
