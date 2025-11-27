@@ -32,7 +32,7 @@ Markup Languages:
 Features:
 
 - Shell code emmbedding using terminal tools (Music sheets, Diagrams, ...)
-- include other files using the syntax ``tcl include filename.md``
+- include other files using the syntax ```tcl include filename.md` ``
 - abbreviations based on YAML header and external YAML files
 - [Kroki](https://kroki.io) diagram support
 - references using BibTeX files
