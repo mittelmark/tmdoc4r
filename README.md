@@ -85,7 +85,7 @@ tmdoc("infile.Rmd","outfile.html",css=CSS,toc=TRUE)
 ```
 
 To see how to include  the  generated  TOC file see the  example 11 below. You
-should just add a line ` `tcl include infile.toc` ` somewhere in your document.
+should just add a line `` `tcl include infile.toc` `` somewhere in your document.
 
 ## Examples
 
