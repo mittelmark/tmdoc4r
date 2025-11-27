@@ -1,7 +1,7 @@
 ---
 title: tmdoc4r vignette
 author: Detlef Groth, University of Potsdam, Germany
-date: 2025-11-24 06:36
+date: 2025-11-27 10:04
 bibliography: assets/literature.bib
 ---
 
@@ -34,7 +34,7 @@ approach. In addition on MacOS it might be required to install the [XQuartz](htt
 - embedding LaTeX equations are images usig the CodeCogs webservice
 - document support for Markdown, LaTex, Typst and AsciiDoc
 
-## Literate programming with R
+## Literate Programming with R
 
 As this is a vignette  tutorial for the R package `tmdoc4r` we will focus here
 on the embedding of R code and other things which are related to writing research reports with R. For more information you might look at the documentation of the Tcl package [tmdoc](https://github.com/mittelmark/tmdoc).
@@ -506,6 +506,99 @@ code as `echo` was set to false:
 > fetched if the code updates. To include the files on your own, you have to find
 > out the filename by inspecting the generated Png files.
 
+## Python, Octave and Julia Code Embedding
+
+Beside of R code as well  programming  code from other  programming  languages
+can be  embedded  like  Python, Gnu Octave,  Julia or Tcl. Here an example for
+embedding Python code.
+
+```
+' ```{py}
+import sys
+def helloPy():
+    print("Hello Python World")
+    print("My Python Version is '%s'!", sys.version)
+
+helloPy()
+x=1
+' ```
+
+The value of x is `py x`!
+```
+
+Here the output.
+
+```{py}
+import sys
+def helloPy():
+    print("Hello Python World")
+    print("My Python Version is '%s'!", sys.version)
+
+helloPy()    
+x=1
+```
+
+The value of x is `py x`!
+
+As in R variables are still existing in the next code chunk:
+
+```{py}
+'x' in dir()
+print(x)
+```
+
+Using Python packages like matplotlib you can as well generated  images within
+your code chunks and then embed these images using standard Markdown syntax.
+
+Here an example:
+
+```
+' ```{py results="hide"}
+import matplotlib.pyplot as plt
+x = [0, 2, 4, 6, 8]
+y = [0, 4, 16, 36, 64]
+
+fig, ax = plt.subplots()  
+ax.plot(x, y, marker='o', label="Data Points")
+
+ax.set_title("Basic Components of Matplotlib Figure")
+ax.set_xlabel("X-Axis") 
+ax.set_ylabel("Y-Axis")  
+plt.savefig('pyexample.svg')
+' ```
+
+![](pyexample.svg)
+```
+
+And here the ouput:
+
+```{py results="hide"}
+import matplotlib.pyplot as plt
+x = [0, 2, 4, 6, 8]
+y = [0, 4, 16, 36, 64]
+
+fig, ax = plt.subplots()  
+ax.plot(x, y, marker='o', label="Data Points")
+
+ax.set_title("Basic Components of Matplotlib Figure")
+ax.set_xlabel("X-Axis") 
+ax.set_ylabel("Y-Axis")  
+plt.savefig('pyexample.svg')
+```
+
+![](pyexample.svg)
+
+> [!CAUTION] 
+> In Python there is not yet support for terminal like output as in R and
+> as well no support for the <i>fig=TRUE</i> option as Python has many 
+> possibilities  to create  images  within a code chunk.  Further as well the
+> command to save a plot might differ even for matplotlib as using the 
+> shortage <i>plt</i> as in the example above is not standard.
+
+In a similar way code for Octave with a label `` `oc` `` 
+or Julia with a label `` `jl` ``  or `` `julia` `` for triple backticks
+chunks can be embedded within your documents. Of course these
+programming languages needs to be installed before they can be used.
 
 ## Summary
 
