@@ -27,8 +27,11 @@
 #' COPYRIGHT HOLDER: Detlef Groth
 
 #' FILE: tmdoc4r/NEWS
-#' 2025-11-XX: version 0.1.10 - fix for Octave with fig=TRUE and for encoding problems
-#'                              incase of non ASCII letters
+# '2025-12-XX: version 0.2.0 - adding support for html tags like kbd and kbd.menu
+#'                           - adding include support 
+#'                           - TRUE HTML comments
+#' 2025-11-27: version 0.1.10 - fix for Octave with fig=TRUE and for encoding problems
+#'                              increase of non ASCII letters
 #' 2025-11-24: version 0.1.9 - bold df2md table headers, required for LaTeX output with pandoc
 #'                             fixing wait issues on R mode and Python
 #' 2025-11-21: version 0.1.8 - adding LaTeX style file tmdoc.sty to support LaTex compilation

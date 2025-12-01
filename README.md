@@ -109,6 +109,7 @@ More examples can be found at the [tmdoc tutorial](https://github.com/mittelmark
 
 ## Changes
 
+- __v0.2.0 - 2025-12-XX:__ adding support for html tags like kbd and kbd.menu, include support and TRUE HTML comments
 - __v0.1.10 - 2025-11-27:__ fixing  encoding issues for non UTF8 files, fixing
   fig=TRUE issues in Octave
 - __v0.1.9 - 2025-11-24:__ fixes issues with long  computations in R, Python,
