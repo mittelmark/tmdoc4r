@@ -39,6 +39,8 @@ Features:
 - CSV data display as tables
 - [alert messages](https://blog.jakelee.co.uk/github-alert-experiments/) if tmdoc.css is used
 - embedding LaTeX equations as images using
+- automatic table of contents creation
+- HTML comments are truly removed, not just hidden
 
 <a title="CodeCogs.com" href="https://www.codecogs.com">
 <img src="https://www.codecogs.com/images/poweredbycodecogs.png" border="0" 
