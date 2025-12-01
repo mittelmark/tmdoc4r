@@ -33,7 +33,7 @@ build:
 	weasyprint -q --stylesheet small.css $(pkg)/inst/doc/$(pkg)-vignette.html $(pkg)/vignettes/tmdoc4r-vignette.pdf
 	cp tmdoc4r-vignette.Rnw  $(pkg)/vignettes/
 	cp examples/tmdoc.css $(pkg)/inst/files/
-	rm $(pkg)/inst/doc/*.html
+	mv $(pkg)/inst/doc/*.html .
 	#cp tmdoc4r-examples.Rmd tmdoc4r-vignette.Rmd $(pkg)/vignettes/
 	TMPDIR=`pwd`/Rbuild R_LIBS=`pwd`/$(pkg).Rcheck Rscript $(pkg)-src.R --build $(pkg)
 	R_LIBS=`pwd`/$(pkg).Rcheck Rscript $(pkg)-src.R --check $(pkg)_$(VERSION).tar.gz

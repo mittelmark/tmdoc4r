@@ -1,7 +1,7 @@
 ---
 title: tmdoc4r vignette
 author: Detlef Groth, University of Potsdam, Germany
-date: 2025-11-27 10:04
+date: 2025-12-01 10:31
 bibliography: assets/literature.bib
 ---
 
@@ -599,6 +599,120 @@ In a similar way code for Octave with a label `` `oc` ``
 or Julia with a label `` `jl` ``  or `` `julia` `` for triple backticks
 chunks can be embedded within your documents. Of course these
 programming languages needs to be installed before they can be used.
+
+## HTML Tags 
+
+Since version 0.2.0 you can as well include  aribitary HTML tags into Markdown
+documents. the styling can be then done by your CSS stylesheet here an example
+for a span class.
+
+```
+`tcl tag span "Hello Text" grey70`
+```
+
+Here the output:
+
+`tcl tag span "Hello Text" grey70`
+
+More  interesting  might be the  'kbd'  tag  which  allows  you to  display
+keyboard  like text to  communicate  key-sequence  if the  proper  styling  is
+provided.   The   included   'tmdoc.css'   stylesheet   here   provides   this
+functionality.  Here an example:
+
+```
+The key combination in MicroEmacs to save is file is `tcl tag kbd Ctrl-x` 
+`tcl tag kbd Ctrl-s`. 
+```
+
+Here the output:
+
+The key combination in MicroEmacs to save is file is `tcl tag kbd Ctrl-x` 
+`tcl tag kbd Ctrl-s`. 
+
+
+As this syntax 'tcl tag kbd' is rather clumsy there is as well an  abbreviated
+form using just the syntax 'kbd key' like here:
+
+```
+`kbd Ctrl-x` `kbd Ctrl-f` is used to open a file via them  message  line
+which allows using the `kbd &#8644\;` (TAB) key for filename completion.
+```
+
+And here the output:
+
+`kbd Ctrl-x` `kbd Ctrl-f` is used to open a file via them  message  line
+which allows using the `kbd &#8644\;` (TAB) key for filename completion.
+
+To look for more symbols you can use in this context have a look at the list of
+[UTF-8 arrows](https://www.w3schools.com/charsets/ref_utf_arrows.asp)   and
+their HTML symbols.
+
+In a similar way like the keyboard shortcuts you can include menu entry paths like here:
+
+```
+The menu entry `menu {<u>F</u>ile "Save <u>A</u>s"}` allows you to save 
+a file via the menu with a new filename.
+```
+
+An here the output:
+
+The menu entry `menu {<u>F</u>ile "Save <u>A</u>s"}` allows you to save a file via
+the menu with a new filename.
+
+## File Includes 
+
+Sometime you might like to split your document into different  sections, like
+introduction,  materials  and methods,  results etc or just  include  standard
+headers or footers  into a set of  document.  For this you can use the include
+functionality of the tmdoc4r package here an example:
+
+```
+`tcl include lipsum.txt`
+or:
+`include lipsum.txt`
+```
+
+`` `tcl include FILENAME` `` and ``  `include FILENAME` `` provide the same functionality.
+
+## Creation of Table of Contents
+
+If you use the argument _toc=TRUE_ for the tmdoc function a file with the same
+basename as the input  document and the extension  _toc_ will be generated and
+can be then included at a place you like to have this table of contents.  That
+should then look like this:
+
+```
+`tcl include tmdoc4r-vignette.toc`
+```
+
+## Comments
+
+Since  version 0.2.0 there is as well for true comments  where the text is not
+only hidden but as well excluded from the output document.
+
+Here is an example:
+
+```
+This is some text.
+
+<!--
+Some comment which should be exluded.
+Some more text
+-->
+
+That should be visible again.
+```
+
+And here the output:
+
+This is some text.
+
+<!--
+Some comment which should be exluded.
+Some more text
+-->
+
+That should be visible again.
 
 ## Summary
 

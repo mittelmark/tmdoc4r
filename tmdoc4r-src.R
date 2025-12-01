@@ -2,9 +2,9 @@
 #' FILE: tmdoc4r/DESCRIPTION
 #' Package: tmdoc4r
 #' Type: Package
-#' Title: R single file dummy package
-#' Version: 0.1.10
-#' Date: 2025-11-27
+#' Title: tmdoc4r package for literate programming with R
+#' Version: 0.2.0
+#' Date: 2025-12-02
 #' Author: Detlef Groth
 #' Authors@R: c(person("Detlef","Groth", role=c("aut", "cre"),
 #'                   email = "dgroth@uni-potsdam.de",
