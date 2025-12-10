@@ -2,8 +2,8 @@
 #' FILE: tmdoc4r/DESCRIPTION
 #' Package: tmdoc4r
 #' Type: Package
-#' Title: tmdoc4r package for literate programming with R
-#' Version: 0.2.0
+#' Title: tmdoc4r package for literate programming with R, Python, Octave, Julia and Tcl
+#' Version: 0.2.1
 #' Date: 2025-12-02
 #' Author: Detlef Groth
 #' Authors@R: c(person("Detlef","Groth", role=c("aut", "cre"),
@@ -27,7 +27,10 @@
 #' COPYRIGHT HOLDER: Detlef Groth
 
 #' FILE: tmdoc4r/NEWS
-# '2025-12-XX: version 0.2.0 - adding support for html tags like kbd and kbd.menu
+#' 2025-12-XX: version 0.2.1 - adding support for internal stylesheets  mndoc.css
+#'                             and tmdoc.css in case the files are missing if css 
+#'                             argument is given
+# '2025-12-01: version 0.2.0 - adding support for html tags like kbd and kbd.menu
 #'                           - adding include support 
 #'                           - TRUE HTML comments
 #' 2025-11-27: version 0.1.10 - fix for Octave with fig=TRUE and for encoding problems
@@ -254,49 +257,91 @@
 #' FILE: tmdoc4r/R/tmdoc.R
 tmdoc <- function (infile, outfile=NULL, css=NULL, quiet=FALSE, mathjax=NULL, refresh=NULL, inline=TRUE, toc=FALSE,...) {
     stopifnot(file.exists(infile))
-    mdfile=gsub("\\..md$",".md",infile)
-    if (is.null(outfile)) {
-        outfile=gsub("\\..md$",".html",infile)
-    } 
-    if (is.null(css)) {
-        css=""
+    if (grepl("\\.(R|r|tcl|py|cpp|c|hpp|h|jl|m)$",infile)) {
+        ## documentation extracton
+        fin  = file(infile, "r")
+        print("here")
+        mode = "md"
+        if (is.null(outfile)) {
+            outfile=gsub("\\..[A-Za-z]+$",".md",infile)
+        } else if (outfile == "-") {
+            mode="stdout"
+            fout=stdout()
+        } else {
+            if (grepl("\\.html?",outfile,ignore.case=TRUE)) {
+                mode = "html"
+                mdfile=gsub("\\.[A-Za-z]$",".Rmd")
+                fout = file(mdfile,'w')
+            } else {
+                print("opening outfile")
+                fout = file(outfile,'w')
+            }
+        }
+        print(fin)
+        while(length((line = readLines(fin,n=1)))>0) {
+            if (grepl("^\\s*#'\\s?",line)) {
+                line = gsub("^\\s*#' ?","",line)
+                cat(line,"\n",file=fout)
+            }
+        }
+        close(fin)
+        if (mode != "stdout") {
+            close(fout)
+        }
+        if (mode == "html") {
+            
+            tmdoc(mdfile,outfile,css=css,quiet=quiet,mathjax=mathjax,
+                  refresh=refresh,inline=inline,toc=toc)
+        }
+        if (!quiet) {
+            message(paste("Processing",infile,"to",outfile,"done!"))
+        }
+        
     } else {
-        css=paste("--css",css)
-    }
-    if (toc) {
-        tocx="--toc true"
-    } else {
-        tocx = ""
-    }
-    if (is.null(mathjax)) {
-        mjx=""
-    } else {
-        mjx="--mathjax true"
-    }
-    if (is.null(refresh)) {
-        refresh=""
-    } else {
-        refresh=paste("--refresh",refresh)
-    }
-    if (inline) {
-        inline="--base64 true"
-    } else {
-        inline="--base64 false"
-    }
-    cmdline = paste("set ::argv [list",infile, mdfile,tocx,"]")        
-
-    tcltk::.Tcl("set ::quiet true")
-    tcltk::.Tcl(paste(paste("cd",getwd())))
-    tcltk::.Tcl("if {[info commands ::exitorig] eq {}} {  rename ::exit ::exitorig ; }; proc ::exit {args} { return }")
-    tcltk::.Tcl(cmdline)
-    tcltk::.Tcl("set ::argv0 tmdoc")
-    tcltk::.Tcl("tmdoc::main $argv")
-    cmdline = paste("set ::argv [list",mdfile,outfile,mjx,css,refresh,inline,"]")
-    tcltk::.Tcl(cmdline)
-    tcltk::.Tcl("set ::argv0 mndoc")
-    tcltk::.Tcl("mndoc::main $argv")
-    if (!quiet) {
-        message(paste("Processing",infile,"to",outfile,"done!"))
+        mdfile=gsub("\\..md$",".md",infile)
+        if (is.null(outfile)) {
+            outfile=gsub("\\..md$",".html",infile)
+        } 
+        if (is.null(css)) {
+            css=""
+        } else {
+            css=paste("--css",css)
+        }
+        if (toc) {
+            tocx="--toc true"
+        } else {
+            tocx = ""
+        }
+        if (is.null(mathjax)) {
+            mjx=""
+        } else {
+            mjx="--mathjax true"
+        }
+        if (is.null(refresh)) {
+            refresh=""
+        } else {
+            refresh=paste("--refresh",refresh)
+        }
+        if (inline) {
+            inline="--base64 true"
+        } else {
+            inline="--base64 false"
+        }
+        cmdline = paste("set ::argv [list",infile, mdfile,tocx,"]")        
+        
+        tcltk::.Tcl("set ::quiet true")
+        tcltk::.Tcl(paste(paste("cd",getwd())))
+        tcltk::.Tcl("if {[info commands ::exitorig] eq {}} {  rename ::exit ::exitorig ; }; proc ::exit {args} { return }")
+        tcltk::.Tcl(cmdline)
+        tcltk::.Tcl("set ::argv0 tmdoc")
+        tcltk::.Tcl("tmdoc::main $argv")
+        cmdline = paste("set ::argv [list",mdfile,outfile,mjx,css,refresh,inline,"]")
+        tcltk::.Tcl(cmdline)
+        tcltk::.Tcl("set ::argv0 mndoc")
+        tcltk::.Tcl("mndoc::main $argv")
+        if (!quiet) {
+            message(paste("Processing",infile,"to",outfile,"done!"))
+        }
     }
 }
 

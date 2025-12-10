@@ -31,7 +31,8 @@ Markup Languages:
 
 Features:
 
-- Shell code emmbedding using terminal tools (Music sheets, Diagrams, ...)
+
+- shell code emmbedding using terminal tools (Music sheets, Diagrams, ...)
 - include other files using the syntax `` `tcl include filename.md` `` done
 - abbreviations based on YAML header and external YAML files
 - [Kroki](https://kroki.io) diagram support
@@ -40,6 +41,7 @@ Features:
 - [alert messages](https://blog.jakelee.co.uk/github-alert-experiments/) if tmdoc.css is used
 - embedding LaTeX equations as images using
 - automatic table of contents creation
+- automatic figure and table numbering
 - HTML comments are truly removed, not just hidden
 
 <a title="CodeCogs.com" href="https://www.codecogs.com">
@@ -54,7 +56,7 @@ The package should be installed in an interactive R session like this:
 
 ```
 install.packages(
-  "https://github.com/mittelmark/tmdoc4r/releases/download/v0.2.0/tmdoc4r_0.2.0.tar.gz",
+  "https://github.com/mittelmark/tmdoc4r/releases/download/v0.2.1/tmdoc4r_0.2.1.tar.gz",
   repos=NULL);
 ```
 
@@ -111,6 +113,10 @@ More examples can be found at the [tmdoc tutorial](https://github.com/mittelmark
 
 ## Changes
 
+- __v0.2.1  - 2025-12-10:__ adding support for internal stylesheets  mndoc.css
+  and  tmdoc.css  in case the files are  missing if css  argument is given, as
+  well  publishing  examples  for figure and table  numberings  using 
+  `` `nfig label` `` and `` `nfig label` `` syntax
 - __v0.2.0  - 2025-12-01:__ adding support for HTML tags like 'kbd' and 'kbd '
    class 'menu', 'include FILENAME' support and true HTML comments
 - __v0.1.10 - 2025-11-27:__ fixing  encoding issues for non UTF8 files, fixing
