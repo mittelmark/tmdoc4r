@@ -113,7 +113,9 @@ More examples can be found at the [tmdoc tutorial](https://github.com/mittelmark
 
 ## Changes
 
-- __v0.2.1  - 2025-12-10:__ adding support for internal stylesheets  mndoc.css
+- __v0.2.2  -  2025-12-18:__  fixing  issue  with more  complex  inline R code
+  chunks within single backticks
+- __v0.2.1  - 2025-12-12:__ adding support for internal stylesheets  mndoc.css
   and  tmdoc.css  in case the files are  missing if css  argument is given, as
   well  publishing  examples  for figure and table  numberings  using 
   `` `nfig label` `` and `` `nfig label` `` syntax

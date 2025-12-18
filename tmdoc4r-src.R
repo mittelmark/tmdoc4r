@@ -3,8 +3,8 @@
 #' Package: tmdoc4r
 #' Type: Package
 #' Title: tmdoc4r package for literate programming with R, Python, Octave, Julia and Tcl
-#' Version: 0.2.1
-#' Date: 2025-12-02
+#' Version: 0.2.2
+#' Date: 2025-12-18
 #' Author: Detlef Groth
 #' Authors@R: c(person("Detlef","Groth", role=c("aut", "cre"),
 #'                   email = "dgroth@uni-potsdam.de",
@@ -27,7 +27,8 @@
 #' COPYRIGHT HOLDER: Detlef Groth
 
 #' FILE: tmdoc4r/NEWS
-#' 2025-12-XX: version 0.2.1 - adding support for internal stylesheets  mndoc.css
+#' 2025-12-18: version 0.2.2 - fixing inline R code issue with more complex statements
+#' 2025-12-12: version 0.2.1 - adding support for internal stylesheets  mndoc.css
 #'                             and tmdoc.css in case the files are missing if css 
 #'                             argument is given
 # '2025-12-01: version 0.2.0 - adding support for html tags like kbd and kbd.menu

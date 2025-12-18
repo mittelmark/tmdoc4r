@@ -1,7 +1,7 @@
 ---
 title: tmdoc4r vignette
 author: Detlef Groth, University of Potsdam, Germany
-date: 2025-12-10 16:40
+date: 2025-12-18 12:17
 bibliography: assets/literature.bib
 ---
 
@@ -186,6 +186,31 @@ The data set iris has data for `r nrow(iris)` plants,
 where `r length(which(iris$Species=='setosa'))` are setosa plants.
 
 This document was compiled at `r Sys.Date()`.
+
+In  earlier  versions  before  0.17.2  more  complex   statements which return
+a list structure could  make trouble. That was fixed in 0.17.2.
+
+Here an example:
+
+```
+'``{r}
+x=1:10
+y=x+rnorm(10,sd=0.2)
+cor(x,y)
+'``
+
+The correlation coefficient is: `r cor.test(x,y)$estimate`.
+```
+
+And here the now correct code output:
+
+```{r}
+x=1:10
+y=x+rnorm(10,sd=0.5)
+cor(x,y)
+```
+
+The correlation coefficient is: `r cor.test(x,y)$estimate`.
 
 ## CSV Tables
 
