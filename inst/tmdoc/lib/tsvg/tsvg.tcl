@@ -2,7 +2,7 @@
 ##############################################################################
 #  Created By    : Dr. Detlef Groth
 #  Created       : Sat Aug 28 09:52:16 2021
-#  Last Modified : <230716.0919>
+#  Last Modified : <260102.1657>
 #
 #  Description	 : Minimal Tcl package to write SVG code and write it to 
 #                  a file.
@@ -22,19 +22,20 @@
 #                                  - fix for height of images 
 #                                  - making viewbox optional  
 #                                  - adding combineSVG Method    
-#	
+#                - 2026-01-02 - Version 0.4.0 support rsvg-convert added
+#
 ##############################################################################
 #
-#  Copyright (c) 2021-2023 Detlef Groth, Germany
+#  Copyright (c) 2021-2026 Detlef Groth, Germany
 # 
-#  License: MIT 
+#  License: BSD 
 # 
 ##############################################################################
 
 #' ---
-#' title: tsvg package 0.3.1
+#' title: tsvg package 0.4.0
 #' author: Detlef Groth, Germany
-#' date: 2023-07-16
+#' date: 2026-01-02
 #' tsvg:
 #'     eval: 1
 #' tcl:
@@ -194,7 +195,17 @@
 #' tsvg write hello-world2.png
 #' ```
 #' 
+#' Since version 0.4.0 as well the command line tool rsvg-convert is supported for converting documents into
+#' pdf and png. The user can install this usually on Linux system easily by using the package manager like this:
 #' 
+#' ```
+#' ### Debian/Ubuntu
+#' sudo apt install librsvg2-bin 
+#' ### Fedora/CentOS/RHEL:
+#' sudo dnf install librsvg2
+#' ### Arch Linux:
+#' sudo pacman -S librsvg
+#' ```
 #'  
 #' For inclusion of images into LaTeX documents I would recommend using the PDF output format.
 #' 
@@ -269,19 +280,21 @@
 #' That way you can as well create your own function which perform more complex SVG element creations. Here an example:
 #' 
 #' ```{.tsvg label=logo}
-#' tsvg proc logo_tsvg {{filename ""}} {
+#' tsvg proc logo_tsvg {{filename ""} {col blue}} {
 #'     tsvg set code ""
 #'     tsvg set width 100
 #'     tsvg set height 60
 #'     tsvg rect x 0 y 0 width 100 height 100 fill #F64935
-#'     tsvg text x 20 y 40 style "font-size:24px;fill:blue;" tSVG
+#'     tsvg text x 20 y 40 style "font-size:24px;fill:$col;" tSVG
 #'     if {$filename ne ""} {
 #'        tsvg write $filename
 #'     }
 #' }
-#' tsvg logo_tsvg logo.svg
+#' tsvg logo_tsvg logo1.svg blue
+#' tsvg logo_tsvg logo2.png skyblue
 #' ```
 #' 
+#' ![](logo1.svg)
 #'
 #' ### Documentation extraction
 #' 
@@ -302,6 +315,8 @@
 #' * 2021-08-31 Version 0.2 fix for the header line
 #' * 2021-12-01 Version 0.3.0 adding write option for PNG and PDF files using cairosvg 
 #' * 2023-07-15 Version 0.3.1 fixing height issue, adding combine files method, own repo, License now BSD
+#' * 2026-01-02 version 0.4.0 support for rsvg-convert in addtion to cairosvg to convert to pdf and png
+#'
 #'     
 #' ## SEE ALSO
 #' 
@@ -310,14 +325,14 @@
 #' 
 #' ## AUTHOR
 #' 
-#' Detlef Groth, Caputh-Schwielowsee, Germany, detlef(_at_)dgroth(_dot_).de
+#' Detlef Groth, University of Potsdam, Germany, dgroth(at)uni(minus)potsdam(dot).de
 #' 
 #' ## LICENSE
 #' 
 #' ```
 #' BSD 3-Clause License
 #' 
-#' Copyright (c) 2023, D Groth
+#' Copyright (c) 2023-2026, Detlef Groth, University of Potsdam, Germany
 #' 
 #' Redistribution and use in source and binary forms, with or without
 #' modification, are permitted provided that the following conditions are met:
@@ -347,7 +362,7 @@
 #' 
 
 
-package provide tsvg 0.3.1
+package provide tsvg 0.4.0
 
 # minimal OOP
 proc thingy name {
@@ -491,8 +506,11 @@ tsvg proc write {filename} {
     variable code
     set ext [file extension $filename]
     if {$ext in [list .pdf .png]} {
-        if {[auto_execok cairosvg] eq ""} {
-            error "tsvg conversion to $ext needs the cairosvg tool"
+        set conv cairosvg
+        if {[auto_execok rsvg-convert] ne ""} {
+            set conv rsvg-convert
+        } elseif {[auto_execok cairosvg] eq ""} {
+            error "Error: tsvg conversion to $ext needs the cairosvg or the rsvg-convert tool!"
         }
     } elseif {$ext ne ".svg"}  {
         error "Unkown file extension, know file extensions are: .svg, .pdf, .png"
@@ -505,7 +523,11 @@ tsvg proc write {filename} {
     puts $out $footer
     close $out
     if {$ext in [list .pdf .png]} {
-       exec cairosvg [file rootname $filename].svg -o $filename -W $width -H $height
+        if {$conv eq "cairosvg"} {
+            exec cairosvg [file rootname $filename].svg -o $filename -W $width -H $height
+        } elseif {$conv eq "rsvg-convert"} {
+            exec rsvg-convert [file rootname $filename].svg -o $filename --format [string range $ext 1 end] -w $width -h $height
+        }
     } 
 }
 
@@ -608,7 +630,7 @@ tsvg proc demo {} {
     puts "Writing file basic-shapes.pdf done!"
 }
 
-                   
+
 if {[info exists argv0] && $argv0 eq [info script] && [regexp tsvg.tcl $argv0]} {
     #package require Tk
     tsvg demo

@@ -1,7 +1,7 @@
 ---
 title: tmdoc4r vignette
 author: Detlef Groth, University of Potsdam, Germany
-date: 2025-12-18 12:17
+date: 2026-01-03 09:50
 bibliography: assets/literature.bib
 ---
 
@@ -542,7 +542,7 @@ embedding Python code.
 import sys
 def helloPy():
     print("Hello Python World")
-    print("My Python Version is '%s'!", sys.version)
+    print("My Python Version is '%s'!" % sys.version)
 
 helloPy()
 x=1
@@ -557,7 +557,7 @@ Here the output.
 import sys
 def helloPy():
     print("Hello Python World")
-    print("My Python Version is '%s'!", sys.version)
+    print("My Python Version is '%s'!" % sys.version)
 
 helloPy()    
 x=1
@@ -816,6 +816,126 @@ And here the output:
 __A__,1,2,3
 __B__,4,5,6
 __B__,7,8,9
+```
+
+## Music Songsheets
+
+Since  version  0.3.0 it as well  possible to display song chord sheets and to
+transpose  these chords if necessary. Here an example which should display the
+song "Scarborough Fair".
+
+Below we have an example for a tcrd sheet.
+
+```
+'``{.tcrd echo=FALSE}
+[Dm]Are you going to [C]Scarborough [Dm]Fair? 
+[F]Parsley, [Dm]sage, rose [F]mary [G]and [Dm]thyme 
+Remember [F]me to one who [C]lives there 
+[Dm]He once [C]was a true love of [Dm]mine
+'``
+```
+
+And here is the output:
+
+```{.tcrd echo=FALSE}
+[Dm]Are you going to [C]Scarborough [Dm]Fair? 
+[F]Parsley, [Dm]sage, rose [F]mary [G]and [Dm]thyme 
+Remember [F]me to one who [C]livesxb there 
+[Dm]He once [C]was a true love of [Dm]mine
+```
+
+Let's now add a few Ukulele Chord charts for this song:
+
+```
+'``{.tcrd chord=true,echo=true,fig=true,out.width=300}
+C  0003
+Dm 2210
+F  2010
+G  0232
+'``
+```
+
+And here the output:
+
+```{.tcrd chord=true,echo=true,fig=true,out.width=400}
+I-C  0003
+ii-Dm 2210
+iV-F  2010
+V-G  0232
+```
+
+You can as well  transpose  the  chords  by half  steps,  here an  example  to
+transpose  the  chords by two half steps, so that for  instance C becomes a D
+accord.
+
+```
+'``{.tcrd echo=FALSE transpose=2}
+[Dm]Are you going to [C]Scarborough [Dm]Fair? 
+[F]Parsley, [Dm]sage, rose [F]mary [G]and [Dm]thyme 
+Remember [F]me to one who [C]lives there 
+[Dm]He once [C]was a true love of [Dm]mine
+'``
+```
+
+And here is the output:
+
+```{.tcrd echo=FALSE,transpose=2}
+[Dm]Are you going to [C]Scarborough [Dm]Fair? 
+[F]Parsley, [Dm]sage, rose [F]mary [G]and [Dm]thyme 
+Remember [F]me to one who [C]livesxb there 
+[Dm]He once [C]was a true love of [Dm]mine
+```
+
+If you have  already a song text with  chords  above of the  lyrics  you still
+transpose the song like this:
+
+```{.tcrd echo=FALSE,transpose=2,inline=FALSE}
+C           G
+Dat du mien Leevsten b¸st
+Am          G  
+dat du wohl weeﬂ
+F                C          Am
+Kumm bi de Nacht kumm bi de Nacht
+G7         C 
+segg wo du heeﬂt
+F                C          Am
+Kumm bi de Nacht kumm bi de Nacht
+G7         C 
+segg wo du heeﬂt
+```
+
+
+
+Now some Guitar chord diagrams.
+
+```
+'``{.tcrd chord=true,echo=true,fig=true,fig.width=150,echo=FALSE}
+C  x32010
+Dm xx0231
+Em 022000
+'``
+
+'``{.tcrd chord=true,echo=true,fig=true,fig.width=150,echo=FALSE}
+F  x03211
+G  320003
+Am x02210
+'``
+```
+
+And here the ouput:
+
+__Guitar Tuning EADGBE:__
+
+```{.tcrd chord=true,echo=true,fig=true,fig.width=150,echo=FALSE}
+C  x32010
+Dm xx0231
+Em 022000
+```
+
+```{.tcrd chord=true,echo=true,fig=true,fig.width=150,echo=FALSE}
+F  x03211
+G  320003
+Am x02210
 ```
 
 

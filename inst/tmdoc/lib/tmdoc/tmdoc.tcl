@@ -4,7 +4,6 @@ exec tclsh "$0" "$@"
 ##############################################################################
 #  Author        : Dr. Detlef Groth
 #  Created       : Tue Feb 18 06:05:14 2020
-#  Last Modified : <251218.1145>
 #
 # Copyright (c) 2020-2025  Detlef Groth, University of Potsdam, Germany
 #                          E-mail: dgroth(at)uni(minus)potsdam(dot)de
@@ -69,16 +68,19 @@ exec tclsh "$0" "$@"
 #                                            replace `nfig label` or `ntab label` with `tcl nfig label`
 #                                            remove tcl rfig and tcl rtab command can be replaced with tcl nfig and tcl ntab
 #                  2025-12-18 version 0.17.2 fixing an issue with more complex returns in inline R statements
+#                  2026-01-01 version 0.18.0 adding support for Ukulele and Guitar chords as well as chord sheets
+#                                            adding support for #INCLUDE in code chunks
 #
 package require Tcl 8.6-
 package require fileutil
 package require yaml
-package provide tmdoc::tmdoc 0.17.2
+package provide tmdoc::tmdoc 0.18.0
 package provide tmdoc [package provide tmdoc::tmdoc]
 source [file join [file dirname [info script]] filter-r.tcl]
 source [file join [file dirname [info script]] filter-python.tcl]
 source [file join [file dirname [info script]] filter-octave.tcl]
 source [file join [file dirname [info script]] filter-julia.tcl]
+source [file join [file dirname [info script]] filter-tcrd.tcl]
 namespace eval ::tmdoc {
     variable script [info script]
     variable pipedone
@@ -451,7 +453,11 @@ proc tmdoc::block {txt inmode {style ""}} {
             set mstyle "${style}"
         }
         if {$inmode eq "md"} {
-            set txt [string trim $txt]
+            if {$style ne "tcrd"} {
+                set txt [string trim $txt]
+            } else {
+                set txt [string trimright $txt]
+            }
             set mstyle [regsub 3 $mstyle ""]
             append res "```${mstyle}\n${txt}"
             if {![regexp {\n$} $txt]} {
@@ -478,9 +484,21 @@ proc tmdoc::block {txt inmode {style ""}} {
             append res "\[,${style}]\n----\n$txt----\n"
             append res "\n"
         } else {
-            append res "\\begin{lcverbatim}\n"
-            append res "$txt"
-            append res "\\end{lcverbatim}"
+            if {$style eq "r"} {
+                append res "\\begin{lrverbatim}\n"
+                append res "$txt"
+                append res "\n\\end{lrverbatim}"
+            } elseif {$style eq "python3"} {
+                append res "\\begin{lpverbatim}\n"
+                append res "$txt"
+                append res "\n\\end{lpverbatim}"
+                
+            } else {
+                append res "\\begin{lcverbatim}\n"
+                append res "$txt"
+                append res "\n\\end{lcverbatim}"
+                
+            }
         }
         return $res
     }
@@ -529,15 +547,22 @@ proc tmdoc::cairosvg {filename dict} {
     array set opt $dict
     set fname [file rootname $filename]
     if {$opt(ext) in [list "pdf" "png"]} {
-        if {[auto_execok cairosvg] eq ""} {
-            return [list "Error: pdf and png conversion needs cairosvg, please install cairosvg https://www.cairosvg.org !" ""]
+        set conv cairosvg
+        if {[auto_execok rsvg-convert] ne ""} {
+            set conv rsvg-convert
+        } elseif {[auto_execok cairosvg] eq ""} {
+            return [list "Error: pdf and png conversion needs cairosvg or rsvg-convert, please install cairosvg https://www.cairosvg.org !" ""]
         }
     }
     if {[dict get $dict ext] eq "pdf"} {
-        exec cairosvg $fname.svg -o $fname.pdf ;# -W $opt(width) -H $opt(height)
+        if {$conv eq "cairosvg"} {
+            exec $conv $fname.svg -o $fname.pdf ;# -W $opt(width) -H $opt(height)
+        } else {
+            exec $conv $fname.svg --format pdf -o $fname.pdf ;#-W $opt(width) -H $opt(height)
+        }
         return ${fname}.pdf
     } elseif {[dict get $dict ext] eq "png"} {
-        exec cairosvg $fname.svg -o $fname.png ;#-W $opt(width) -H $opt(height)
+        exec $conv $fname.svg -o $fname.png ;#-W $opt(width) -H $opt(height)
         return ${fname}.png
     } elseif {[dict get $dict ext] ne "svg"} {
         return "Error unkown extension name valid values are svg, pdf, png"
@@ -639,12 +664,13 @@ proc ::tmdoc::tmdoc {filename outfile args} {
     set bashinput ""
     set krokiinput ""
     set mtexinput ""
+    set tcrdinput ""    
     set lastbashinput ""
     set ginput ""
-    array set mopt [list eval true echo true results show fig false include true label chunk-nn\
+    array set mopt [list eval true echo true results show fig false include true label chunk-nn fig.path images \
                     ext png chunk.ext txt fig.width 0]
     ## r, python, octave, julia
-    array set dopt [list eval true echo true results show fig false include true pipe python3 \
+    array set dopt [list eval true echo true results show fig false include true pipe python3 fig.path images \
         fig.width 0 fig.height 0 fig.cap {} label chunk-nn ext png chunk.ext txt]
     ## bash / shell
     array set bdopt [list cmd "" echo true eval true results show fig true include true \
@@ -652,10 +678,13 @@ proc ::tmdoc::tmdoc {filename outfile args} {
     ## kroki
     array set kdopt [list echo true eval true results show fig true include true \
                      fig.width 0 label chunk-nn ext png dia ditaa \
-                     fig.path .]
+                     fig.path images]
     ## mtex
     array set tdopt [list echo true eval true results show fig true include true \
-        label chunk-nn fig.path . fig.width 0 ext png]
+                     label chunk-nn fig.path images fig.width 0 ext png]
+    ## tcrd
+    array set cdopt [list echo true results show eval true include true label chunk-nn transpose 0 inline true \
+                 chord false chordname "" fig.path images fig false ext svg circlecolor black fig.width 100 out.width 0]
     interpReset
     interp eval intp "set ::inmode $inmode"
     set enc [::tmdoc::get_encoding $filename]
@@ -696,6 +725,10 @@ proc ::tmdoc::tmdoc {filename outfile args} {
                 set line [regsub -all {`menu ([^`]+)`} $line "`tcl tag kbd \\1 menu`"]
                 set line [regsub -all {`include ([^`]+)`} $line "`tcl include \\1`"]
                 set line [regsub -all {`(n[ft][ai][bg]) +([a-zA-Z0-9]+)`} $line "`tcl \\1 \\2`"]
+            } elseif {$mode in [list tcrd mtex shell kroki]} {
+                if {[regexp {^#INCLUDE "(.+)"} $line -> filename]} {
+                    set line [include $filename]
+                }
             }
             set line [regsub {^\s*\[@references\]\s*$} $line "`tcl citer::bibliography`"]
             incr lnr
@@ -788,7 +821,6 @@ proc ::tmdoc::tmdoc {filename outfile args} {
                 set mode code
                 incr chunki
                 array set copt [array get dopt]
-
                 # TODO: spaces in fig.cap etc
                 ::tmdoc::GetOpts
                 continue
@@ -803,6 +835,9 @@ proc ::tmdoc::tmdoc {filename outfile args} {
                 set mode kroki
                 incr chunki
                 array set copt [array get kdopt]
+                if {[file isdirectory $copt(fig.path)]} {
+                    file mkdir $copt(fig.path)
+                }
                 # TODO: spaces in fig.cap etc
                 ::tmdoc::GetOpts 
                 continue
@@ -811,6 +846,15 @@ proc ::tmdoc::tmdoc {filename outfile args} {
                 incr chunki
                 array set copt [array get tdopt]
                 ::tmdoc::GetOpts 
+                continue
+            } elseif {$mode eq "text" && (![regexp {   ```} $line] && [regexp {^\s{0,2}```\s?\{\.?(tcrd)(\s*.*)\}} $line -> tp opts])} {
+                set mode tcrd
+                incr chunki
+                array set copt [array get cdopt]
+                ::tmdoc::GetOpts 
+                if {$copt(chord)} {
+                    set copt(fig) true
+                }
                 continue
             } elseif {$mode eq "text" && (![regexp {   ```} $line] && [regexp {^\s{0,2}```\s?\{\.?(pipe)(\s*.*)\}} $line -> tp opts])} {
                 set mode pipe
@@ -961,11 +1005,40 @@ proc ::tmdoc::tmdoc {filename outfile args} {
                 #if {$copt(ext) eq "svg"} {
                 #    set filename [tmdoc::cairosvg $filename [array get copt]]
                 #}
+                if {[file isdirectory $copt(fig.path)]} {
+                    file mkdir $copt(fig.path)
+                }
                 if {$copt(include)} {
                     set imgsrc $filename
                     iimage
                 }
                 set mtexinput ""
+                set mode text
+                array unset copt
+            } elseif {$mode eq "tcrd" && [regexp {^ {0,2}```} $line]} {
+                if {$copt(echo)} {
+                    set cont [tmdoc::block $tcrdinput $inmode tcrd]
+                    puts $out $cont
+                }
+                if {$copt(eval)} {
+                    set res [tmdoc::tcrd::filter $tcrdinput [dict create {*}[array get copt]]]
+                    if {$copt(fig)} {
+                        set imgsrc [lindex $res end]
+                        if {$copt(out.width) > 0} {
+                            set copt(fig.width) $copt(out.width)
+                        }
+                        if {$copt(include)} {
+                            iimage
+                        }
+                    }
+                    if {$copt(results) eq "show"} {
+                        set cont [tmdoc::block [lindex $res 0] $inmode tcrd]
+                        puts $out $cont
+                    } elseif {$copt(results) eq "asis"} {
+                        puts $out [lindex $res 0]
+                    }
+                }
+                set tcrdinput ""
                 set mode text
                 array unset copt
             } elseif {$mode eq "shell"} {
@@ -974,6 +1047,8 @@ proc ::tmdoc::tmdoc {filename outfile args} {
                 append krokiinput "$line\n"
             } elseif {$mode eq "mtex"} {
                 append mtexinput "$line\n"
+            } elseif {$mode eq "tcrd"} {
+                append tcrdinput "$line\n"
             } elseif {$mode in [list csv pipe]} {
                 append ginput "$line\n"
             } elseif {$mode eq "code" && [regexp {^ {0,2}```} $line]} {
@@ -1051,26 +1126,27 @@ proc ::tmdoc::tmdoc {filename outfile args} {
                                 }
                             
                             }
-                            if {$copt(fig)} {
-                                set imgfile [file tail [file rootname $filename]]-$copt(label).$copt(ext)
-                                if {[interp eval intp "info commands figure"] eq ""} {
-                                    if {$inmode eq "md"} {
-                                        puts $out "```{tclerr}\nYou need to define a figure procedure \nwhich gets a filename as argument"
-                                        puts $out "proc figure {filename} { }\n\nwhere within you create the image file```\n"
-                                    } elseif {$inmode eq "man"} {
-                                        puts $out "\n\[example_begin\]"
-                                        puts $out "\nYou need to define a figure procedure \nwhich gets a filename as argument"
-                                        puts $out "proc figure {filename} { }\n\nwhere within you create the image file\n"
-                                        puts $out "\n\[example_end\]"
-                                    } else {
-                                        puts $out "\n\\begin{lrverbatim}\n\nYou need to define a figure procedure \nwhich gets a filename as argument\n"
-                                        puts $out "proc figure {filename} { }\n\nwhere within you create the image file\\end{lrverbatim}\n"
-                                    }
+                        }
+                        if {$copt(fig)} {
+                            set imgfile [file tail [file rootname $filename]]-$copt(label).$copt(ext)
+                            if {[interp eval intp "info commands figure"] eq ""} {
+                                if {$inmode eq "md"} {
+                                    puts $out "```{tclerr}\nYou need to define a figure procedure \nwhich gets a filename as argument"
+                                    puts $out "proc figure {filename} { }\n\nwhere within you create the image file```\n"
+                                } elseif {$inmode eq "man"} {
+                                    puts $out "\n\[example_begin\]"
+                                    puts $out "\nYou need to define a figure procedure \nwhich gets a filename as argument"
+                                    puts $out "proc figure {filename} { }\n\nwhere within you create the image file\n"
+                                    puts $out "\n\[example_end\]"
                                 } else {
-                                    interp eval intp [list figure $imgfile]
-                                    if {$copt(include)} {
-                                        set imgsrc $imgfile
-                                    }
+                                    puts $out "\n\\begin{lrverbatim}\n\nYou need to define a figure procedure \nwhich gets a filename as argument\n"
+                                    puts $out "proc figure {filename} { }\n\nwhere within you create the image file\\end{lrverbatim}\n"
+                                }
+                            } else {
+                                interp eval intp [list figure $imgfile]
+                                if {$copt(include)} {
+                                    set imgsrc $imgfile
+                                    iimage
                                 }
                             }
                         }
@@ -1205,7 +1281,7 @@ proc ::tmdoc::GetOpts {} {
         # setting default label if no label was given
         foreach key [array names copt] {
             if {$key eq "label" && $copt($key) eq "chunk-nn"} {
-                set value [regsub {nn} $copt($key) $chunki]
+                set value [regsub {nn} $copt($key) $mode-$chunki]
                 set copt($key) $value
             }
         }
@@ -1269,6 +1345,24 @@ proc tmdoc::ue_init {} {
 tmdoc::ue_init
 proc tmdoc::ue {s} { string map $::ue_map $s }
 proc tmdoc::ud {s} { string map $::ud_map $s }
+proc ::tmdoc::include {filename} {
+    if {![file exists $filename]} {
+        return "Error: file '$filename' does not exists!"
+    }
+    set enc [get_encoding $filename]
+    if [catch {open $filename r} infh] {
+        return "Cannot open $filename"
+    } else {
+        fconfigure $infh -encoding $enc
+        set res ""
+        while {[gets $infh line] >= 0} {
+            append res "$line\n"
+        }
+        set res [regsub {\n$} $res ""]
+        close $infh
+        return $res
+    }
+}
 proc ::tmdoc::main {argv} {
     global argv0
     set APP $argv0
