@@ -1,7 +1,7 @@
 ---
 title: tmdoc4r vignette
 author: Detlef Groth, University of Potsdam, Germany
-date: 2026-01-03 09:50
+date: 2026-01-03 15:01
 bibliography: assets/literature.bib
 ---
 
@@ -620,6 +620,32 @@ plt.savefig('pyexample.svg')
 > command to save a plot might differ even for matplotlib as using the 
 > shortage <i>plt</i> as in the example above is not standard.
 
+If you setup the matplotlib  library as shown above you can as well get rid of
+the  plot.savefig  call by setting the code chunk option  `fig=true`.  Here an
+example:
+
+```{py fig=true,results=hide,fig.dpi=144,fig.ext=svg}
+import numpy as np
+
+plt.style.use('_mpl-gallery')
+
+# make the data
+np.random.seed(3)
+x = 4 + np.random.normal(0, 2, 24)
+y = 4 + np.random.normal(0, 2, len(x))
+# size and color:
+sizes = np.random.uniform(15, 80, len(x))
+colors = np.random.uniform(15, 80, len(x))
+
+# plot
+fig, ax = plt.subplots()
+
+ax.scatter(x, y, s=sizes, c=colors, vmin=0, vmax=100)
+
+ax.set(xlim=(0, 8), xticks=np.arange(1, 8),
+       ylim=(0, 8), yticks=np.arange(1, 8))
+```
+
 In a similar way code for Octave with a label `` `oc` `` 
 or Julia with a label `` `jl` ``  or `` `julia` `` for triple backticks
 chunks can be embedded within your documents. Of course these
@@ -697,7 +723,26 @@ or:
 `include lipsum.txt`
 ```
 
-`` `tcl include FILENAME` `` and ``  `include FILENAME` `` provide the same functionality.
+`` ` tcl include FILENAME` `` and ``  ` include FILENAME` `` provide the same functionality.
+
+Since  version 0.3.0 of the tmdoc4r  package you can as well include text into
+code chunks here an example which includes a flow chart file and then displays
+its result.
+
+```
+'``{.kroki dia=graphviz}
+#INCLUDE "assets/graph.dot"
+'``
+```
+
+And here the output (the include line is replaced with the content of the file):
+
+```{.kroki dia=graphviz}
+#INCLUDE "assets/graph.dot"
+```
+
+
+Obviously you can use `echo=FALSE` to hide the source code.
 
 ## Creation of Table of Contents
 
