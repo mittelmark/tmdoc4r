@@ -27,7 +27,7 @@
 #' COPYRIGHT HOLDER: Detlef Groth
 
 #' FILE: tmdoc4r/NEWS
-#' 2026-01-02: version 0.3,0 - adding support for INCLUDE within code chunks
+#' 2026-01-07: version 0.3.0 - adding support for INCLUDE within code chunks
 #'                             and support for chord sheets and guitar and ukulele
 #'                             chords using .tcrd code chunks and support for fig=true for
 #'                             for Python Matplotlib code chunks
