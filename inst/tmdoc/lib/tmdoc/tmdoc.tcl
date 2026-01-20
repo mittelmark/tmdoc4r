@@ -1,6 +1,4 @@
-#!/bin/sh
-# A Tcl comment, whose contents don't matter \
-exec tclsh "$0" "$@"
+#!//usr/bin/env tclsh
 ##############################################################################
 #  Author        : Dr. Detlef Groth
 #  Created       : Tue Feb 18 06:05:14 2020
@@ -68,16 +66,19 @@ exec tclsh "$0" "$@"
 #                                            replace `nfig label` or `ntab label` with `tcl nfig label`
 #                                            remove tcl rfig and tcl rtab command can be replaced with tcl nfig and tcl ntab
 #                  2025-12-18 version 0.17.2 fixing an issue with more complex returns in inline R statements
-#                  2026-01-01 version 0.18.0 adding support for Ukulele and Guitar chords as well as chord sheets
+#                  2026-01-07 version 0.18.0 adding support for Ukulele and Guitar chords as well as chord sheets
 #                                            adding support for #INCLUDE in code chunks
 #                                            fixing issues with fig=TRUE in Tcl cocd chunks
 #                                            adding support for fig=true in Python matplotlib plots
-#                                             adding support for rsvg-convert in addition to cairosvg
-  
+#                                            adding support for rsvg-convert in addition to cairosvg
+#                 2026-01-XX version 0.18.1  adding include support for Python, R, Julia and Tcl code chunks
+#                                            adding include with environment arguments for including files into pre or div tags
+#                                            fixing fig.path issue for R chunks
+
 package require Tcl 8.6-
 package require fileutil
 package require yaml
-package provide tmdoc::tmdoc 0.18.0
+package provide tmdoc::tmdoc 0.18.1
 package provide tmdoc [package provide tmdoc::tmdoc]
 source [file join [file dirname [info script]] filter-r.tcl]
 source [file join [file dirname [info script]] filter-python.tcl]
@@ -251,7 +252,7 @@ proc ::tmdoc::interpReset {} {
                 }
             }
         }
-        proc include {filename} {
+        proc include {filename {envir {"" ""}}} {
             if {![file exists $filename]} {
                 return "Error: file '$filename' does not exists!"
             }
@@ -261,10 +262,12 @@ proc ::tmdoc::interpReset {} {
             } else {
                 fconfigure $infh -encoding $enc
                 set res ""
+                append res [lindex $envir 0]
                 while {[gets $infh line] >= 0} {
                     append res "$line\n"
                 }
                 set res [regsub {\n$} $res ""]
+                append res [lindex $envir 1]
                 close $infh
                 return $res
             }
@@ -346,7 +349,7 @@ proc ::tmdoc::interpReset {} {
     # todo handle puts options
     
     interp eval itry {proc puts {args} {}}
-    interp eval itry {proc include {filename} {}}
+    interp eval itry {proc include {filename {envir {"" ""}}} {}}
     interp eval itry {proc list2tab {header data} {}}
     interp eval itry {proc list2mdtab {header data} {}}
     interp eval itry {proc nfig {{label ""}} {}}
@@ -728,7 +731,7 @@ proc ::tmdoc::tmdoc {filename outfile args} {
                 set line [regsub -all {`menu ([^`]+)`} $line "`tcl tag kbd \\1 menu`"]
                 set line [regsub -all {`include ([^`]+)`} $line "`tcl include \\1`"]
                 set line [regsub -all {`(n[ft][ai][bg]) +([a-zA-Z0-9]+)`} $line "`tcl \\1 \\2`"]
-            } elseif {$mode in [list tcrd mtex shell kroki]} {
+            } elseif {$mode in [list tcrd mtex shell kroki pipe]} {
                 if {[regexp {^#INCLUDE "(.+)"} $line -> filename]} {
                     if {[regexp {^#INCLUDE "(.+)" +([0-9]+) +([0-9]+)} $line -> filename start end]} {
                         set line [include $filename $start $end]

@@ -3,8 +3,8 @@
 #' Package: tmdoc4r
 #' Type: Package
 #' Title: tmdoc4r package for literate programming with R, Python, Octave, Julia and Tcl
-#' Version: 0.3.0
-#' Date: 2026-01-02
+#' Version: 0.3.1
+#' Date: 2026-01-20
 #' Author: Detlef Groth
 #' Authors@R: c(person("Detlef","Groth", role=c("aut", "cre"),
 #'                   email = "dgroth@uni-potsdam.de",
@@ -27,6 +27,9 @@
 #' COPYRIGHT HOLDER: Detlef Groth
 
 #' FILE: tmdoc4r/NEWS
+#' 2026-01-20: version 0.3.1 - adding includes as well for R, Python, Julia and Octave code chunks,
+#'                             fixing issues with pipes in normal text rendered as table, 
+#'                             adding include support with HTML tags
 #' 2026-01-07: version 0.3.0 - adding support for INCLUDE within code chunks
 #'                             and support for chord sheets and guitar and ukulele
 #'                             chords using .tcrd code chunks and support for fig=true for
