@@ -113,7 +113,7 @@ More examples can be found at the [tmdoc tutorial](https://github.com/mittelmark
 
 ## Changes
 
-- __v0.3.2 . 2026-01-20:__ fixing issues pipes in text, can be now surrounded by pipes, adding option to HTML environment for include
+- __v0.3.2 . 2026-01-20:__ smaller file size again, fixing issues pipes in text, can be now surrounded by pipes, adding option to HTML environment for include
   like so `` `include filename pre` `` would display the code in a pre tag
 - __v0.3.1 . 2026-01-20:__ fixing issues with image paths in R code chunks, fixing
   issues with pipes in normal text, adding support for includes with pre and post text 
