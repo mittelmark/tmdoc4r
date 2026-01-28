@@ -56,7 +56,7 @@ The package should be installed in an interactive R session like this:
 
 ```
 install.packages(
-  "https://github.com/mittelmark/tmdoc4r/releases/download/v0.3.1/tmdoc4r_0.3.1.tar.gz",
+  "https://github.com/mittelmark/tmdoc4r/releases/download/v0.3.2/tmdoc4r_0.3.2.tar.gz",
   repos=NULL);
 ```
 
@@ -76,7 +76,7 @@ library(tmdoc4r)
 tmdoc("infile.Rmd","outfile.html",css="tmdoc.css",toc=TRUE)
 ```
 
-The Rmd file contains than code chunks or other Markup known by __tmdoc__. The [vignette](https://github.com/mittelmark/tmdoc4r/releases/download/v0.3.1/tmdoc4r-vignette.pdf) 
+The Rmd file contains than code chunks or other Markup known by __tmdoc__. The [vignette](https://github.com/mittelmark/tmdoc4r/releases/download/v0.3.2/tmdoc4r-vignette.pdf) 
 has more examples. You can choose as well file extensions lile _.tmd_ or _.pmd_ (for Python code) etc for the input file. The input file should however not have a _.md_ extension as this will be the intermediate output file extension during the processing to HTML.
 
 A style sheet file  _tmdoc.css_  is as well part of the  package,  you can use
@@ -113,6 +113,8 @@ More examples can be found at the [tmdoc tutorial](https://github.com/mittelmark
 
 ## Changes
 
+- __v0.3.2 . 2026-01-20:__ fixing issues pipes in text, can be now surrounded by pipes, adding option to HTML environment for include
+  like so `` `include filename pre` `` would display the code in a pre tag
 - __v0.3.1 . 2026-01-20:__ fixing issues with image paths in R code chunks, fixing
   issues with pipes in normal text, adding support for includes with pre and post text 
   after the includes to embed for instance code chunks more easily like `` `include filename.txt {<pre> </pre>}` ``

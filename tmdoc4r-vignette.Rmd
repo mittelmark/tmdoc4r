@@ -1,7 +1,7 @@
 ---
 title: tmdoc4r vignette
 author: Detlef Groth, University of Potsdam, Germany
-date: 2026-01-03 15:01
+date: 2026-01-28 08:10
 bibliography: assets/literature.bib
 ---
 
@@ -9,10 +9,11 @@ bibliography: assets/literature.bib
 
 ## Introduction
 
-This is a tutorial for the `tmdoc4r`  package  which can be seen as a lightweight
-replacement of more sophisticated R package like `knitr` or `rmarkdown`.
+This is a tutorial for the `tmdoc4r` package which can be seen as a
+lightweight replacement of more sophisticated R packages like `knitr` or
+`rmarkdown` which however have a much larger install size.
 
-The  install  size of the  `tmdoc4r`  package is less than 1MB and it does not
+The  install  size of the  `tmdoc4r` package is less than 1MB and it does not
 have any dependencies except for the package `tcltk` which should be installed
 on most R basic  installations,  probably  except  on MacOS. On MacOS it might be
 installed  manually by the user with the standard  `install.packages('tcltk')`
@@ -32,16 +33,47 @@ approach. In addition on MacOS it might be required to install the [XQuartz](htt
 - including other text files using the 'tcl include  FILENAME' syntax (replace
   single quotes here with backticks
 - embedding LaTeX equations are images usig the CodeCogs webservice
-- document support for Markdown, LaTex, Typst and AsciiDoc
+- document support for Markdown, LaTeX, Typst and AsciiDoc
 
 ## Literate Programming with R
 
-As this is a vignette  tutorial for the R package `tmdoc4r` we will focus here
-on the embedding of R code and other things which are related to writing research reports with R. For more information you might look at the documentation of the Tcl package [tmdoc](https://github.com/mittelmark/tmdoc).
+As this is a vignette tutorial for the R package `tmdoc4r` we will focus here
+on the embedding of R code and other things which are related to writing
+research reports with R. For more information you might look at the
+documentation of the Tcl package [tmdoc](https://github.com/mittelmark/tmdoc).
+
+The usual processing pipeline of documents is that the user creates a R
+Markdown file write text and R code chunks within that document and the the
+document ins translated first to a Markdown and then to an HTML document.
+Using tools like [Weasyprint](https://doc.courtbouillon.org/weasyprint/) or
+[pandoc](https://pandoc.org) that document can be then converted for instance
+to a PDF document. Pandoc as well supports many more output formats.
+
+Here is an example for a processing pipeline:
+
+```{.kroki echo=FALSE,dia="graphviz",ext=svg}
+digraph g {
+size="5,5"
+rankdir="LR";
+node[shape=box,style=filled]
+"R-Markdown" -> Markdown[label="tmdoc4r"]
+Markdown -> HTML[label="tmdoc4r"]
+HTML -> Pdf[label="Weasyprint"]
+}
+```
+
+The appropriate command for direct conversion into an HTML document for a
+file let's say report.Rmd would be the following:
+
+```
+library(tmdoc4r)
+tmdoc4r::tmdoc("report.Rmd",outfile="report.html",css="tmdoc.css",toc=TRUE)
+```
 
 ### Meta Information in the Document Header
 
-The package supports the addition of meta data in the document YAML header. Here an example for a YAML header:
+The package supports the addition of meta data in the document YAML header.
+Here an example for a YAML header:
 
 ```
 ---
@@ -53,7 +85,8 @@ date: 2025-11-03
 
 ### R Code Chunks
 
-R code chunks are started with triple backticks an an indicator r within curly braces which look like this:
+R code chunks are started with triple backticks an an indicator r within
+curly braces which look like this:
 
 ```
 ' ```{r}
@@ -64,7 +97,7 @@ R code chunks are started with triple backticks an an indicator r within curly b
 > [!INFO]
 > Always Ignore the leading single quotes. They are added here only to avoid
 > interpretation of the text thereafter as this document is written and 
-> evaluated with the tmdoc4r package itself.
+> evaluated with the tools embedded with the tmdoc4r package itself.
 
 Here is the output:
 
@@ -743,6 +776,16 @@ And here the output (the include line is replaced with the content of the file):
 
 
 Obviously you can use `echo=FALSE` to hide the source code.
+
+If you just like to include the file without any code evaluation, you can use the following simpler approach:
+
+```
+`include assets/graph.dot pre`
+```
+
+Here the result:
+
+`include assets/graph.dot pre`
 
 ## Creation of Table of Contents
 

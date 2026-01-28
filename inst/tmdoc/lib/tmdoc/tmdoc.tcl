@@ -71,14 +71,17 @@
 #                                            fixing issues with fig=TRUE in Tcl cocd chunks
 #                                            adding support for fig=true in Python matplotlib plots
 #                                            adding support for rsvg-convert in addition to cairosvg
-#                 2026-01-XX version 0.18.1  adding include support for Python, R, Julia and Tcl code chunks
+#                 2026-01-20 version 0.18.1  adding include support for Python, R, Julia and Tcl code chunks
 #                                            adding include with environment arguments for including files into pre or div tags
 #                                            fixing fig.path issue for R chunks
+#                 2026-01-XX version 0.18.2  fixing an issue with fig.width smaller than 20 seens as pixel
+#                                            fixing issue in included files within pre environments havng < and > chars
+#                                            optional shortening syntax for pre environments in include to `include filename pre`
 
 package require Tcl 8.6-
 package require fileutil
 package require yaml
-package provide tmdoc::tmdoc 0.18.1
+package provide tmdoc::tmdoc 0.18.2
 package provide tmdoc [package provide tmdoc::tmdoc]
 source [file join [file dirname [info script]] filter-r.tcl]
 source [file join [file dirname [info script]] filter-python.tcl]
@@ -262,12 +265,19 @@ proc ::tmdoc::interpReset {} {
             } else {
                 fconfigure $infh -encoding $enc
                 set res ""
-                append res [lindex $envir 0]
                 while {[gets $infh line] >= 0} {
                     append res "$line\n"
                 }
+                if {$envir eq "pre"} {
+                    set envir {<pre> </pre>}
+                }
                 set res [regsub {\n$} $res ""]
+                if {[regexp {^<pre} [lindex $envir 0]]} {
+                    set res [string map [list "<" "&lt;" ">" "&gt;"] $res]
+                }
+                set res "[lindex $envir 0]$res"
                 append res [lindex $envir 1]
+
                 close $infh
                 return $res
             }
@@ -529,7 +539,12 @@ proc tmdoc::iimage {} {
     uplevel 1 {
         if {$inmode eq "md"} {
             if {$copt(fig.width) > 0} {
-                puts $out "!\[ \]($imgsrc){width=\"$copt(fig.width)\"}"
+                set width $copt(fig.width)
+                if {$width < 20} {
+                    set width [expr {$copt(fig.width)*144}]
+                }
+                puts $out "!\[ \]($imgsrc){width=\"$width\"}"
+
             } else {
                 puts $out "!\[ \]($imgsrc)"
             }
@@ -540,7 +555,7 @@ proc tmdoc::iimage {} {
         } elseif {$inmode eq "typst"} {
           puts $out "\n#image(\"$imgsrc\")\n"
       } elseif {$inmode eq "latex"} {
-          if {$copt(fig.width) > 0} {
+          if {$copt(fig.width) ne "0"} {
               puts $out "\n\\includegraphics\[width=$copt(fig.width)\]{[file rootname $imgsrc]}\n"
           } else {
               puts $out "\n\\includegraphics{[file rootname $imgsrc]}\n"

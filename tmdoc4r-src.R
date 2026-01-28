@@ -3,8 +3,8 @@
 #' Package: tmdoc4r
 #' Type: Package
 #' Title: tmdoc4r package for literate programming with R, Python, Octave, Julia and Tcl
-#' Version: 0.3.1
-#' Date: 2026-01-20
+#' Version: 0.3.2
+#' Date: 2026-01-28
 #' Author: Detlef Groth
 #' Authors@R: c(person("Detlef","Groth", role=c("aut", "cre"),
 #'                   email = "dgroth@uni-potsdam.de",
@@ -27,6 +27,9 @@
 #' COPYRIGHT HOLDER: Detlef Groth
 
 #' FILE: tmdoc4r/NEWS
+#' 2026-01-28: version 0.4.0 - fixing file size by removing non-required fonts,
+#'                             fixing issue with pipe symbols in backticks creating tables,
+#'                             adding support for environments like code blocks in include calls
 #' 2026-01-20: version 0.3.1 - adding includes as well for R, Python, Julia and Octave code chunks,
 #'                             fixing issues with pipes in normal text rendered as table, 
 #'                             adding include support with HTML tags
@@ -69,6 +72,11 @@
 #' FILE: tmdoc4r/NAMESPACE
 #' exportPattern("^[[:lower:]]+")
 #' importFrom("stats", "sd")
+
+#' FILE: tmdoc4r/.Rbuildignore
+#' ^inst/tmdoc/lib/tmdoc/andika.css
+#' ^inst/tmdoc/lib/tmdoc/fonts.css
+#' ^inst/tmdoc/lib/tmdoc/ubuntu-mono.css
 
 #' FILE: tmdoc4r/inst/files/decathlon.tab
 #' 100	long	shot	high	400	110	disq	pole	jave	1500
