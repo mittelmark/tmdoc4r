@@ -3,8 +3,8 @@
 #' Package: tmdoc4r
 #' Type: Package
 #' Title: tmdoc4r package for literate programming with R, Python, Octave, Julia and Tcl
-#' Version: 0.3.2
-#' Date: 2026-01-28
+#' Version: 0.3.3
+#' Date: 2026-02-02
 #' Author: Detlef Groth
 #' Authors@R: c(person("Detlef","Groth", role=c("aut", "cre"),
 #'                   email = "dgroth@uni-potsdam.de",
