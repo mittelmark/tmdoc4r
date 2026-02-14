@@ -33,13 +33,15 @@ Features:
 
 
 - shell code emmbedding using terminal tools (Music sheets, Diagrams, ...)
-- include other files using the syntax `` `tcl include filename.md` `` done
+- include other files using the syntax `` `tcl include filename.md` `` 
+- include file in code chunks with `` `#INCLUDE "filename.ext"` ``
 - abbreviations based on YAML header and external YAML files
 - [Kroki](https://kroki.io) diagram support
 - references using BibTeX files
 - CSV data display as tables
 - [alert messages](https://blog.jakelee.co.uk/github-alert-experiments/) if tmdoc.css is used
 - embedding LaTeX equations as images using
+- embedding simple chemical equations
 - automatic table of contents creation
 - automatic figure and table numbering
 - HTML comments are truly removed, not just hidden
@@ -113,7 +115,8 @@ More examples can be found at the [tmdoc tutorial](https://github.com/mittelmark
 
 ## Changes
 
-- __v0.3.3 - 2026-02.02:__ fixing infinite waiting bug in Julia, Python if last statement does not return a newline
+- __v0.4.0 - 2026-02-14:__ adding support for simple chemical equations
+- __v0.3.3 - 2026-02-02:__ fixing infinite waiting bug in Julia, Python if last statement does not return a newline
 - __v0.3.2 - 2026-01-28:__ smaller file size again, fixing issues pipes in text, can be now surrounded by pipes, adding option to HTML environment for include
   like so: `` - `include filename pre` `` would display the code in a pre tag
 - __v0.3.1 - 2026-01-20:__ fixing issues with image paths in R code chunks, fixing

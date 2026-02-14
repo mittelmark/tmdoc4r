@@ -1,7 +1,7 @@
 ---
 title: tmdoc4r vignette
 author: Detlef Groth, University of Potsdam, Germany
-date: 2026-01-28 08:10
+date: 2026-02-14 13:08
 bibliography: assets/literature.bib
 ---
 
@@ -563,6 +563,50 @@ code as `echo` was set to false:
 > on the CRC32 hash to avoid fetching and overusing the web service. So files are only
 > fetched if the code updates. To include the files on your own, you have to find
 > out the filename by inspecting the generated Png files.
+
+## Chemical Equations
+
+Version 0.19.0 as well supports simple chemical equations. To use them
+properly you might use the provided tmdoc.css stylesheet. You can update this
+by removing your current tmdoc.css file in the current project folder. Here
+an example for some chemical equations.
+
+```
+Glucose creation: 
+`ce 6H2O + 6CO2 -> C6H12O6 + 6O2`
+
+Respiration with backward arrow: 
+`ce 6CO2 + 6H2O <- C6H12O6 + 6O2`
+
+The dissociation of water showing back and forward arrows is show here: 
+`ce 2H2O <-> H3O+ + OH-`
+
+Dissociation of Natrium Phosphate: 
+`ce Na3PO4 <-> 3Na+ + PO_4^3-`
+
+`ce 2MnO4^-  3Mn^2+ + 4OH- <-> 5MnO2 + 2H2O`
+
+Isotop: `ce ^14C`
+```
+
+Here the output:
+
+Glucose creation: 
+`ce 6H2O + 6CO2 -> C6H12O6 + 6O2`
+
+Respiration with backward arrow: 
+`ce 6CO2 + 6H2O <- C6H12O6 + 6O2`
+
+The dissociation of water showing back and forward arrows is show here: 
+`ce 2H2O <-> H3O+ + OH-`
+
+Dissociation of Natrium Phosphate: 
+`ce Na3PO4 <-> 3Na+ + PO_4^3-`
+
+`ce 2MnO4^-  3Mn^2+ + 4OH- <-> 5MnO2 + 2H2O`
+
+Isotop: `ce ^14C`
+
 
 ## Python, Octave and Julia Code Embedding
 

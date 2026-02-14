@@ -3,8 +3,8 @@
 #' Package: tmdoc4r
 #' Type: Package
 #' Title: tmdoc4r package for literate programming with R, Python, Octave, Julia and Tcl
-#' Version: 0.3.3
-#' Date: 2026-02-02
+#' Version: 0.4.0
+#' Date: 2026-02-14
 #' Author: Detlef Groth
 #' Authors@R: c(person("Detlef","Groth", role=c("aut", "cre"),
 #'                   email = "dgroth@uni-potsdam.de",
@@ -27,9 +27,10 @@
 #' COPYRIGHT HOLDER: Detlef Groth
 
 #' FILE: tmdoc4r/NEWS
-#' 2026-01-28: version 0.4.0 - fixing file size by removing non-required fonts,
+#' 2026-02-14: version 0.4.0 - fixing file size by removing non-required fonts,
 #'                             fixing issue with pipe symbols in backticks creating tables,
 #'                             adding support for environments like code blocks in include calls
+#'                             adding support for simple chemical equations
 #' 2026-01-20: version 0.3.1 - adding includes as well for R, Python, Julia and Octave code chunks,
 #'                             fixing issues with pipes in normal text rendered as table, 
 #'                             adding include support with HTML tags
