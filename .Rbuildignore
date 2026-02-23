@@ -1,0 +1,11 @@
+^\.git$
+^\.github$
+^build$
+^rlibs$
+^bin$
+^img$
+^\.\.Rcheck$
+^\.Rbuildignore~$
+^Makefile$
+\.swo$
+^LICENSE.md$
