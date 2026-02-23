@@ -58,7 +58,7 @@ The package should be installed in an interactive R session like this:
 
 ```
 install.packages(
-  "https://github.com/mittelmark/tmdoc4r/releases/download/v0.4.0/tmdoc4r_0.4.0.tar.gz",
+  "https://github.com/mittelmark/tmdoc4r/releases/download/v0.4.1/tmdoc4r_0.4.1.tar.gz",
   repos=NULL);
 ```
 
@@ -78,7 +78,7 @@ library(tmdoc4r)
 tmdoc("infile.Rmd","outfile.html",css="tmdoc.css",toc=TRUE)
 ```
 
-The Rmd file contains than code chunks or other Markup known by __tmdoc__. The [vignette](https://github.com/mittelmark/tmdoc4r/releases/download/v0.4.0/tmdoc4r-vignette.pdf) 
+The Rmd file contains than code chunks or other Markup known by __tmdoc__. The [vignette](https://github.com/mittelmark/tmdoc4r/releases/download/v0.4.1/tmdoc4r-vignette.pdf) 
 has more examples. You can choose as well file extensions lile _.tmd_ or _.pmd_ (for Python code) etc for the input file. The input file should however not have a _.md_ extension as this will be the intermediate output file extension during the processing to HTML.
 
 A style sheet file  _tmdoc.css_  is as well part of the  package,  you can use
@@ -115,6 +115,8 @@ More examples can be found at the [tmdoc tutorial](https://github.com/mittelmark
 
 ## Changes
 
+
+- __v0.4.1 - 2026-02-23:__ fixing issues with separators in quotes for CSV tables
 - __v0.4.0 - 2026-02-14:__ adding support for simple chemical equations
 - __v0.3.3 - 2026-02-02:__ fixing infinite waiting bug in Julia, Python if last statement does not return a newline
 - __v0.3.2 - 2026-01-28:__ smaller file size again, fixing issues pipes in text, can be now surrounded by pipes, adding option to HTML environment for include
