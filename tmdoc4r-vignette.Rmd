@@ -1,7 +1,7 @@
 ---
 title: tmdoc4r vignette
 author: Detlef Groth, University of Potsdam, Germany
-date: 2026-02-23 11:45
+date: 2026-07-08 17:15
 bibliography: assets/literature.bib
 ---
 
@@ -398,6 +398,162 @@ class B extends A {
 }
 @enduml
 ```
+
+## tblocks diagrams
+
+Since R package version 0.5.0 there is as well support for a diagram tool which just used ordinary Markdown as input to create flowcharts or diagrams.
+
+Here some input:
+
+```
+'``{.tblocks}
+---
+mode: "inout"
+---
+## Input
+
+MD file
+
+Markdown document with
+headers and normal text
+as input for your diagram.
+
+## Tcl-Script
+
+tblocks.tcl
+
+The standalone Tcl script
+which can create several
+type of diagrams such 
+as this.
+
+## Output
+
+SVG file
+
+A SVG graphics file which
+can be further converted 
+to other file types like
+ PDF or SVG.
+'``
+```
+
+And here the output:
+
+```{.tblocks label=inout}
+---
+mode: "inout"
+---
+
+## Input
+
+MD file
+
+Markdown document with
+headers and normal text
+as input for your diagram.
+
+## Tcl-Script
+
+tblocks.tcl
+
+The standalone Tcl script
+which can create several
+type of diagrams such 
+as this.
+
+## Output
+
+SVG file
+
+A SVG graphics file which
+can be further converted 
+to other file types like
+ PDF or SVG.
+```
+
+And here an other diagram type, the blocks type:
+
+```
+'``{.tblocks label=blocks}
+---
+mode: "blocks"
+---
+## Call by Value
+Concept:
+    Clones the data.
+
+`int add(int x, int y);`
+`add(x,y);`
+
+Safe but inefficient for large
+data structures.
+
+## Pointers
+Concept:
+    Passes memory address.
+
+`void swap(int *x, int *y);`
+`swap(&x,&y);`
+
+Requires eight '*' and two '&' symbols
+for resolving the address issues.
+
+## References
+Concept:
+    Creates an alias.
+
+`void swap(int &x, int &y);`
+`swap(x,y);`
+
+Requires only 4 '&' and only in the
+argument lists. Clean function call.
+References can't be reassigned.
+'``
+```
+
+And here the output:
+
+```{.tblocks}
+---
+mode: "blocks"
+---
+
+## Call by Value
+Concept:
+    Clones the data.
+
+`int add(int x, int y);`
+`add(x,y);`
+
+Safe but inefficient for large
+data structures.
+
+## Pointers
+Concept:
+    Passes memory address.
+
+`void swap(int *x, int *y);`
+`swap(&x,&y);`
+
+Requires eight '*' and two '&' symbols
+for resolving the address issues.
+
+## References
+Concept:
+    Creates an alias.
+
+`void swap(int &x, int &y);`
+`swap(x,y);`
+
+Requires only 4 '&' and only in the
+argument lists. Clean function call.
+References can't be reassigned.
+```
+
+The created Markdown and image files should be in subfolder images in your current directory. They are automatically included.
+
+For more examples consult the [Github project page of tblocks](https://gitbub.com/mittelmark/tblocks).
 
 ## Citations
 

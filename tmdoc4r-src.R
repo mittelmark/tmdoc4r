@@ -3,8 +3,8 @@
 #' Package: tmdoc4r
 #' Type: Package
 #' Title: tmdoc4r package for literate programming with R, Python, Octave, Julia and Tcl
-#' Version: 0.4.1
-#' Date: 2026-02-23
+#' Version: 0.5.0
+#' Date: 2026-07-08
 #' Author: Detlef Groth
 #' Authors@R: c(person("Detlef","Groth", role=c("aut", "cre"),
 #'                   email = "dgroth@uni-potsdam.de",
@@ -23,10 +23,11 @@
 #' Collate: tmdoc4r.R tmdoc.R df2md.R lipsum.R ttangle.R
 
 #' FILE: tmdoc4r/LICENSE
-#' YEAR: 2025
+#' YEAR: 2025-2026
 #' COPYRIGHT HOLDER: Detlef Groth
 
 #' FILE: tmdoc4r/NEWS
+#' 2026-07-08: version 0.5.0 - support for tblocks diagrams
 #' 2026-02-23: version 0.4.1 - fixing for quoted strings in CSV files with embedded separator
 #' 2026-02-14: version 0.4.0 - fixing file size by removing non-required fonts,
 #'                             fixing issue with pipe symbols in backticks creating tables,

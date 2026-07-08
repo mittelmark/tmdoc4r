@@ -116,6 +116,7 @@ More examples can be found at the [tmdoc tutorial](https://github.com/mittelmark
 ## Changes
 
 
+- __v0.5.0 - 2026-07-08:__ support for tblocks diagrams written just with plain Markdown
 - __v0.4.1 - 2026-02-23:__ fixing issues with separators in quotes for CSV tables
 - __v0.4.0 - 2026-02-14:__ adding support for simple chemical equations
 - __v0.3.3 - 2026-02-02:__ fixing infinite waiting bug in Julia, Python if last statement does not return a newline
