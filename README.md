@@ -58,7 +58,7 @@ The package should be installed in an interactive R session like this:
 
 ```
 install.packages(
-  "https://github.com/mittelmark/tmdoc4r/releases/download/v0.4.1/tmdoc4r_0.4.1.tar.gz",
+  "https://github.com/mittelmark/tmdoc4r/releases/download/v0.5.0/tmdoc4r_0.5.0.tar.gz",
   repos=NULL);
 ```
 
