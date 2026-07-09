@@ -27,6 +27,7 @@ jobs:
         run: |
             sudo apt install r-cran-knitr graphviz imagemagick 
             sudo apt install texlive-latex-extra
+            sudo apt install weasyprint
             mkdir -p ~/.local/bin
             /bin/bash -c "$(curl -fsSL https://github.com/mittelmark/tmdoc/releases/latest/download/install-tmdoc.sh)"
             export PATH="~/.local/bin:$PATH"
