@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-22.04
     
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Process and Create Package Structure
         run: |
             sudo apt install r-cran-knitr graphviz imagemagick 
@@ -35,11 +35,11 @@ jobs:
       - name: build package
         run: |
             make build pkg=tmdoc4r
-            export VRS=`grep Version: sbi/DESCRIPTION | grep -oE '[.0-9]+'`
+            export VRS=`grep Version: tmdoc4r/DESCRIPTION | grep -oE '[.0-9]+'`
             echo "VRS=$VRS" >> $GITHUB_ENV
   
       - name: Upload Package Release files
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with: 
-          name: sbi_${{ env.VRS }}.tar.gz
-          path: sbi_${{ env.VRS }}.tar.gz
+          name: tmdoc4r_${{ env.VRS }}.tar.gz
+          path: tmdoc4r_${{ env.VRS }}.tar.gz
