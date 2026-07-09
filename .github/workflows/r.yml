@@ -19,25 +19,22 @@ permissions:
 
 jobs:
   build:
-    runs-on: macos-latest
-    strategy:
-      matrix:
-        r-version: ['4.1.1']
-
+    runs-on: ubuntu-22.04
+    
     steps:
       - uses: actions/checkout@v4
-      - name: Set up R ${{ matrix.r-version }}
-        uses: r-lib/actions/setup-r@f57f1301a053485946083d7a45022b278929a78a
-        with:
-          r-version: ${{ matrix.r-version }}
-      - name: process Rscript
+      - name: Process and Create Package Structure
         run: |
-          make build
-      - name: Install dependencies
+            sudo apt install r-cran-knitr graphviz imagemagick 
+            sudo apt install texlive-latex-extra
+      - name: build package
         run: |
-          install.packages(c("remotes", "rcmdcheck"))
-          remotes::install_deps(dependencies = TRUE)
-        shell: Rscript {0}
-      - name: Check
-        run: rcmdcheck::rcmdcheck(args = "--no-manual", error_on = "error")
-        shell: Rscript {0}
+            make build pkg=tmdoc4r
+            export VRS=`grep Version: sbi/DESCRIPTION | grep -oE '[.0-9]+'`
+            echo "VRS=$VRS" >> $GITHUB_ENV
+  
+      - name: Upload Package Release files
+        uses: actions/upload-artifact@v4
+        with: 
+          name: sbi_${{ env.VRS }}.tar.gz
+          path: sbi_${{ env.VRS }}.tar.gz
