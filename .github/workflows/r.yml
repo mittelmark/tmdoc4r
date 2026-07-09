@@ -27,7 +27,10 @@ jobs:
         run: |
             sudo apt install r-cran-knitr graphviz imagemagick 
             sudo apt install texlive-latex-extra
+            mkdir -p ~/.local/bin
             /bin/bash -c "$(curl -fsSL https://github.com/mittelmark/tmdoc/releases/latest/download/install-tmdoc.sh)"
+            export PATH="~/.local/bin:$PATH"
+            echo "PATH=$PATH" >> $GITHUB_ENV
       - name: build package
         run: |
             make build pkg=tmdoc4r
