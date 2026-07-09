@@ -3,8 +3,8 @@
 #' Package: tmdoc4r
 #' Type: Package
 #' Title: tmdoc4r package for literate programming with R, Python, Octave, Julia and Tcl
-#' Version: 0.5.0
-#' Date: 2026-07-08
+#' Version: 0.5.1
+#' Date: 2026-07-09
 #' Author: Detlef Groth
 #' Authors@R: c(person("Detlef","Groth", role=c("aut", "cre"),
 #'                   email = "dgroth@uni-potsdam.de",
@@ -27,6 +27,7 @@
 #' COPYRIGHT HOLDER: Detlef Groth
 
 #' FILE: tmdoc4r/NEWS
+#' 2026-09-09: version 0.5.1 - fixing an issue with spaces in folder names
 #' 2026-07-08: version 0.5.0 - support for tblocks diagrams
 #' 2026-02-23: version 0.4.1 - fixing for quoted strings in CSV files with embedded separator
 #' 2026-02-14: version 0.4.0 - fixing file size by removing non-required fonts,
@@ -349,7 +350,7 @@ tmdoc <- function (infile, outfile=NULL, css=NULL, quiet=FALSE, mathjax=NULL, re
         cmdline = paste("set ::argv [list",infile, mdfile,tocx,"]")        
         
         tcltk::.Tcl("set ::quiet true")
-        tcltk::.Tcl(paste(paste("cd",getwd())))
+        tcltk::.Tcl(paste(paste("cd {",getwd(),"}",sep="")))
         tcltk::.Tcl("if {[info commands ::exitorig] eq {}} {  rename ::exit ::exitorig ; }; proc ::exit {args} { return }")
         tcltk::.Tcl(cmdline)
         tcltk::.Tcl("set ::argv0 tmdoc")

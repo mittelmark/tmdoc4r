@@ -58,7 +58,7 @@ The package should be installed in an interactive R session like this:
 
 ```
 install.packages(
-  "https://github.com/mittelmark/tmdoc4r/releases/download/v0.5.0/tmdoc4r_0.5.0.tar.gz",
+  "https://github.com/mittelmark/tmdoc4r/releases/download/v0.5.1/tmdoc4r_0.5.1.tar.gz",
   repos=NULL);
 ```
 
@@ -116,6 +116,7 @@ More examples can be found at the [tmdoc tutorial](https://github.com/mittelmark
 ## Changes
 
 
+- __v0.5.1 - 2026-07-09:__ fixing an issue with spaces in folder names 
 - __v0.5.0 - 2026-07-08:__ support for tblocks diagrams written just with plain Markdown
 - __v0.4.1 - 2026-02-23:__ fixing issues with separators in quotes for CSV tables
 - __v0.4.0 - 2026-02-14:__ adding support for simple chemical equations
