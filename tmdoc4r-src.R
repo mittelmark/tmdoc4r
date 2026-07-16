@@ -3,8 +3,8 @@
 #' Package: tmdoc4r
 #' Type: Package
 #' Title: tmdoc4r package for literate programming with R, Python, Octave, Julia and Tcl
-#' Version: 0.5.1
-#' Date: 2026-07-09
+#' Version: 0.5.2
+#' Date: 2026-07-16
 #' Author: Detlef Groth
 #' Authors@R: c(person("Detlef","Groth", role=c("aut", "cre"),
 #'                   email = "dgroth@uni-potsdam.de",
@@ -27,6 +27,7 @@
 #' COPYRIGHT HOLDER: Detlef Groth
 
 #' FILE: tmdoc4r/NEWS
+#' 2026-09-16: version 0.5.2 - trying to fix an install issue with the PATH on Windows
 #' 2026-09-09: version 0.5.1 - fixing an issue with spaces in folder names
 #' 2026-07-08: version 0.5.0 - support for tblocks diagrams
 #' 2026-02-23: version 0.4.1 - fixing for quoted strings in CSV files with embedded separator
@@ -189,7 +190,7 @@
 
 .onLoad <- function(libname, pkgname) {
     # to show a startup message
-    tcltk::.Tcl(paste("lappend auto_path",file.path(system.file(package="tmdoc4r"),"tmdoc", "lib")))
+    tcltk::.Tcl(paste("lappend auto_path {",file.path(system.file(package="tmdoc4r"), "tmdoc", "lib"),"}",sep=""))
     tcltk::.Tcl("package require tmdoc")
     tcltk::.Tcl("package require mndoc")    
     tools::vignetteEngine("tmdoc4r",
