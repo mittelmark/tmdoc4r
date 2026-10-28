@@ -1,5 +1,5 @@
 ---
-title: tmdoc4r vignette
+title: tmdoc4r 0.5.3 vignette
 author: Detlef Groth, University of Potsdam, Germany
 date: 2026-07-08 17:15
 bibliography: assets/literature.bib
@@ -1193,17 +1193,17 @@ transpose the song like this:
 
 ```{.tcrd echo=FALSE,transpose=2,inline=FALSE}
 C           G
-Dat du mien Leevsten b¸st
+Dat du mien Leevsten b√ºst
 Am          G  
-dat du wohl weeﬂ
+dat du wohl wee√ü
 F                C          Am
 Kumm bi de Nacht kumm bi de Nacht
 G7         C 
-segg wo du heeﬂt
+segg wo du hee√üt
 F                C          Am
 Kumm bi de Nacht kumm bi de Nacht
 G7         C 
-segg wo du heeﬂt
+segg wo du hee√üt
 ```
 
 
@@ -1278,6 +1278,4 @@ on `tcl set os`
 - Tcl: `tcl set tclversion`
 - R: `r version`
 - R package tmdoc4r: `r packageVersion("tmdoc4r")`
-
-
 

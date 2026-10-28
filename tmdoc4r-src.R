@@ -3,8 +3,8 @@
 #' Package: tmdoc4r
 #' Type: Package
 #' Title: tmdoc4r package for literate programming with R, Python, Octave, Julia and Tcl
-#' Version: 0.5.2
-#' Date: 2026-07-16
+#' Version: 0.5.3
+#' Date: 2026-10-28
 #' Author: Detlef Groth
 #' Authors@R: c(person("Detlef","Groth", role=c("aut", "cre"),
 #'                   email = "dgroth@uni-potsdam.de",
@@ -27,6 +27,9 @@
 #' COPYRIGHT HOLDER: Detlef Groth
 
 #' FILE: tmdoc4r/NEWS
+#' 2026-10-28: version 0.5.3 - update bundled mndoc to 0.15.5, preserving non-ISO YAML dates,
+#'                             honoring inline=FALSE for HTML-to-HTML conversion, and resolving
+#'                             relative stylesheets correctly
 #' 2026-09-16: version 0.5.2 - trying to fix an install issue with the PATH on Windows
 #' 2026-09-09: version 0.5.1 - fixing an issue with spaces in folder names
 #' 2026-07-08: version 0.5.0 - support for tblocks diagrams

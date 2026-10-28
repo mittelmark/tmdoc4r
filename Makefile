@@ -19,7 +19,7 @@ pkg=tmdoc4r
 VERSION=$(shell grep -Eo "^#' Version: [.0-9]+" $(pkg)-src.R | sed -E 's/.+: //g; s/ //g;')
 help:
 	@printf "Usage:\n"
-	@printf "   make build   pkg=sbi\n      for creating a true R package file named sbi_§(VERSION).tar.gz\n" 
+	@printf "   make build   pkg=sbi\n      for creating a true R package file named sbi_ï¿½(VERSION).tar.gz\n"
 	@printf "   make install pkg=sbi\n      for installing the package file sbi_$(VERSION).tar.gz\n"
 build:
 	-rm -rf $(pkg)/ temp
@@ -29,6 +29,7 @@ build:
 	mkdir $(pkg)/inst/doc
 	mkdir $(pkg)/vignettes
 	tmdoc tmdoc4r-examples.Rmd - | mndoc - $(pkg)/inst/doc/$(pkg)-examples.html --css examples/tmdoc.css
+	tmdoc tmdoc4r-vignette.Rmd - --toc true > /dev/null
 	tmdoc tmdoc4r-vignette.Rmd - --toc true | mndoc - $(pkg)/inst/doc/$(pkg)-vignette.html --css examples/tmdoc.css 
 	weasyprint -q --stylesheet small.css $(pkg)/inst/doc/$(pkg)-vignette.html $(pkg)/vignettes/tmdoc4r-vignette.pdf
 	cp tmdoc4r-vignette.Rnw  $(pkg)/vignettes/
@@ -38,6 +39,7 @@ build:
 	TMPDIR=`pwd`/Rbuild R_LIBS=`pwd`/$(pkg).Rcheck Rscript $(pkg)-src.R --build $(pkg)
 	R_LIBS=`pwd`/$(pkg).Rcheck Rscript $(pkg)-src.R --check $(pkg)_$(VERSION).tar.gz
 vignette:
+	tmdoc tmdoc4r-vignette.Rmd - --toc true > /dev/null
 	tmdoc tmdoc4r-vignette.Rmd - --toc true | mndoc - $(pkg)/inst/doc/$(pkg)-vignette.html --css examples/tmdoc.css 
 install: build	
 	Rscript $(pkg)-src.R --install $(pkg)_$(VERSION).tar.gz
