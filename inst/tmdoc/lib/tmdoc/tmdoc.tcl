@@ -82,11 +82,30 @@
 #                                            adding basic suport for chemical formula and reactions
 #                 2026-02-23 version 0.19.1  fix for csv mode with comma or semikolon within quotes
 #                 2026-07-08 version 0.20.0  support for tblocks package
+#                 2026-10-27 version 0.20.1  restore missing filter-tblocks.tcl, fix
+#                                            test-name collision, pin vendored modules
+#                                            to commits, add AGENTS.md; the combined
+#                                            app now also ships the mndoc non-ISO date
+#                                            fix via the installer
+#                 2026-11-02 version 0.21.0  flexible command line parsing: options may
+#                                            be given before, between or after the file
+#                                            arguments; OUTFILE is optional (stdout)
+#                                            mndoc v0.17.0 is fetched into the build
+#                                            (make mndoc) instead of a sibling checkout
+#                                            Julia filter uses 2>@1 so no stray &1 file
+#                                            is created under Tcl 9; help examples
+#                                            say mndoc instead of the old mkdoc
+#                 2026-11-03 version 0.21.1  strip the unquoted web-font @import
+#                                            from generated tblocks SVGs so the
+#                                            figures survive weasyPrint; copy
+#                                            tmdoc.sty next to .tex output files
+#                                            too and drop the unused tcolorbox
+#                                            requirement from it
 
 package require Tcl 8.6-
 package require fileutil
 package require yaml
-package provide tmdoc::tmdoc 0.20.0
+package provide tmdoc::tmdoc 0.21.1
 package provide tmdoc [package provide tmdoc::tmdoc]
 source [file join [file dirname [info script]] filter-r.tcl]
 source [file join [file dirname [info script]] filter-python.tcl]
@@ -624,16 +643,28 @@ proc tmdoc::waitchunk {} {
     }
     #puts stderr "x was $x"
 }
+
+## Pull the tmdoc.sty style file out of the package into the directory $dir
+## (usually the folder of the LaTeX document just written).  The style file
+## defines the lpverbatim, lrverbatim, lcverbatim, cverbatim and dverbatim
+## environments which the LaTeX output of tmdoc uses; without it pdflatex
+## stops with "Environment lpverbatim undefined".  The copy is skipped when
+## the file is already there or when the package ships no style file.
+proc tmdoc::ensureSty {dir} {
+    variable script
+    set src [file join [file dirname $script] tmdoc.sty]
+    if {[file exists [file join $dir tmdoc.sty]] || ![file exists $src]} {
+        return
+    }
+    file copy $src $dir
+}
 # public functions - the main function process the files
 
 proc ::tmdoc::tmdoc {filename outfile args} {
-    variable script
     if {[string tolower [file extension $filename]] in [list .tnw .tex .snw]} {
         set inmode latex
-        if {![file exists [file join [file dirname $filename] tmdoc.sty]]} {
-            ## copy out tmdoc.sty
-            file copy [file join [file dirname $script] tmdoc.sty] [file dirname $filename]
-        }
+        ## copy out tmdoc.sty next to the input document
+        ensureSty [file dirname $filename]
     } elseif {[string tolower [file extension $filename]] in [list .tan .man .tman]} {
         set inmode man
     } elseif {[regexp {doc$} [string tolower [file extension $filename]]]} {
@@ -667,6 +698,8 @@ proc ::tmdoc::tmdoc {filename outfile args} {
     if {$arg(outfile) ni [list stdout -]} {
         if {[file extension $arg(outfile)] eq ".tex"} {
             set inmode latex
+            ## pull tmdoc.sty out of the package next to the output document
+            ensureSty [file dirname $arg(outfile)]
         }
         if {[file extension $arg(outfile)] eq ".man"} {
             set inmode man
@@ -1257,7 +1290,7 @@ proc ::tmdoc::tmdoc {filename outfile args} {
                 continue
             } elseif {$mode eq "text" && [regexp {[> ]{0,2}```} $line]} {
                 set mode pretext
-                puts $out $line
+                puts $out  $line ;# [regsub -all {\.```} {```}]
                 continue
             } elseif {$mode eq "pretext" && [regexp {[> ]{0,2}```} $line]} {
                 puts $out $line
@@ -1500,6 +1533,106 @@ proc ::tmdoc::include {filename args} {
         return $res
     }
 }
+## check GitHub for the latest tmdoc release, by following the redirect of
+## https://github.com/mittelmark/tmdoc/releases/latest/ (302 -> tag/vX.Y.Z)
+proc ::tmdoc::latest-version {} {
+    set url "https://github.com/mittelmark/tmdoc/releases/latest/"
+    set out ""
+    if {[auto_execok curl] ne ""} {
+        if {[catch {exec curl -isS $url 2>@1} out]} {
+            return -code error "Error: checking GitHub for the latest tmdoc release failed: $out"
+        }
+        # note: greedy '.*' - a non-greedy '.*?' before /tag/v shortens the
+        # whole match in Tcl's AREs and would truncate the version capture
+        if {![regexp -nocase -line {^location:.*/tag/v([0-9][0-9.]*)} $out -> version]} {
+            return -code error "Error: unexpected answer from GitHub while checking the latest tmdoc release!"
+        }
+    } elseif {[auto_execok wget] ne ""} {
+        catch {exec wget -S --spider $url 2>@1} out
+        if {![regexp -nocase {location:.*/tag/v([0-9][0-9.]*)} $out -> version]} {
+            return -code error "Error: could not read the latest tmdoc release tag from GitHub!"
+        }
+    } else {
+        return -code error "Error: 'tmdoc --upgrade' needs curl or wget to check GitHub for a newer release!"
+    }
+    return $version
+}
+## is version a strictly newer than version b? compared numerically
+## component by component, leading digits only, missing parts count as 0
+proc ::tmdoc::version-newer {a b} {
+    set va [split $a .]
+    set vb [split $b .]
+    while {[llength $va] < [llength $vb]} { lappend va 0 }
+    while {[llength $vb] < [llength $va]} { lappend vb 0 }
+    foreach x $va y $vb {
+        set xa 0
+        set ya 0
+        regexp {^[0-9]+} $x xa
+        regexp {^[0-9]+} $y ya
+        if {$xa > $ya} { return 1 }
+        if {$xa < $ya} { return 0 }
+    }
+    return 0
+}
+## download url into the file outfile, with curl or wget
+proc ::tmdoc::fetch {url outfile} {
+    if {[auto_execok curl] ne ""} {
+        set cmd [list {*}[auto_execok curl] -fsSL $url --output $outfile]
+    } elseif {[auto_execok wget] ne ""} {
+        set cmd [list {*}[auto_execok wget] -q -O $outfile $url]
+    } else {
+        return -code error "Error: downloading '$url' needs curl or wget!"
+    }
+    if {[catch {exec {*}$cmd 2>@1} out]} {
+        file delete -force $outfile
+        return -code error "Error: downloading '$url' failed: $out"
+    }
+}
+## 'tmdoc --upgrade': check GitHub for a newer release and, if there is one,
+## download and run the official install-tmdoc.sh installer again, which
+## refreshes the standalone binaries in ~/.local/bin (a checkout of the
+## source repository is not touched) - tmdoc and mndoc are refreshed in the
+## same run. The installer asks whether to add ~/.local/bin to the PATH, so
+## that directory is prepended to the PATH of the installer process -
+## --upgrade stays non-interactive and prints a PATH hint itself afterwards.
+proc ::tmdoc::upgrade {} {
+    set current [package provide tmdoc]
+    set latest [latest-version]
+    if {![version-newer $latest $current]} {
+        puts "tmdoc $current is already the latest release (GitHub: v$latest)."
+        return
+    }
+    puts "A newer tmdoc release is available: GitHub v$latest, local version: $current"
+    set url "https://github.com/mittelmark/tmdoc/releases/latest/download/install-tmdoc.sh"
+    set bindir ""
+    set envargs [list env]
+    if {[info exists ::env(HOME)]} {
+        set bindir [file join $::env(HOME) .local bin]
+        set path ""
+        if {[info exists ::env(PATH)]} {
+            set path $::env(PATH)
+        }
+        lappend envargs "PATH=$bindir:$path"
+    }
+    set fh [file tempfile script tmdoc-install-]
+    close $fh
+    set cmd [list {*}$envargs {*}[auto_execok bash] $script]
+    if {[catch {
+        fetch $url $script
+        exec {*}$cmd 2>@1
+    } out]} {
+        file delete -force $script
+        return -code error "Error: running the tmdoc install script failed!\n$out"
+    }
+    file delete -force $script
+    puts $out
+    puts "tmdoc and mndoc were upgraded to the latest release."
+    if {$bindir ne "" && (![info exists ::env(PATH)] || \
+            [lsearch -exact [split $::env(PATH) ":"] $bindir] == -1)} {
+        puts "Note: $bindir is not in your PATH yet, add it for example with:"
+        puts "  echo \$PATH | grep -q /.local/bin || export PATH=\$HOME/.local/bin:\$PATH"
+    }
+}
 proc ::tmdoc::main {argv} {
     global argv0
     set APP $argv0
@@ -1507,15 +1640,17 @@ proc ::tmdoc::main {argv} {
         set APP "tclmain -m tmdoc"
     }
     set Usage [string map [list "\n    " "\n"] {
-        Usage: __APP__ ?[--help|version]? INFILE OUTFILE ?--mode weave|tangle?   
-               
+        Usage: __APP__ ?options? INFILE ?OUTFILE?
+               __APP__ INFILE ?OUTFILE? ?options?
+               (options may as well be given before, between or after the file names)
+
         tmdoc - Literate programming with Tcl for Markdown, AsciiDoc, Typst, 
                 Quarkdown  and LaTeX documents, Version __VERSION__
                 Converts Markdown, AsciiDoc, Typst, Quarkdown or LaTeX documents
                 with embedded R, Python, Octave, Tcl Diagram code and other
                 extensions with evaluated code chunks and embedded images
                 
-        Positional arguments (required):
+        Positional arguments:
         
             INFILE  - input file usually Markdown or LaTeX with embedded Tcl code
                       either in code chunks starting with ```{.tcl} or in short
@@ -1530,9 +1665,12 @@ proc ::tmdoc::main {argv} {
            --help               - displays this help page, and exit
            --version            - display version number, and exit
            --license            - display license information, and exit
+           --upgrade            - check GitHub for a newer tmdoc release and
+                                  install it (refreshes tmdoc and mndoc in
+                                  ~/.local/bin)
            --mode  weave|tangle - either `weave` for evaluating the code chunks
                                   or `tangle` for extracting all Tcl code  
-           --abbrev  FILENAM E  - an Yaml abbreviation file used to expand abbreviations
+           --abbrev  FILENAME  - an Yaml abbreviation file used to expand abbreviations
                                   within curly braces
            --toc   false|true   - should a table of contents file (toc.md) 
                                   ready for inclusion being generated
@@ -1542,20 +1680,29 @@ proc ::tmdoc::main {argv} {
         
            # convert the tutorial in the modules/tmdoc folder
            __APP__ modules/tmdoc/tmdoc-tutorial.Tmd modules/tmdoc/tmdoc-tutorial.md
-           # convert it furthermore to HTML using mkdoc
-           mkdoc modules/tmdoc/tmdoc-tutorial.md modules/tmdoc/tmdoc-tutorial.html \
+           # the options may as well be given before or between the file names
+           __APP__ --mode weave modules/tmdoc/tmdoc-tutorial.Tmd modules/tmdoc/tmdoc-tutorial.md
+           # convert it furthermore to HTML using mndoc
+           mndoc modules/tmdoc/tmdoc-tutorial.md modules/tmdoc/tmdoc-tutorial.html \
                  --css tmdoc.css
            
            # extract inline examples from the package code
-           mkdoc modules/tmdoc/tmdoc.tcl modules/tmdoc/tmdoc.tmd
+           mndoc modules/tmdoc/tmdoc.tcl modules/tmdoc/tmdoc.tmd
            # evaluate the examples and add the code output
            __APP__ modules/tmdoc/tmdoc.tmd modules/tmdoc/tmdoc.md
            # convert it to HTML 
-           mkdoc modules/tmdoc/tmdoc.md modules/tmdoc/tmdoc-tmdoc.html \
+           mndoc modules/tmdoc/tmdoc.md modules/tmdoc/tmdoc-tmdoc.html \
                  --css tmdoc.css
+           
+           # check GitHub for a newer tmdoc release and install it, if there
+           # is one (refreshes tmdoc and mndoc in ~/.local/bin)
+           
+           __APP__ --upgrade
            
       License: BSD
     }]
+
+    set valid_args [list --help --version --license --mode --abbrev --toc]
 
     if {[lsearch -exact $argv {--version}] > -1} {
         puts "[package provide tmdoc::tmdoc]"
@@ -1565,48 +1712,96 @@ proc ::tmdoc::main {argv} {
         puts "BSD License - see manual page"
         return
     }
+    if {[lsearch -exact $argv {--upgrade}] > -1} {
+        # '--upgrade' must not return to the script: the installer may just
+        # have replaced the very file this interpreter is executing (an
+        # installed tmdoc-*.bin), so no further top-level commands of
+        # [info script] may be read - exit right after the upgrade instead
+        if {[catch {upgrade} err]} {
+            puts $err
+            exit 1
+        }
+        exit 0
+    }
 
-    if {[llength $argv] < 2 || [lsearch -exact $argv {--help}] > -1} {
-        set usage [regsub -all {__VERSION__} [regsub -all {__APP__} $Usage $APP] [package provide tmdoc]]
+    set usage [regsub -all {__VERSION__} [regsub -all {__APP__} $Usage $APP] [package provide tmdoc]]
+    if {[lsearch -exact $argv {--help}] > -1} {
         puts $usage
         exit 0
     } else {
-        set idxm [lsearch -exact $argv {--mode}]
-        set idxa [lsearch -exact $argv {--abbrev}]
-        set idxt [lsearch -exact $argv {--toc}]        
-        set mode weave
-        set abbrevfile ""
-        set toc false
-        if {$idxt > -1} {
-            set toc [lindex $argv [expr {$idxt + 1}]]
-            if {![string is boolean $toc]} {
-                puts "Error: The argument for --toc must be either true or false!"
-                puts $usage
-                exit 0
-            }
-            set argv [lreplace $argv $idxt [expr {$idxt + 1}]]
-        }
-        
-        if {$idxa > -1} {
-            set abbrevfile [lindex $argv [expr {$idxa + 1}]]
-            if {![file exists $abbrevfile]} {
-                puts "Error: Abbreviation file '$abbrevfile' does not exists!"
-                puts $usage
-                exit 0
-            }
-            set argv [lreplace $argv $idxa [expr {$idxa + 1}]]
-        }
-        if {$idxm > -1} {
-            if {[llength $argv] != 4} {
-                puts "Usage: Error - argument --mode must have an argument either weave or tangle"
-            } elseif {[lindex $argv [expr {$idxm + 1}]] ni [list weave tangle]} {
-                puts "Usage: Error - --mode must have as values on of weave or tangle"
+        # options may be given before, between or after the file names,
+        # every option consumes the argument right behind it as its value
+        set files [list]
+        set options [list]
+        set err ""
+        set max [llength $argv]
+        for {set i 0} {$i < $max} {incr i} {
+            set opt [lindex $argv $i]
+            if {[regexp {^-.+} $opt] && $opt ne {-}} {
+                if {$opt ni $valid_args} {
+                    set err "Error: The argument '$opt' is not valid!"
+                    break
+                }
+                incr i
+                if {$i >= $max || [lindex $argv $i] in $valid_args} {
+                    set err "Error: the option '$opt' needs a value!"
+                    break
+                }
+                lappend options $opt [lindex $argv $i]
             } else {
-                set mode [lindex $argv [expr {$idxm + 1}]]
+                ## '-' is the stdout marker for OUTFILE, not an option
+                lappend files $opt
             }
-            set argv [lreplace $argv $idxm [expr {$idxm + 1}]]
         }
-        tmdoc::tmdoc [lindex $argv 0] [lindex $argv 1] [list -mode $mode -abbrev $abbrevfile -toc $toc]
+        if {$err ne ""} {
+            puts $err
+            puts $usage
+            exit 0
+        } elseif {[llength $files] < 1} {
+            puts $usage
+            exit 0
+        } elseif {[llength $files] > 2} {
+            puts "Error: expected INFILE ?OUTFILE?, got: [join $files { }]"
+            puts $usage
+            exit 0
+        } else {
+            set infile [lindex $files 0]
+            if {[llength $files] == 2} {
+                set outfile [lindex $files 1]
+            } else {
+                set outfile stdout
+            }
+            set mode weave
+            set abbrevfile ""
+            set toc false
+            for {set i 0} {$i < [llength $options]} {incr i 2} {
+                set opt [lindex $options $i]
+                set val [lindex $options [expr {$i + 1}]]
+                if {$opt eq {--mode}} {
+                    if {$val ni [list weave tangle]} {
+                        puts "Error: --mode must have as value one of weave or tangle!"
+                        puts $usage
+                        exit 0
+                    }
+                    set mode $val
+                } elseif {$opt eq {--abbrev}} {
+                    if {![file exists $val]} {
+                        puts "Error: Abbreviation file '$val' does not exist!"
+                        puts $usage
+                        exit 0
+                    }
+                    set abbrevfile $val
+                } elseif {$opt eq {--toc}} {
+                    if {![string is boolean $val]} {
+                        puts "Error: The argument for --toc must be either true or false!"
+                        puts $usage
+                        exit 0
+                    }
+                    set toc $val
+                }
+            }
+            tmdoc::tmdoc $infile $outfile [list -mode $mode -abbrev $abbrevfile -toc $toc]
+        }
     }
 }
 

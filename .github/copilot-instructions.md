@@ -31,7 +31,9 @@ WeasyPrint to create the PDF included in the package. The vignette includes
 `tmdoc4r-vignette.toc`, so run `tmdoc <vignette> - --toc true` once to create
 the TOC before running it again to render the document; both `make build` and
 `make vignette` follow this two-pass sequence. Keep the vignette title's
-package version current for each release.
+package version current for each release. Python chunks run through `python3`;
+install Matplotlib into that interpreter when the vignette's Python plotting
+example should produce `pyexample.svg`.
 
 ## Commands
 
@@ -52,6 +54,11 @@ without rebuilding that Sweave vignette, use `R CMD build
 --no-build-vignettes tmdoc4r` after copying the freshly generated
 `tmdoc4r-vignette.pdf` into `tmdoc4r/vignettes/`; check with
 `R CMD check --ignore-vignettes --no-manual <package_tarball>`.
+Confirm `python3 -c 'import matplotlib'` succeeds when validating the plot
+example. The package-build wrapper may return success after `R CMD build`
+fails, allowing `make` to check a pre-existing tarball; do not treat that
+later check as validating the new build. Verify the archive version and that
+its vignette PDF matches the freshly generated PDF before uploading it.
 
 After a build, run all example integration checks with:
 

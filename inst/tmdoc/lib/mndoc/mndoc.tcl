@@ -43,6 +43,13 @@
 #                  2026-01-20 Release 0.15.3 fixing pipes in backticks creating tables
 #                  2026-01-28 Release 0.15.4 fixing fixing LICENSE issues stating mixes of BSD/MIT, LICENSE should be BSD3, more pipe fixes
 #                  2026-10-27 Release 0.15.5 fix YAML date handling for non-ISO date formats
+#                  2026-10-31 Release 0.16.0 book.css stylesheet for a traditional book layout, standalone images are
+#                                            marked as figures (data-figure), explicit image sizes are honored as inline
+#                                            styles, reading measure widened to 1000px, --css embedding resolves
+#                                            relative to the document path rather than the working directory
+#                  2026-11-02 Release 0.17.0 flexible command line option order, .pdf output via headless
+#                                            chrome/chromium or weasyprint, shared print fit and locale paper
+#                                            size, mndoc --upgrade checks GitHub for and installs a newer release
 ##############################################################################
 #
 # Copyright (c) 2019-2026  Detlef Groth, E-mail: dgroth((at)uni-potsdam(dot)de
@@ -50,9 +57,9 @@
 # 
 ##############################################################################
 #' ---
-#' title: mndoc::mndoc 0.15.5
+#' title: mndoc::mndoc 0.17.0
 #' author: Detlef Groth, University of Potsdam, Germany
-#' date: 2026-10-27
+#' date: 2026-10-31
 #' css: mndoc.css
 #' style: |
 #'    @import url('https://fonts.bunny.net/css?family=Andika&display=swap'); 
@@ -63,18 +70,18 @@
 #' 
 #' ## NAME
 #'
-#' **mndoc::mndoc**  - Tcl package and command line application to extract and format 
-#' embedded programming documentation from source code files written in Markdown or
-#' doctools format and optionally converting it into HTML. The **mndoc** tool can be as
-#' well used to convert Markdown files to HTML files and to embed local images and stylesheets into 
-#' the output document. It supports standard Markdown with a few extensions which are
+#' **mndoc::mndoc**  - Tcl package and command line application to convert Markdown
+#' files to HTML files and to extract and format embedded programming documentation
+#' from source code files written in Markdown or doctools format. Local images and
+#' stylesheets can be embedded into the output document as base64 data. The **mndoc**
+#' tool supports standard Markdown with a few extensions which are
 #' explained below.
 #'
 #' ## USE CASES
 #'
 #' - simple install with small file size < 150kb
-#' - extract in source code embedded Markdown documentation
 #' - convert Markdown files to HTML
+#' - extract in source code embedded Markdown documentation
 #' - embed local images into HTML files
 #' - use provided extensions for better display experiences
 #'
@@ -114,12 +121,6 @@
 #'    ?--javascript highlightjs|file1.js,file2.js? ?--mathjax true? ?--refresh 10?
 #' ```
 #'
-#' Usage as command line application for extraction of Markdown comments prefixed with `#'`:
-#'
-#' ```
-#' mndoc inputcodefile outputfile.md ?options?
-#' ```
-#'
 #' Usage as command line application for conversion of Markdown to HTML:
 #'
 #' ```
@@ -128,16 +129,64 @@
 #'   --refresh 10 --base64 true --bodyonly false?  
 #' ```
 #'
+#' Usage as command line application for conversion of Markdown to PDF:
+#'
+#' ```
+#' mndoc inputfile.md outputfile.pdf ?options?
+#' ```
+#'
+#' This first writes the matching `outputfile.html` and then prints it to PDF
+#' with headless chrome/chromium, or with weasyprint if no browser is
+#' installed. Without either of those tools the application refuses to run,
+#' because then only HTML documents can be produced. The paper size follows
+#' the `LC_PAPER` locale (A4 by default, US Letter for locales such as
+#' `en_US`) and can be overridden with the environment variable `PAPER`,
+#' for instance `PAPER=Letter`.
+#'
+#' The only exception is an input file which already is the HTML document
+#' behind that PDF, that is when *infile* and *outfile* share their base
+#' name, for example `mndoc chapter.html chapter.pdf`. The input file must
+#' not be overwritten, so no separate HTML file is written then, the PDF is
+#' printed from a temporary inlined copy of the input instead.
+#'
+#' The options may be placed before, between or after the two file arguments,
+#' each option directly followed by its value, for example
+#' `mndoc --css file.css --bodyonly false inputfile.md outputfile.html`.
+#'
+#' Usage as command line application for extraction of Markdown comments prefixed with `#'`:
+#'
+#' ```
+#' mndoc inputcodefile outputfile.md ?options?
+#' ```
+#'
+#' Usage as command line application to check for and install a newer release:
+#'
+#' ```
+#' mndoc --upgrade
+#' ```
+#'
+#' The running version is compared with the release tag GitHub serves for
+#' `releases/latest` (an HTTP redirect to `releases/tag/vX.Y.Z`). If a newer
+#' release exists, the official `install-mndoc.sh` installer is downloaded and
+#' run again, which refreshes the standalone binary in `~/.local/bin`. The
+#' check needs `curl` or `wget` and network access, the installation runs
+#' without asking questions, and a source checkout of the mndoc repository is
+#' not touched - use `git pull` there.
+#'
 #' ## <a name='description'>DESCRIPTION</a>
 #' 
-#' **mndoc::mndoc**  extracts embedded Markdown or doctools documentation from source code files
-#' and  as well converts Markdown the output to HTML if desired.
+#' **mndoc::mndoc**  converts Markdown files to HTML files and extracts embedded
+#' Markdown or doctools documentation from source code files.
 #' The documentation inside the source code must be prefixed with the `#'` character sequence.
 #' The file extension of the output file determines the output format. 
 #' File extensions can bei either `.md` for Markdown output, `.man` for doctools output or `.html` for html output.
 #' The latter requires the tcllib Markdown or the doctools extensions to be installed.
 #' If the file extension of the inputfile is *.md* and file extension of the output files is *.html* 
 #' there will be simply a conversion from a Markdown to a HTML file.
+#' The command line application additionally accepts a *.pdf* output file:
+#' it writes the matching HTML file and prints it to PDF, see the SYNOPSIS
+#' section above for the details and the requirements on chrome/chromium or
+#' weasyprint.
 #'
 #' The file `mndoc.tcl` can be as well directly used as a console application. 
 #' An explanation on how to do this, is given in the section [Installation](#install).
@@ -153,11 +202,14 @@
 #' > - *infile* - file with embedded markdown documentation
 #'   - *outfile* -  name of output file extension
 #'   - *--base64 false|true* should local images and CSS files be embedded as base64 data, default: true
-#'   - *--css cssfile* if outfile is an HTML file use the given *cssfile*, if the filename is 'mndoc.css' or 'tmdoc.css'
-#'      and if the file is not yet existing in the appropriate location this file is copied from the package folder at this place
+#'   - *--css cssfile* if outfile is an HTML file use the given *cssfile*, one of the bundled stylesheets
+#'      'mndoc.css', 'tmdoc.css' or the flat, greyish book layout 'book.css', as well as any other local or remote stylesheet.
+#'      Local stylesheets are resolved relative to the document being converted rather than the current working directory:
+#'      with *--base64 true* (default) they are inlined as base64 data, with *--base64 false* a stylesheet bundled with mndoc
+#'      is copied next to the output file so that the relative link stays valid
 #'   - *--footer footer.html* if outfile is an HTML file add this footer before the closing body tag
 #'   - *--header header.html* if outfile is an HTML file add this header after  the opening body tag
-#'   - *--javascript highlightjs|filename1,filename2* if outfile is an HTML file embeds either the highlight.js Javascript highlighter or the given local javascript filename(s)
+#'   - *--javascript highlightjs|filename1,filename2* if outfile is an HTML file embeds either the highlight.js Javascript highlighter or the given local javascript filename(s) 
 #'   - *--mathjax false|true* should there be the MathJax library included, default: false
 #'   - *--refresh 0|10* should there be the autorefresh header included only values above 9 are considered, default: 0
 #'   - *--bodyonly false|true* should only the part within the body tags be saved to the new file, default: false
@@ -194,8 +246,8 @@ package require Tcl 8.6-
 package require yaml
 package require Markdown
 
-package provide mndoc 0.15.5
-package provide mndoc::mndoc 0.15.5
+package provide mndoc 0.17.0
+package provide mndoc::mndoc 0.17.0
 namespace eval ::mndoc {
     variable deindent [list \n\t \n "\n    " \n]
     variable scriptfile [info script]
@@ -203,6 +255,7 @@ namespace eval ::mndoc {
 	<!DOCTYPE html>
 	<html>
 	<head>
+	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta name="title" content="$document(title)">
 	<meta name="author" content="$document(author)">
@@ -236,11 +289,11 @@ variable htmlstart [string map $deindent {
             margin: 0 auto;
 	}
         div.document-header {
-            max-width: 800px;
+            max-width: 1000px;
             text-align: center;
         }
-        hr { max-width: 800px; }
-        p, ul { max-width: 800px; }        
+        hr { max-width: 1000px; }
+        p, ul { max-width: 1000px; }        
         img { margin-left: 25px; }
 
         h1.title, p.author, p.date, h2.author, h2.date {
@@ -253,7 +306,7 @@ variable htmlstart [string map $deindent {
             border-bottom: 2px solid #CCCCCC; 
             font-family: monospace;
             margin-left: 30px;
-            max-width: 800px;
+            max-width: 1000px;
         }
         code { font-size: 80% ;}
         pre:has(code) {
@@ -357,6 +410,130 @@ proc ::mndoc::img-replace {line filename} {
     } 
     return $line
 }
+
+# Restate an explicit image size as an inline style.
+#
+# The markdown image syntax lets an author suggest a size, as in
+# ![dot](dot.png){width="800"}. A unitless value means pixels, but the
+# width and height *attributes* are only presentational hints: weasyprint
+# ignores them altogether and any stylesheet rule outranks them, so the
+# requested size would silently be lost. Restating the size as an inline
+# style keeps the attribute -- normalised to the unitless integer the HTML
+# spec requires, since width="800px" is not valid and would be dropped by
+# browsers -- and adds the declaration that every renderer honours, which
+# is also what makes the author's suggestion win over stylesheet defaults.
+proc ::mndoc::img-size {line} {
+    set pos 0
+    set out ""
+    while {[regexp -indices -start $pos {<img [^>]*>} $line match]} {
+        lassign $match s e
+        append out [string range $line $pos [expr {$s - 1}]]
+        append out [::mndoc::img-size-tag [string range $line $s $e]]
+        set pos [expr {$e + 1}]
+    }
+    append out [string range $line $pos end]
+    return $out
+}
+
+proc ::mndoc::img-size-tag {tag} {
+    set decl {}
+    # plain numbers and 'px' both mean pixels
+    foreach {prop re} {
+        width  {width[ \t]*=[ \t]*"([0-9]+(?:\.[0-9]+)?)(px)?"}
+        height {height[ \t]*=[ \t]*"([0-9]+(?:\.[0-9]+)?)(px)?"}
+    } {
+        if {[regexp -nocase $re $tag -> num unit]} {
+            lappend decl "$prop:${num}px"
+            set tag [regsub -nocase $re $tag "$prop=\"$num\""]
+        }
+    }
+    # a percentage cannot be carried by the HTML attribute at all
+    foreach {prop re} {
+        width  {width[ \t]*=[ \t]*"([0-9]+(?:\.[0-9]+)?)%"}
+        height {height[ \t]*=[ \t]*"([0-9]+(?:\.[0-9]+)?)%"}
+    } {
+        if {[regexp -nocase $re $tag -> num]} {
+            lappend decl "$prop:${num}%"
+            set tag [regsub -nocase $re $tag ""]
+        }
+    }
+    if {[llength $decl]} {
+        set css [join $decl ";"]
+        if {[regexp {style[ \t]*=[ \t]*"([^"]*)"} $tag -> have]} {
+            set tag [regsub {style[ \t]*=[ \t]*"[^"]*"} $tag "style=\"$have;$css\""]
+        } else {
+            set tag [regsub {>$} $tag " style=\"$css\">"]
+        }
+    }
+    return $tag
+}
+
+# Put the data-figure marker at the end of an <img> opening tag, just before
+# the bracket -- and before a trailing slash too, so a self-closing tag stays
+# well formed. A tag that already carries the marker is left alone.
+proc ::mndoc::mark-img {img} {
+    if {[regexp {data-figure} $img] || ![regexp -indices {<img [^>]*>} $img span]} {
+        return $img
+    }
+    lassign $span start end
+    set tag [string range $img $start $end]
+    set tag [string range $tag 0 end-1]             ;# strip the closing bracket
+    if {[string match "*/" $tag]} {
+        set tag "[string trimright [string range $tag 0 end-1]] data-figure/>"
+    } else {
+        set tag "[string trimright $tag] data-figure>"
+    }
+    return [string replace $img $start $end $tag]
+}
+
+# Mark every image that is the only content of its paragraph or list item.
+#
+# Markdown has no notion of "this image stands alone", and CSS cannot recover
+# it either: text nodes cannot be selected, so a plate sitting on a line of
+# its own and one buried mid-sentence look identical to a selector. mndoc can
+# see both, so it tags the lone ones with data-figure and book.css keys its
+# figure layout off that marker instead of guessing. Nothing else interprets
+# it, so it is inert in every other stylesheet.
+#
+# The decision is taken on the converted HTML, not on the markdown line: a
+# text line and an image line without a blank between them are one paragraph,
+# and that image is still an inline one. tcllib markdown wraps even a lone
+# raw <img> in <p>, so paragraph (and list item) content is the reliable test.
+proc ::mndoc::mark-figures {html} {
+    set re {(<(?:p|li)(?:\s[^>]*)?>)([ \t\r\n]*)(<img [^>]*>(?:</img>)?)([ \t\r\n]*)(</(?:p|li)>)}
+    set pos 0
+    set out ""
+    while {[regexp -indices -start $pos $re $html whole tagopen ws1 img ws2 tagclose]} {
+        lassign $tagopen o1 o2
+        lassign $ws1 w1 w2
+        lassign $img i1 i2
+        lassign $ws2 x1 x2
+        lassign $tagclose c1 c2
+        append out [string range $html $pos [expr {$o1 - 1}]]
+        append out [string range $html $o1 $o2]                       ;# <p> or <li>
+        append out [string range $html $w1 $w2]                       ;# whitespace
+        append out [mark-img [string range $html $i1 $i2]]
+        append out [string range $html $x1 $x2]                       ;# whitespace
+        append out [string range $html $c1 $c2]                       ;# </p> or </li>
+        set pos [expr {[lindex $whole 1] + 1}]
+    }
+    append out [string range $html $pos end]
+    return $out
+}
+
+# The same for raw HTML input, which never sees markdown: an <img> alone on
+# its line (optionally inside a blockquote) is a figure.
+proc ::mndoc::mark-figures-html {html} {
+    set out {}
+    foreach line [split $html "\n"] {
+        if {[regexp {^[ \t]*(?:>[ \t]*)*<img [^>]*>[ \t]*$} $line]} {
+            set line [mark-img $line]
+        }
+        lappend out $line
+    }
+    return [join $out \n]
+}
+
 proc ::mndoc::inline-assets {filename html} {
     set htm ""
     foreach line [split $html "\n"] {
@@ -418,6 +595,11 @@ proc ::mndoc::mndoc {filename outfile args} {
                 return -code error "Cannot open $filename: $infh"
             } else {
                 set html [read $infh]
+                # Mark standalone images here too: the marker is about layout
+                # (book.css), not about embedding, so it does not depend on
+                # --base64.
+                set html [mark-figures-html $html]
+                set html [mark-figures $html]
                 if {$arg(--base64)} {
                     set html [inline-assets $filename $html]
                 }
@@ -524,6 +706,7 @@ proc ::mndoc::mndoc {filename outfile args} {
                 set line [regsub -all {!\[(.+?)\]\((.+?)\)\{(.+?)\}} $line "<img src=\"\\2\" alt=\"\\1\" \\3></img>"]
                 set line [regsub -all {!\[\]\((.+?)\)\{(.+?)\}} $line "<img src=\"\\1\" \\2></img>"]            
                 set line [regsub -all {!\[\]\((.+?)\)} $line "<img src=\"\\1\"></img>"]
+                set line [::mndoc::img-size $line]
                 set line [regsub {^- \[ \]} $line "- AMPERSAND#9744" ] 
                 set line [regsub {^- \[x\]} $line "- AMPERSAND#9745"]
             }
@@ -532,11 +715,35 @@ proc ::mndoc::mndoc {filename outfile args} {
     }
     if {$arg(--css) ne ""} {
         set css ""
+        set docdir [file dirname $filename]
         foreach cs [split $arg(--css) ","] {
-            append css   "\n<link rel=\"stylesheet\" href=\"$cs\">\n"
-            if {![file exists $cs] && [file exists [file join [file dirname $scriptfile] $cs]]} {
-                file copy [file join [file dirname $scriptfile] $cs] $cs
+            set href $cs
+            set bundle [file join [file dirname $scriptfile] $cs]
+            if {$arg(--base64)} {
+                # Embedding (inline-assets) resolves local stylesheets relative
+                # to the document path, not the current working directory. To
+                # make embedding independent of where the process was started,
+                # resolve a local stylesheet to an absolute path here; the
+                # base64 data replaces the <link> and the path never survives
+                # into the output.
+                foreach cand [list [file join $docdir $cs] [file normalize $cs] $bundle] {
+                    if {![regexp {^(https?:)?//} $cand] && [file exists $cand]} {
+                        set href [file normalize $cand]
+                        break
+                    }
+                }
+            } else {
+                # External-link mode: keep a relative href that stays valid
+                # next to the output file. Fall back to the stylesheet bundled
+                # with mndoc by copying it next to the output (never into the
+                # current working directory).
+                if {![file exists [file join $docdir $cs]] && ![file exists $cs] && [file exists $bundle]} {
+                    set outdir [file dirname $outfile]
+                    if {$outfile eq "-" || $outfile eq ""} {set outdir "."}
+                    file copy $bundle [file join $outdir $cs]
+                }
             }
+            append css   "\n<link rel=\"stylesheet\" href=\"$href\">\n"
         }
         dict set yamldict css $css
     }
@@ -607,6 +814,7 @@ proc ::mndoc::mndoc {filename outfile args} {
             append style "\n<style>\n[dict get $yamldict style]</style>"
         }
         set html [Markdown::convert $mdhtml]
+        set html [mndoc::mark-figures $html]
         if {$arg(--base64)} {
             set html [mndoc::inline-assets $filename $html]
         }
@@ -662,42 +870,287 @@ proc ::mndoc::mndoc {filename outfile args} {
     }
 }
 
+## look for a PDF renderer: a Chromium based browser first, because it runs
+## MathJax and highlight.js while WeasyPrint cannot, then WeasyPrint.
+## Returns a two element list {kind executable}, or an empty list if neither
+## tool is installed. The CHROME environment variable can name a specific
+## browser binary.
+proc ::mndoc::pdf-engine {} {
+    set candidates [list]
+    if {[info exists ::env(CHROME)] && $::env(CHROME) ne ""} {
+        lappend candidates $::env(CHROME)
+    }
+    lappend candidates chromium-browser chromium google-chrome google-chrome-stable chrome
+    foreach bin $candidates {
+        if {[auto_execok $bin] ne ""} {
+            return [list chrome $bin]
+        }
+    }
+    if {[auto_execok weasyprint] ne ""} {
+        return [list weasyprint weasyprint]
+    }
+    return [list]
+}
+## the @page paper size rule for a throwaway print copy of a document: the
+## PAPER environment variable overrides, otherwise the paper follows the
+## LC_PAPER locale category (which falls back to LANG), where width 216 or
+## 215.9 is US Letter and every other width, including the C/POSIX locale,
+## is A4 - the same rule the Makefile uses for its PDF targets.
+proc ::mndoc::paper-style {} {
+    set paper ""
+    if {[info exists ::env(PAPER)] && $::env(PAPER) ne ""} {
+        set paper $::env(PAPER)
+    } else {
+        set width ""
+        if {![catch {exec locale -k LC_PAPER} out]} {
+            regexp {width=([0-9.]+)} $out -> width
+        }
+        if {$width in {216 215.9}} {
+            set paper Letter
+        } else {
+            set paper A4
+        }
+    }
+    return "<style>@page { size: $paper; }</style>"
+}
+## write the paper size rule into an existing HTML file: before the closing
+## head tag if the document has one, else after the opening body tag, else
+## at the very beginning (a bodyonly fragment)
+proc ::mndoc::paper-inject {htmlfile style} {
+    if {$style eq ""} {
+        return
+    }
+    set in [open $htmlfile r]
+    set html [read $in]
+    close $in
+    set idx [string first "</head>" $html]
+    if {$idx >= 0} {
+        set html "[string range $html 0 [expr {$idx - 1}]]$style\n[string range $html $idx end]"
+    } else {
+        regexp {<body[^>]*>} $html -> tag
+        if {[info exists tag] && $tag ne ""} {
+            regsub -- $tag $html "$style\n$tag" html
+        } else {
+            set html "$style\n$html"
+        }
+    }
+    set out [open $htmlfile w 0644]
+    puts -nonewline $out $html
+    close $out
+}
+## command line helper for an OUTFILE with the extension .pdf: make sure a
+## renderer is installed before anything is written, then create the
+## matching .html file and print that to the PDF file. Chrome and WeasyPrint
+## are tried in this order, CHROME points to a specific browser binary. If
+## neither tool is installed the conversion is refused, because without
+## chrome/chromium or weasyprint only HTML documents can be produced.
+proc ::mndoc::pdf-output {filename outfile args} {
+    set engine [pdf-engine]
+    if {[llength $engine] == 0} {
+        return -code error "Error: PDF output needs chrome/chromium or weasyprint - without installing one of them only HTML documents can be produced!\n       Write the HTML document instead: '[file rootname $outfile].html'"
+    }
+    lassign $engine kind bin
+    set root [file rootname $outfile]
+    set htmlfile "$root.html"
+    set printhtml "$root.print.html"
+    set printcopy false
+    if {[file normalize $htmlfile] eq [file normalize $filename] } {
+        ## converting an HTML file whose own name would be the output: keep
+        ## the input untouched and print a temporary inlined copy of it
+        set htmlfile $printhtml
+        set printcopy true
+    }
+    if {[catch {mndoc $filename $htmlfile {*}$args} err]} {
+        file delete -force $printhtml
+        return -code error $err
+    }
+    if {!$printcopy} {
+        file copy -force $htmlfile $printhtml
+    }
+    paper-inject $printhtml [paper-style]
+    if {$kind eq "chrome"} {
+        set cmd [list {*}[auto_execok $bin] --headless=new --disable-gpu \
+                 --no-pdf-header-footer --virtual-time-budget=15000 \
+                 --print-to-pdf=[file normalize $outfile] \
+                 "file://[file normalize $printhtml]"]
+    } else {
+        set cmd [list {*}[auto_execok $bin] [file normalize $printhtml] \
+                 [file normalize $outfile]]
+    }
+    set status [catch {exec {*}$cmd 2>@1} out]
+    file delete -force $printhtml
+    if {$status} {
+        return -code error "Error: PDF conversion with '$bin' failed!\n$out"
+    }
+    return $outfile
+}
+
+## the version of the latest release on GitHub: the releases/latest URL
+## redirects (HTTP 302) to .../releases/tag/vX.Y.Z, which is exactly the
+## check the install-mndoc.sh script performs. curl is preferred, since the
+## installer needs it anyway, wget is the fallback.
+proc ::mndoc::latest-version {} {
+    set url "https://github.com/mittelmark/mndoc/releases/latest/"
+    set out ""
+    if {[auto_execok curl] ne ""} {
+        if {[catch {exec curl -isS $url 2>@1} out]} {
+            return -code error "Error: checking GitHub for the latest mndoc release failed: $out"
+        }
+        # note: greedy '.*' - a non-greedy '.*?' before /tag/v shortens the
+        # whole match in Tcl's AREs and would truncate the version capture
+        if {![regexp -nocase -line {^location:.*/tag/v([0-9][0-9.]*)} $out -> version]} {
+            return -code error "Error: unexpected answer from GitHub while checking the latest mndoc release!"
+        }
+    } elseif {[auto_execok wget] ne ""} {
+        catch {exec wget -S --spider $url 2>@1} out
+        if {![regexp -nocase {location:.*/tag/v([0-9][0-9.]*)} $out -> version]} {
+            return -code error "Error: could not read the latest mndoc release tag from GitHub!"
+        }
+    } else {
+        return -code error "Error: 'mndoc --upgrade' needs curl or wget to check GitHub for a newer release!"
+    }
+    return $version
+}
+## is version a strictly newer than version b? compared numerically
+## component by component, leading digits only, missing parts count as 0
+proc ::mndoc::version-newer {a b} {
+    set va [split $a .]
+    set vb [split $b .]
+    while {[llength $va] < [llength $vb]} { lappend va 0 }
+    while {[llength $vb] < [llength $va]} { lappend vb 0 }
+    foreach x $va y $vb {
+        set xa 0
+        set ya 0
+        regexp {^[0-9]+} $x xa
+        regexp {^[0-9]+} $y ya
+        if {$xa > $ya} { return 1 }
+        if {$xa < $ya} { return 0 }
+    }
+    return 0
+}
+## download url into the file outfile, with curl or wget
+proc ::mndoc::fetch {url outfile} {
+    if {[auto_execok curl] ne ""} {
+        set cmd [list {*}[auto_execok curl] -fsSL $url --output $outfile]
+    } elseif {[auto_execok wget] ne ""} {
+        set cmd [list {*}[auto_execok wget] -q -O $outfile $url]
+    } else {
+        return -code error "Error: downloading '$url' needs curl or wget!"
+    }
+    if {[catch {exec {*}$cmd 2>@1} out]} {
+        file delete -force $outfile
+        return -code error "Error: downloading '$url' failed: $out"
+    }
+}
+## 'mndoc --upgrade': check GitHub for a newer release and, if there is one,
+## download and run the official install-mndoc.sh installer again, which
+## refreshes the standalone binary in ~/.local/bin (a checkout of the source
+## repository is not touched). The installer asks interactively whether to
+## add ~/.local/bin to the PATH, so that directory is prepended to the PATH
+## of the installer process - --upgrade stays non-interactive and prints a
+## PATH hint itself afterwards.
+proc ::mndoc::upgrade {} {
+    set current [package provide mndoc]
+    set latest [latest-version]
+    if {![version-newer $latest $current]} {
+        puts "mndoc $current is already the latest release (GitHub: v$latest)."
+        return
+    }
+    puts "A newer mndoc release is available: GitHub v$latest, local version: $current"
+    set url "https://github.com/mittelmark/mndoc/releases/latest/download/install-mndoc.sh"
+    set bindir ""
+    set envargs [list env]
+    if {[info exists ::env(HOME)]} {
+        set bindir [file join $::env(HOME) .local bin]
+        set path ""
+        if {[info exists ::env(PATH)]} {
+            set path $::env(PATH)
+        }
+        lappend envargs "PATH=$bindir:$path"
+    }
+    set fh [file tempfile script mndoc-install-]
+    close $fh
+    set cmd [list {*}$envargs {*}[auto_execok bash] $script]
+    if {[catch {
+        fetch $url $script
+        exec {*}$cmd 2>@1
+    } out]} {
+        file delete -force $script
+        return -code error "Error: running the mndoc install script failed!\n$out"
+    }
+    file delete -force $script
+    puts $out
+    puts "mndoc was upgraded to the latest release."
+    if {$bindir ne "" && (![info exists ::env(PATH)] || \
+            [lsearch -exact [split $::env(PATH) ":"] $bindir] == -1)} {
+        puts "Note: $bindir is not in your PATH yet, add it for example with:"
+        puts "  echo \$PATH | grep -q /.local/bin || export PATH=\$HOME/.local/bin:\$PATH"
+    }
+}
+
 proc ::mndoc::main {argv} {
     global argv0
-    set valid_args [list --help --version --license --css --header --footer --mathjax \
+    set valid_args [list --help -h --version --license --css --header --footer --mathjax \
                     --javascript --refresh --base64 --bodyonly]
     set APP $argv0
     if {[regexp {tclmain} $APP]} {
         set APP "tclmain -m mndoc"
     }
 set USAGE [string map [list "\n    " "\n"] {
-    Usage: __APP__ ?--help|--version|--license? INFILE OUTFILE ?--css file.css? 
-                      ?--header header.html? ?--footer footer.html? ?--mathjax true? 
-                      ?--javascript JSLIB|JSFile? ?--refresh 10? ?--base64 true? ?--bodyonly false?
+    Usage: __APP__ ?options? INFILE OUTFILE
+           __APP__ INFILE OUTFILE ?options?
+
+           options: ?--css file.css? ?--header header.html? ?--footer footer.html?
+                    ?--mathjax true? ?--javascript JSLIB|JSFile? ?--refresh 10?
+                    ?--base64 true? ?--bodyonly false?
+
+           OUTFILE extension: .html or .htm for HTML, .md for Markdown,
+                              .pdf for a PDF document printed with
+                              chrome/chromium or weasyprint (refused if
+                              neither of them is installed)
+
+    Info:   __APP__ ?-h|--help? | ?--version? | ?--license? | ?--upgrade?
 }]
 set HELP [string map [list "\n    " "\n"] {
-    mndoc __VERSION__ - code documentation tool to process embedded Markdown markup
-                        given after "#'" comments 
+    mndoc __VERSION__ - Markdown to HTML converter and source code documentation tool
+
+        converts Markdown files to HTML (optionally with syntax highlighting,
+        LaTeX formulas, custom stylesheets, header and footer) and extracts
+        embedded documentation written after "#'" comments from source code.
 
     Positional arguments (required):
     
         INFILE  - input file with:
+                - pure Markdown code (file.md, .Rmd, .tmd, ...)
                 - embedded Markdown comments: #' Markdown markup
-                - pure Markdown code (file.md)
-                - HTML file 
+                - an existing HTML file (assets are inlined into it)
                 - if INFILE is given as - input is taken from STDIN
 
         OUTFILE - output file usually HTML or Markdown file
-                - file format is deduced on file extension .html or .md,
+                - file format is deduced on file extension .html, .md or .pdf,
                 - if OUTFILE is the `-` sign output is written to STDOUT
                 - if INFILE and OUTFILE are HTML files just embedding of
                   local images and stylesheets is performed
+                - a .pdf output first writes the matching .html file and
+                  then prints it with headless chrome/chromium or, if no
+                  browser is installed, with weasyprint; without either
+                  tool the conversion is refused, because only HTML
+                  documents can be produced
+                - exception: if INFILE is already the HTML file a .pdf
+                  OUTFILE would be built from (same base name, e.g.
+                  sample.html -> sample.pdf), only the PDF is written,
+                  because the input file must not be overwritten
 
     Optional arguments:
 
-        --help             - display this help page, and exit
+        --help, -h         - display this help page, and exit
         --version          - display version number, and exit
         --license          - display license information, and exit
+        --upgrade          - check GitHub for a newer mndoc release and, if
+                             there is one, run the official install script
+                             again to update the standalone binary in
+                             ~/.local/bin; needs curl or wget and network
+                             access, the source checkout is not touched
         --css CSSFILE      - use the specified CSSFILE instead of internal default 
                              mndoc.css
         --header HTMLFILE  - file with HTML code to be included after the body tag
@@ -708,23 +1161,14 @@ set HELP [string map [list "\n    " "\n"] {
         --mathjax    BOOL  - Embed the Mathjax Javascript library to add LaTeX formulas, default: false
         --refresh    INT   - Create a HTML page which does automatic refreshing after N seconds, default: 0
         --bodyonly   BOOL  - omit the HTML header and footer, keeping only the body content, default: false
+
     Examples:
-
-        # create manual page for mndoc.tcl itself 
-        __APP__ mndoc.tcl mndoc.html
-        
-        # inline all local images and stylesheets into an HTML file
-        __APP__ sample.html sample-out.html
-        
-        # create manual code for a CPP file using a custom style sheet
-        __APP__ sample.cpp sample.html --css manual.css
-
-        # extract code documentation as simple Markdown
-        # ready to be processed further with pandoc
-        __APP__ sample.cpp sample.md 
 
         # convert a Markdown file to HTML
         __APP__ sample.md sample.html
+        
+        # options may also be given before the file names
+        __APP__ --css my.css --bodyonly true sample.md sample.html
         
         # convert a Markdown file to HTML with own css, header and foot
         __APP__ sample.md sample.html --css my.css --footer foot.html --header head.html
@@ -742,6 +1186,34 @@ set HELP [string map [list "\n    " "\n"] {
         
         __APP__ sample.md sample.html --bodyonly true
         
+        # convert a Markdown file to PDF, which creates sample.html and
+        # sample.pdf, needs chrome/chromium or weasyprint to be installed
+        
+        __APP__ sample.md sample.pdf --mathjax true
+        
+        # print an existing HTML file to PDF, sample.html stays untouched
+        # and no second HTML file is written
+        
+        __APP__ sample.html sample.pdf
+        
+        # inline all local images and stylesheets into an HTML file
+        __APP__ sample.html sample-out.html
+        
+        # create the manual page for mndoc.tcl itself from its #' comments
+        __APP__ mndoc.tcl mndoc.html
+        
+        # extract the documentation of a CPP file as simple Markdown
+        # ready to be processed further with pandoc
+        __APP__ sample.cpp sample.md 
+
+        # create a manual page for a CPP file using a custom style sheet
+        __APP__ sample.cpp sample.html --css manual.css
+
+        # check GitHub for a newer mndoc release and install it if there is
+        # one (updates the standalone binary in ~/.local/bin)
+        
+        __APP__ --upgrade
+
     Author: @ Detlef Groth, University of Potsdam, Germany 2019-2026
 
     License: BSD-3-Clause
@@ -752,41 +1224,68 @@ set HELP [string map [list "\n    " "\n"] {
         puts "[package provide mndoc]"
     } elseif {[lsearch -exact $argv {--license}] > -1} {
         puts "BSD License - see manual page"
-    } elseif {[lsearch -exact $argv {--help}] > -1} {
+    } elseif {[lsearch -exact $argv {--help}] > -1 || [lsearch -exact $argv {-h}] > -1} {
         set usage [regsub -all {__VERSION__} [regsub -all {__APP__} $USAGE $APP] [package provide mndoc]]
         puts $usage
         set help [regsub -all {__VERSION__} [regsub -all {__APP__} $HELP $APP] [package provide mndoc]]
         puts $help
         exit 0
-    } elseif {[llength $argv] < 2} {
-        set usage [regsub -all {__VERSION__} [regsub -all {__APP__} $USAGE $APP] [package provide mndoc]]
-        puts $usage
-    } elseif {[llength $argv] == 2} {
-        if {[regexp {^-.} [lindex $argv 1]]} {
-            puts stderr "Error: wrong outfile name [lindex $argv 1]"
+    } elseif {[lsearch -exact $argv {--upgrade}] > -1} {
+        # '--upgrade' must not return to the script: the installer may just
+        # have replaced the very file this interpreter is executing (an
+        # installed mndoc-*.bin), so no further top-level commands of
+        # [info script] may be read - exit right after the upgrade instead
+        if {[catch {upgrade} err]} {
+            puts $err
             exit 1
         }
-        mndoc::mndoc [lindex $argv 0] [lindex $argv 1]
-    
-    } elseif {[llength $argv] > 2} {
-        foreach arg $argv {
-            if {[regexp {^-.+} $arg]} {
-                if {$arg ni $valid_args} {
-                    puts "Error: The argument '$arg' is not valid!"
-                    set usage [regsub -all {__VERSION__} [regsub -all {__APP__} $USAGE $APP] [package provide mndoc]]
-                    puts $usage
-                    exit 0
+        exit 0
+    } else {
+        # options may be given before, between or after the file names,
+        # every option consumes the argument right behind it as its value
+        set files [list]
+        set options [list]
+        set err ""
+        set max [llength $argv]
+        for {set i 0} {$i < $max} {incr i} {
+            set opt [lindex $argv $i]
+            if {[regexp {^-.+} $opt]} {
+                if {$opt ni $valid_args} {
+                    set err "Error: The argument '$opt' is not valid!"
+                    break
                 }
-                    
+                incr i
+                if {$i >= $max || [lindex $argv $i] in $valid_args} {
+                    set err "Error: the option '$opt' needs a value!"
+                    break
+                }
+                lappend options $opt [lindex $argv $i]
+            } else {
+                lappend files $opt
             }
         }
-        if {! [expr {[llength $argv] % 2 == 0}]} {
-            puts "Error: option List must have an even length of type '--option value'!"
-            set usage [regsub -all {__VERSION__} [regsub -all {__APP__} $USAGE $APP] [package provide mndoc]]
+        set usage [regsub -all {__VERSION__} [regsub -all {__APP__} $USAGE $APP] [package provide mndoc]]
+        if {$err ne ""} {
+            puts $err
             puts $usage
             exit 0
+        } elseif {[llength $files] < 2} {
+            puts $usage
+        } elseif {[llength $files] > 2} {
+            puts "Error: expected INFILE OUTFILE, got: [join $files { }]"
+            puts $usage
+            exit 0
+        } else {
+            set outfile [lindex $files 1]
+            if {[string tolower [file extension $outfile]] eq ".pdf"} {
+                if {[catch {pdf-output {*}$files {*}$options} err]} {
+                    puts $err
+                    exit 1
+                }
+            } else {
+                mndoc::mndoc {*}[lrange $files 0 1] {*}$options
+            }
         }
-        mndoc::mndoc {*}$argv
     }
 }
 #'
@@ -840,9 +1339,9 @@ set HELP [string map [list "\n    " "\n"] {
 #'
 #' ```
 #' #' ---
-#' #' title: mndoc::mndoc 0.15.5
+#' #' title: mndoc::mndoc 0.17.0
 #' #' author: Detlef Groth, University of Potsdam, Germany
-#' #' date: 2026-10-27
+#' #' date: 2026-10-31
 #' #' css: mndoc.css
 #' #' style: |
 #' #'   @import url('https://fonts.bunny.net/css?family=Andika&display=swap'); 
@@ -1001,6 +1500,21 @@ set HELP [string map [list "\n    " "\n"] {
 #' ![dot image](../examples/dot.png){width="150px"}
 #' ```
 #'
+#' A unitless value means pixels as well, so *width="150"* and *width="150px"*
+#' are the same suggestion, and a percentage like *width="50%"* is accepted too.
+#' mndoc restates the size as an inline style, because the width and height
+#' *attributes* on their own are only presentational hints: PDF renderers such
+#' as weasyprint ignore them completely and any stylesheet rule outranks them.
+#' The author's size is thus taken as the default, while a stylesheet may still
+#' apply a ceiling of its own, for instance *max-width: 100%*.
+#'
+#' An image that is the only content of its paragraph or list item, one that
+#' stands alone, is additionally marked with a *data-figure* attribute in the
+#' output. CSS cannot make that distinction itself: text nodes cannot be
+#' selected, so an image sitting mid-sentence looks exactly like a lone one to
+#' a selector. The bundled *book.css* uses the marker to set such a plate on
+#' its own line; the marker is inert in any other stylesheet.
+#'
 #' Here the output:
 #'
 #' ![](../examples/dot.png){width="150px"}
@@ -1129,6 +1643,42 @@ set HELP [string map [list "\n    " "\n"] {
 #' 
 #' ## <a name='changes'>CHANGES</a>
 #'
+#' - 2026-11-02 Release 0.17.0
+#'       - flexible command line option order: options may be placed before,
+#'         between or after the two file arguments, each directly followed
+#'         by its value
+#'       - new .pdf output: an OUTFILE with the .pdf extension first writes
+#'         the matching HTML file and prints it to PDF with headless
+#'         chrome/chromium or weasyprint (both engines render MathJax
+#'         equations and highlight.js code, WeasyPrint alone cannot);
+#'         without either tool mndoc refuses, as then only HTML documents
+#'         can be produced
+#'       - shared print fit in the stylesheets (@media print) and the paper
+#'         size now follows the locale: A4 by default, US Letter for
+#'         locales such as en_US, overridable with PAPER=...
+#'       - mndoc --upgrade checks GitHub for a newer release (the release
+#'         tag behind the releases/latest redirect) and, if one exists,
+#'         runs the install-mndoc.sh installer again to refresh the
+#'         standalone binary in ~/.local/bin
+#'       - -h alias for --help; help page repositioned with Markdown to HTML
+#'         conversion first
+#' - 2026-10-31 Release 0.16.0
+#'       - new book.css stylesheet: a flat, greyish layout in the style of a
+#'         traditional book, self-contained without remote font imports
+#'       - images that are the only content of their paragraph or list item
+#'         are marked with data-figure, which book.css uses to tell a figure
+#'         from an inline ornament; CSS alone cannot tell them apart, because
+#'         text nodes are invisible to selectors
+#'       - explicit image sizes are honored: *width="800"* is restated as an
+#'         inline style and the width/height attributes are normalized to the
+#'         unitless integers the HTML spec requires, so renderers like
+#'         weasyprint no longer drop the author's size; while no size is
+#'         given, stylesheet defaults such as the book text-height cap apply
+#'       - reading measure widened from 800px to 1000px; mndoc.css is now
+#'         centred with a 1000px maximum width
+#'       - fix --css embedding to resolve relative to the document rather
+#'         than the current working directory
+#'       - declare the output charset so UTF-8 text renders correctly
 #' - 2026-10-27 Release 0.15.5
 #'       - fix YAML date handling for non-ISO date formats; unknown dates are
 #'         kept as written instead of aborting the conversion

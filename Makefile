@@ -30,8 +30,9 @@ build:
 	mkdir $(pkg)/vignettes
 	tmdoc tmdoc4r-examples.Rmd - | mndoc - $(pkg)/inst/doc/$(pkg)-examples.html --css examples/tmdoc.css
 	tmdoc tmdoc4r-vignette.Rmd - --toc true > /dev/null
-	tmdoc tmdoc4r-vignette.Rmd - --toc true | mndoc - $(pkg)/inst/doc/$(pkg)-vignette.html --css examples/tmdoc.css 
-	weasyprint -q --stylesheet small.css $(pkg)/inst/doc/$(pkg)-vignette.html $(pkg)/vignettes/tmdoc4r-vignette.pdf
+	tmdoc tmdoc4r-vignette.Rmd - --toc true | mndoc - $(pkg)/inst/doc/$(pkg)-vignette.html --css examples/tmdoc.css --mathjax true
+	mndoc $(pkg)/inst/doc/$(pkg)-vignette.html $(pkg)/inst/doc/tmdoc4r-vignette.pdf
+	mv $(pkg)/inst/doc/tmdoc4r-vignette.pdf $(pkg)/vignettes/
 	cp tmdoc4r-vignette.Rnw  $(pkg)/vignettes/
 	cp examples/tmdoc.css $(pkg)/inst/files/
 	mv $(pkg)/inst/doc/*.html .
@@ -40,22 +41,24 @@ build:
 	R_LIBS=`pwd`/$(pkg).Rcheck Rscript $(pkg)-src.R --check $(pkg)_$(VERSION).tar.gz
 vignette:
 	tmdoc tmdoc4r-vignette.Rmd - --toc true > /dev/null
-	tmdoc tmdoc4r-vignette.Rmd - --toc true | mndoc - $(pkg)/inst/doc/$(pkg)-vignette.html --css examples/tmdoc.css 
+	tmdoc tmdoc4r-vignette.Rmd - --toc true | mndoc - $(pkg)/inst/doc/$(pkg)-vignette.html --css examples/tmdoc.css --mathjax true
+	mndoc $(pkg)/inst/doc/$(pkg)-vignette.html $(pkg)/inst/doc/tmdoc4r-vignette.pdf
+	mv $(pkg)/inst/doc/tmdoc4r-vignette.pdf $(pkg)/vignettes/
 install: build	
 	Rscript $(pkg)-src.R --install $(pkg)_$(VERSION).tar.gz
 
 ex:
-	cd examples && R_LIBS=`pwd`/$(pkg).Rcheck Rscript -e "library($(pkg));tmdoc('ex-01.tmd','ex-01.html',css='tmdoc.css');"
-	cd examples && R_LIBS=`pwd`/$(pkg).Rcheck Rscript -e "library($(pkg));tmdoc('ex-02.tmd','ex-02.html',css='tmdoc.css');"
-	cd examples && R_LIBS=`pwd`/$(pkg).Rcheck Rscript -e "library($(pkg));tmdoc('ex-03.Rmd','ex-03.html',css='tmdoc.css');"
-	cd examples && R_LIBS=`pwd`/$(pkg).Rcheck Rscript -e "library($(pkg));tmdoc('ex-04.pmd','ex-04.html',css='tmdoc.css');"
-	cd examples && R_LIBS=`pwd`/$(pkg).Rcheck Rscript -e "library($(pkg));tmdoc('ex-05.omd','ex-05.html',css='tmdoc.css');"
-	cd examples && R_LIBS=`pwd`/$(pkg).Rcheck Rscript -e "library($(pkg));tmdoc('ex-06.tmd','ex-06.html',css='tmdoc.css');"
-	cd examples && R_LIBS=`pwd`/$(pkg).Rcheck Rscript -e "library($(pkg));tmdoc('ex-07.tmd','ex-07.html',css='tmdoc.css');"
-	cd examples && R_LIBS=`pwd`/$(pkg).Rcheck Rscript -e "library($(pkg));tmdoc('ex-08.tmd','ex-08.html',css='tmdoc.css');"
-	cd examples && R_LIBS=`pwd`/$(pkg).Rcheck Rscript -e "library($(pkg));tmdoc('ex-09.tmd','ex-09.html',css='tmdoc.css');"	
-	cd examples && R_LIBS=`pwd`/$(pkg).Rcheck Rscript -e "library($(pkg));tmdoc('ex-10.tmd','ex-10.html',css='tmdoc.css');"	
-	cd examples && R_LIBS=`pwd`/$(pkg).Rcheck Rscript -e "library($(pkg));tmdoc('ex-11.tmd','ex-11.html',css='tmdoc.css',toc=TRUE);"		
+	cd examples && R_LIBS=$(CURDIR)/$(pkg).Rcheck Rscript -e "library($(pkg));tmdoc('ex-01.tmd','ex-01.html',css='tmdoc.css');"
+	cd examples && R_LIBS=$(CURDIR)/$(pkg).Rcheck Rscript -e "library($(pkg));tmdoc('ex-02.tmd','ex-02.html',css='tmdoc.css');"
+	cd examples && R_LIBS=$(CURDIR)/$(pkg).Rcheck Rscript -e "library($(pkg));tmdoc('ex-03.Rmd','ex-03.html',css='tmdoc.css');"
+	cd examples && R_LIBS=$(CURDIR)/$(pkg).Rcheck Rscript -e "library($(pkg));tmdoc('ex-04.pmd','ex-04.html',css='tmdoc.css');"
+	cd examples && R_LIBS=$(CURDIR)/$(pkg).Rcheck Rscript -e "library($(pkg));tmdoc('ex-05.omd','ex-05.html',css='tmdoc.css');"
+	cd examples && R_LIBS=$(CURDIR)/$(pkg).Rcheck Rscript -e "library($(pkg));tmdoc('ex-06.tmd','ex-06.html',css='tmdoc.css');"
+	cd examples && R_LIBS=$(CURDIR)/$(pkg).Rcheck Rscript -e "library($(pkg));tmdoc('ex-07.tmd','ex-07.html',css='tmdoc.css');"
+	cd examples && R_LIBS=$(CURDIR)/$(pkg).Rcheck Rscript -e "library($(pkg));tmdoc('ex-08.tmd','ex-08.html',css='tmdoc.css');"
+	cd examples && R_LIBS=$(CURDIR)/$(pkg).Rcheck Rscript -e "library($(pkg));tmdoc('ex-09.tmd','ex-09.html',css='tmdoc.css');"	
+	cd examples && R_LIBS=$(CURDIR)/$(pkg).Rcheck Rscript -e "library($(pkg));tmdoc('ex-10.tmd','ex-10.html',css='tmdoc.css');"	
+	cd examples && R_LIBS=$(CURDIR)/$(pkg).Rcheck Rscript -e "library($(pkg));tmdoc('ex-11.tmd','ex-11.html',css='tmdoc.css',toc=TRUE);"		
 
 clean:
 	-rm -rf $(pkg)/

@@ -1,7 +1,7 @@
 ---
 title: tmdoc4r 0.5.3 vignette
 author: Detlef Groth, University of Potsdam, Germany
-date: 2026-07-08 17:15
+date: 2026-11-03 18:38
 bibliography: assets/literature.bib
 ---
 
@@ -33,6 +33,10 @@ approach. In addition on MacOS it might be required to install the [XQuartz](htt
 - including other text files using the 'tcl include  FILENAME' syntax (replace
   single quotes here with backticks
 - embedding LaTeX equations are images usig the CodeCogs webservice
+- typesetting LaTeX equations directly within the browser using MathJax
+  with `$...$` inline and `$$...$$` block delimiters
+- writing the document directly to a PDF file in a single call when a
+  headless Chromium/Chrome or WeasyPrint is installed on the machine
 - document support for Markdown, LaTeX, Typst and AsciiDoc
 
 ## Literate Programming with R
@@ -47,7 +51,9 @@ Markdown file write text and R code chunks within that document and the the
 document ins translated first to a Markdown and then to an HTML document.
 Using tools like [Weasyprint](https://doc.courtbouillon.org/weasyprint/) or
 [pandoc](https://pandoc.org) that document can be then converted for instance
-to a PDF document. Pandoc as well supports many more output formats.
+to a PDF document. Pandoc as well supports many more output formats. With the
+bundled mndoc package the PDF can as well be created directly from the
+Markdown file in a single step, see the section *Direct PDF Output* below.
 
 Here is an example for a processing pipeline:
 
@@ -58,6 +64,7 @@ rankdir="LR";
 node[shape=box,style=filled]
 "R-Markdown" -> Markdown[label="tmdoc4r"]
 Markdown -> HTML[label="tmdoc4r"]
+Markdown -> Pdf[label="mndoc"]
 HTML -> Pdf[label="Weasyprint"]
 }
 ```
@@ -734,6 +741,42 @@ code as `echo` was set to false:
 > fetched if the code updates. To include the files on your own, you have to find
 > out the filename by inspecting the generated Png files.
 
+### MathJax Equations
+
+Instead of fetching PNG images from the CodeCogs web service you can as
+well let the browser typeset the LaTeX code itself with the
+[MathJax](https://www.mathjax.org/) library. For this you just pass
+`mathjax=TRUE` to the `tmdoc()` function:
+
+```
+tmdoc('equations.Rmd','equations.html',mathjax=TRUE)
+```
+
+Inline equations are written between single dollar signs, block equations
+between double dollar signs. Here the Markdown source:
+
+```
+The famous Einstein equation $E = mc^2$ is probably the most known
+equation world wide.
+
+$$ \int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi} $$
+```
+
+And here the output of exactly these lines:
+
+The famous Einstein equation $E = mc^2$ is probably the most known
+equation world wide.
+
+$$ \int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi} $$
+
+> [!NOTE]
+> MathJax needs JavaScript to typeset the equations. They are therefore
+> visible in a browser and in PDF files which were created with a
+> Chromium/Chrome based browser, but not when WeasyPrint was used as the
+> PDF engine, not in the GitHub file preview and not in plain text
+> exports. The CodeCogs `.mtex` chunks above work in every case,
+> because they are plain PNG images.
+
 ## Chemical Equations
 
 Version 0.19.0 as well supports simple chemical equations. To use them
@@ -1240,6 +1283,44 @@ G  320003
 Am x02210
 ```
 
+
+## Direct PDF Output
+
+The outfile extension passed to `tmdoc()` decides about the output
+format. Since version 0.17.0 of the underlying Tcl package mndoc, which
+is bundled with this package, a document can be converted **directly to
+a PDF file** in a single call - no external tool like Weasyprint or
+pandoc is needed for that anymore. The conversion is done with a headless
+Chromium/Chrome based browser if one can be found on the PATH, otherwise
+with WeasyPrint, so at least one of them must be installed.
+
+```
+## HTML output as before
+tmdoc('report.Rmd','report.html',css='tmdoc.css')
+
+## the very same document directly as PDF
+tmdoc('report.Rmd','report.pdf',css='tmdoc.css')
+```
+
+In both cases the intermediate Markdown file `report.md` is created
+first. For the PDF output the generated HTML document is prepared for
+printing - the paper size follows the environment variable `PAPER` or
+the `LC_PAPER` locale setting and defaults to A4 - and is then printed
+by the browser in one step.
+
+Stylesheets, syntax highlighting and MathJax equations appear in the PDF
+exactly as they appear in the browser, because a browser executes the
+JavaScript. If WeasyPrint is used as the fallback engine there is no
+JavaScript and MathJax equations stay as raw `$...$` text in the PDF,
+while the CodeCogs equation images shown above are plain PNG files which
+work with both engines.
+
+The PDF version of this very vignette was created this way with the
+mndoc command line application:
+
+```
+mndoc tmdoc4r-vignette.html tmdoc4r-vignette.pdf
+```
 
 ## Summary
 
