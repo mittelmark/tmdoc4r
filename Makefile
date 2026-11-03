@@ -44,6 +44,10 @@ vignette:
 	tmdoc tmdoc4r-vignette.Rmd - --toc true | mndoc - $(pkg)/inst/doc/$(pkg)-vignette.html --css examples/tmdoc.css --mathjax true
 	mndoc $(pkg)/inst/doc/$(pkg)-vignette.html $(pkg)/inst/doc/tmdoc4r-vignette.pdf
 	mv $(pkg)/inst/doc/tmdoc4r-vignette.pdf $(pkg)/vignettes/
+book:
+	tmdoc tmdoc4r-vignette.Rmd - --toc true > /dev/null
+	tmdoc tmdoc4r-vignette.Rmd - --toc true | mndoc - tmdoc4r-tutorial-book.html --css book.css --mathjax true
+	mndoc tmdoc4r-tutorial-book.html tmdoc4r-tutorial-book.pdf
 install: build	
 	Rscript $(pkg)-src.R --install $(pkg)_$(VERSION).tar.gz
 

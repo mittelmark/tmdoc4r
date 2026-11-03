@@ -77,8 +77,11 @@ does `package require tmdoc` + `package require mndoc`.
    `small.css` if they changed) → `inst/tmdoc/lib/tmdoc/`.
 2. mndoc — copy `mndoc.tcl` + `pkgIndex.tcl` from
    `~/workspace/tmdoc/modules/mndoc/` (pinned `MNDOC_REF`) and
-   `mndoc.css` + `tmdoc.css` from `~/workspace/mndoc/mndoc/` →
-   `inst/tmdoc/lib/mndoc/`.
+   `mndoc.css` + `book.css` + `tmdoc.css` from
+   `~/workspace/mndoc/mndoc/` →
+   `inst/tmdoc/lib/mndoc/` (`book.css` is the flat greyish traditional-book
+   layout from mndoc ≥ 0.16.0; a bare `--css book.css` / `css="book.css"`
+   resolves it from this bundle directory).
 3. Other dependency modules only if `diff -rq` against
    `~/workspace/tmdoc/modules/<name>/` shows a real change.
 4. Regenerate (`--process` + `--vignettex`) and verify:
@@ -147,6 +150,11 @@ Rscript tmdoc4r-src.R --check-man tmdoc4r
 # vignette only (two-pass: 1st run writes the .toc, 2nd embeds it)
 make vignette
 
+# book-layout showcase of the vignette -> tmdoc4r-tutorial-book.{html,pdf}
+# (repo root, untracked, illustrative only - never packaged; attach to the
+# GitHub release like mndoc's manual-book-*.pdf)
+make book
+
 # full build: regenerate + vignette artifacts + R CMD build + R CMD check
 make build pkg=tmdoc4r
 
@@ -210,7 +218,10 @@ mndoc tmdoc4r/inst/doc/tmdoc4r-vignette.html tmdoc4r/inst/doc/tmdoc4r-vignette.p
   release.
 - Root-level `tmdoc4r-vignette.html` / `.pdf` are local preview artifacts
   (untracked); the packaged ones are `tmdoc4r/inst/doc/*.html` and
-  `tmdoc4r/vignettes/*.pdf`.
+  `tmdoc4r/vignettes/*.pdf`. `make book` builds the additional book-layout
+  showcase `tmdoc4r-tutorial-book.html` / `.pdf` (repo root, untracked,
+  illustrative only — never packaged; suggested as a GitHub release asset
+  like mndoc's `manual-book-*.pdf`).
 - Chunks run through `python3` / `R` / `tclsh` as present on the build
   machine; `make ex` validates the fixtures afterwards.
 
@@ -245,8 +256,8 @@ mndoc tmdoc4r/inst/doc/tmdoc4r-vignette.html tmdoc4r/inst/doc/tmdoc4r-vignette.p
 - `R/tmdoc4r.R` `.onLoad` uses `tcltk::.Tcl` — packages without tcltk
   (rare Linux builds, macOS without XQuartz) fail at load.
 - Keep generated/build artifacts out of commits: `tmdoc4r/`,
-  `tmdoc4r.Rcheck/`, `tmdoc4r_*.tar.gz`, `tmdoc4r-examples.Rmd`, root
-  vignette previews, `*.toc`, the weave outputs under `examples/`
+  `tmdoc4r.Rcheck/`, `tmdoc4r_*.tar.gz`, `tmdoc4r-examples.Rmd`, the root
+  previews (`tmdoc4r-vignette.*`, `tmdoc4r-tutorial-book.*`), `*.toc`, the weave outputs under `examples/`
   (`ex-*.md`, `ex-11.toc`, `chunk-shell-*.{png,svg,txt,abc}`,
   `fff001.svg`, `examples/images/`), and build residue `temp/`, `images/`,
   `kroki/`, `r-images/`, `pyexample.svg`, `hello.Rmd`, `infile.Rmd`.
