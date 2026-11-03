@@ -3,8 +3,8 @@
 #' Package: tmdoc4r
 #' Type: Package
 #' Title: tmdoc4r package for literate programming with R, Python, Octave, Julia and Tcl
-#' Version: 0.5.3
-#' Date: 2026-10-28
+#' Version: 0.6.0
+#' Date: 2026-11-03
 #' Author: Detlef Groth
 #' Authors@R: c(person("Detlef","Groth", role=c("aut", "cre"),
 #'                   email = "dgroth@uni-potsdam.de",
@@ -27,6 +27,11 @@
 #' COPYRIGHT HOLDER: Detlef Groth
 
 #' FILE: tmdoc4r/NEWS
+#' 2026-11-03: version 0.6.0 - update bundled tmdoc to 0.21.1 and mndoc to 0.17.0 bringing
+#'                             direct PDF output, MathJax equations and the book.css book
+#'                             layout, new MathJax/Direct PDF vignette sections and a
+#'                             tmdoc4r-tutorial-book.pdf showcase, AGENTS.md agent guide,
+#'                             restored examples/lipsum.txt input, regenerated example fixtures
 #' 2026-10-28: version 0.5.3 - update bundled mndoc to 0.15.5, preserving non-ISO YAML dates,
 #'                             honoring inline=FALSE for HTML-to-HTML conversion, and resolving
 #'                             relative stylesheets correctly
@@ -904,7 +909,7 @@ Main <- function (argv) {
     } else if ("--install" %in% argv & length(argv) == 3) {
         library(tools)
         tools::Rcmd(c("INSTALL", argv[3]))
-    } else if ("--check-man" %in% argv) {s
+    } else if ("--check-man" %in% argv) {
         CheckRd(argv[3])
     } else if ("--vignettex" %in% argv) {
         ExtractEx(argv[3])

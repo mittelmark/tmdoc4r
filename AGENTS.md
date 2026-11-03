@@ -26,7 +26,7 @@ Current versions (keep in sync when updating):
 
 | Component | Version | Where declared |
 | --- | --- | --- |
-| tmdoc4r package | **0.5.3** | `tmdoc4r-src.R` (`#' Version:`) → generated `DESCRIPTION` |
+| tmdoc4r package | **0.6.0** | `tmdoc4r-src.R` (`#' Version:`) → generated `DESCRIPTION` |
 | bundled tmdoc | **0.21.1** | `inst/tmdoc/lib/tmdoc/pkgIndex.tcl` |
 | bundled mndoc | **0.17.0** | `inst/tmdoc/lib/mndoc/pkgIndex.tcl` |
 | bundled Markdown (tcllib) | **1.2.5** | `inst/tmdoc/lib/markdown/markdown.tcl` (see pitfall below) |
