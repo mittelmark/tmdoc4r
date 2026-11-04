@@ -187,7 +187,8 @@ refresh with the official installer;
 `tmdoc --upgrade` works from 0.21.1 on), WeasyPrint and/or Chromium for
 the vignette PDF, TeX (`texlive-latex-extra`) for the `.Rnw` Sweave
 vignette, Graphviz/ImageMagick for diagram examples, and
-`python3 -c 'import matplotlib'` for the vignette's Python plotting
+`python3 -c 'import matplotlib'` (Debian/Ubuntu: **`python3-matplotlib`**,
+which pulls in `python3-numpy`) for the vignette's Python plotting
 example (`pyexample.svg`). For `make ex` additionally **`abcm2ps`**
 (ABC-music → SVG chunk in `examples/ex-09.tmd`; user-locally installable
 without root: `dnf download abcm2ps && rpm2cpio abcm2ps-*.rpm | cpio -idm
@@ -195,8 +196,13 @@ without root: `dnf download abcm2ps && rpm2cpio abcm2ps-*.rpm | cpio -idm
 and the untracked input **`examples/lipsum.txt`** (copy it from
 `~/workspace/tmdoc/examples/lipsum.txt`; `ex-11` includes it 9× — without
 it the fixture fills up with `Error: file 'lipsum.txt' does not exists!`).
-CI (`.github/workflows/r.yml`) installs these
-and runs `make build`, then uploads `tmdoc4r_<version>.tar.gz` as artifact.
+CI (`.github/workflows/r.yml`) installs these (including
+`python3-matplotlib` and `python3-numpy`) and runs `make build`, then
+uploads `tmdoc4r_<version>.tar.gz` as artifact. The workflow fails early
+on `python3 -c 'import matplotlib, numpy'` and after the build on
+`test -s pyexample.svg`, so a runner without matplotlib can no longer
+ship a vignette PDF with a broken figure reference (it did until
+2026-11-04).
 
 There is no lint command and no unit-test suite; the `examples/`
 `.tmd`/`.Rmd` inputs plus their checked-in HTML files are the integration

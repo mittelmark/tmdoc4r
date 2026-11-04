@@ -26,14 +26,19 @@ jobs:
       - name: Process and Create Package Structure
         run: |
             sudo apt-get update
-            sudo apt-get install -y r-cran-knitr graphviz imagemagick texlive-latex-extra weasyprint
+            sudo apt-get install -y r-cran-knitr graphviz imagemagick texlive-latex-extra weasyprint python3-matplotlib python3-numpy
             mkdir -p ~/.local/bin
             /bin/bash -c "$(curl -fsSL https://github.com/mittelmark/tmdoc/releases/latest/download/install-tmdoc.sh)"
             export PATH="~/.local/bin:$PATH"
             echo "PATH=$PATH" >> $GITHUB_ENV
+            # the vignette {py} chunks plot with matplotlib/numpy - fail early
+            python3 -c 'import matplotlib, numpy'
       - name: build package
         run: |
             make build pkg=tmdoc4r
+            # the matplotlib figure must exist, otherwise the vignette ships a
+            # broken image reference (as in the releases before 2026-11-04)
+            test -s pyexample.svg
             export VRS=`grep Version: tmdoc4r/DESCRIPTION | grep -oE '[.0-9]+'`
             echo "VRS=$VRS" >> $GITHUB_ENV
   
