@@ -23,6 +23,7 @@ help:
 	@printf "   make install pkg=sbi\n      for installing the package file sbi_$(VERSION).tar.gz\n"
 build:
 	-rm -rf $(pkg)/ temp
+	-rm -f $(pkg)_$(VERSION).tar.gz
 	Rscript $(pkg)-src.R --process $(pkg)-src.R
 	Rscript $(pkg)-src.R --vignettex $(pkg)-src.R
 	mv $(pkg)/vignettes temp
@@ -38,6 +39,15 @@ build:
 	mv $(pkg)/inst/doc/*.html .
 	#cp tmdoc4r-examples.Rmd tmdoc4r-vignette.Rmd $(pkg)/vignettes/
 	TMPDIR=`pwd`/Rbuild R_LIBS=`pwd`/$(pkg).Rcheck Rscript $(pkg)-src.R --build $(pkg)
+	# prepare the documented TeX-less fallback (R CMD build --no-build-vignettes):
+	# without a populated inst/doc that build ships no vignette index, so the
+	# installed package has no Meta/vignette.rds and vignette() fails. A full
+	# build (CI) has already written its own products into inst/doc and its
+	# tarball is already on disk, so these two lines only matter locally.
+	cp $(pkg)/vignettes/$(pkg)-vignette.Rnw $(pkg)/vignettes/$(pkg)-vignette.pdf $(pkg)/inst/doc/
+	# the source-tree PDF is consumed only by the Sweave \includepdf during
+	# --build; drop it afterwards so the fallback tarball does not ship it twice
+	rm -f $(pkg)/vignettes/*.pdf
 	R_LIBS=`pwd`/$(pkg).Rcheck Rscript $(pkg)-src.R --check $(pkg)_$(VERSION).tar.gz
 vignette:
 	tmdoc tmdoc4r-vignette.Rmd - --toc true > /dev/null

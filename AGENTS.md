@@ -167,8 +167,9 @@ R_LIBS="$(pwd)/tmdoc4r.Rcheck" Rscript -e \
   "library(tmdoc4r); tmdoc('examples/ex-01.tmd', '/tmp/ex-01.html', css='examples/tmdoc.css')"
 
 # local fallback when TeX gaps block the Sweave vignette/manual (see
-# Environment facts): the vignette PDF is already built by make, so skip
-# re-building it and check without the manual PDF
+# Environment facts): run AFTER `make build` - that target seeds inst/doc
+# with the vignette Rnw+PDF once its full-build attempt is done, so this
+# build ships a vignette index and vignette() works after installation
 R CMD build --no-build-vignettes tmdoc4r
 R CMD check --ignore-vignettes --no-manual tmdoc4r_<version>.tar.gz
 ```
@@ -216,14 +217,32 @@ mndoc tmdoc4r/inst/doc/tmdoc4r-vignette.html tmdoc4r/inst/doc/tmdoc4r-vignette.p
 - Keep the vignette title's package version (`tmdoc4r <version> vignette`)
   and its `date:` header in `tmdoc4r-src.R`-adjacent content current per
   release.
-- Root-level `tmdoc4r-vignette.html` / `.pdf` are local preview artifacts
-  (untracked); the packaged ones are `tmdoc4r/inst/doc/*.html` and
-  `tmdoc4r/vignettes/*.pdf`. `make book` builds the additional book-layout
+- Root-level `tmdoc4r-vignette.html` / `.pdf` (and `tmdoc4r-examples.html`)
+  are local preview artifacts (untracked) — `make build` moves the
+  generated htmls out of `inst/doc` to the repo root; the packaged
+  vignette is `inst/doc/tmdoc4r-vignette.{Rnw,pdf}` (what `vignette()`
+  serves) plus the `vignettes/tmdoc4r-vignette.Rnw` source. `make book`
+  builds the additional book-layout
   showcase `tmdoc4r-tutorial-book.html` / `.pdf` (repo root, untracked,
   illustrative only — never packaged; suggested as a GitHub release asset
   like mndoc's `manual-book-*.pdf`).
 - Chunks run through `python3` / `R` / `tclsh` as present on the build
   machine; `make ex` validates the fixtures afterwards.
+- **No `VignetteBuilder` field — and none is possible**: tmdoc4r cannot
+  build its own vignettes at `R CMD build` time (chicken-and-egg). The
+  package instead ships a *pre-built* vignette: the packaged
+  `vignettes/tmdoc4r-vignette.Rnw` is a passive Sweave stub
+  (`\VignetteIndexEntry` + `\includepdf` of the mndoc PDF) and the
+  products live in `inst/doc/tmdoc4r-vignette.{Rnw,pdf}`.
+  `R CMD INSTALL` derives `Meta/vignette.rds` from `inst/doc` alone (a
+  full `R CMD build` additionally writes `build/vignette.rds`, which is
+  not required). **A tarball with an empty `inst/doc` therefore installs
+  without a vignette index** and `vignette("tmdoc4r-vignette")` reports
+  "not found" — this is what the first v0.6.0 release asset shipped (the
+  v0.5.3 asset has the same defect); the `build` target now seeds
+  `inst/doc` after its build attempt so the TeX-less
+  `--no-build-vignettes` fallback cannot regress. Verify any release
+  candidate with a fresh install + `vignette()` before attaching it.
 
 ## Version bumps
 
@@ -235,6 +254,12 @@ mndoc tmdoc4r/inst/doc/tmdoc4r-vignette.html tmdoc4r/inst/doc/tmdoc4r-vignette.p
    that its vignette PDF matches the freshly generated one, then release on
    GitHub (the README vignette badge points at
    `releases/latest/download/tmdoc4r-vignette.pdf`, so attach the PDF).
+   Prefer the **CI-built** `tmdoc4r_<version>.tar.gz` artifact (full build,
+   includes `build/vignette.rds`); the local `--no-build-vignettes`
+   fallback tarball is equally installable — but check *every* candidate
+   with a fresh `R CMD INSTALL` + `vignette("tmdoc4r-vignette")` before
+   uploading it (the v0.6.0 release initially got a tarball without
+   `inst/doc`).
 
 ## Known issues and pitfalls
 
@@ -245,9 +270,15 @@ mndoc tmdoc4r/inst/doc/tmdoc4r-vignette.html tmdoc4r/inst/doc/tmdoc4r-vignette.p
 - **Markdown 1.2.5 must not be synced down** to tmdoc's 1.2.4 pin (table
   fix, see Bundled runtime).
 - The package-build wrapper may return success **after** `R CMD build`
-  failed, letting `make` proceed to check a pre-existing tarball — verify
-  the archive version and vignette PDF freshness; do not treat a later
-  `R CMD check` of an old tarball as validating a new build.
+  failed (the failure is swallowed). `make build` now deletes the current
+  tarball up front, so the following `--check` skips instead of silently
+  re-checking a stale archive — still verify that a *fresh* tarball was
+  produced before using or uploading it.
+- A tarball built with `--no-build-vignettes` from a tree whose `inst/doc`
+  is empty installs **without** a vignette index (`vignette()` → "not
+  found"). The `build` target seeds `inst/doc` for you; when building by
+  hand, copy `vignettes/tmdoc4r-vignette.{Rnw,pdf}` into `inst/doc/`
+  first. See The vignette.
 - The vignette TOC needs its two-pass sequence; a single run embeds a
   stale/empty TOC.
 - `exec/tmdoc4r` (bash wrapper) still rejects non-HTML outputs

@@ -50,15 +50,19 @@ command or conventional unit-test suite.
 
 The build requires the external `tmdoc` and `mndoc` executables, WeasyPrint,
 and TeX dependencies used by the `.Rnw` vignette. When preparing artifacts
-without rebuilding that Sweave vignette, use `R CMD build
---no-build-vignettes tmdoc4r` after copying the freshly generated
-`tmdoc4r-vignette.pdf` into `tmdoc4r/vignettes/`; check with
-`R CMD check --ignore-vignettes --no-manual <package_tarball>`.
+without rebuilding that Sweave vignette, run `R CMD build
+--no-build-vignettes tmdoc4r` **after** `make build`, which seeds
+`tmdoc4r/inst/doc/` with the vignette Rnw and PDF once its full-build
+attempt is done; without that directory the tarball carries no vignette
+index and `vignette()` fails after install. When building entirely by hand,
+copy `tmdoc4r-vignette.{Rnw,pdf}` into `tmdoc4r/inst/doc/` yourself; check
+with `R CMD check --ignore-vignettes --no-manual <package_tarball>`.
 Confirm `python3 -c 'import matplotlib'` succeeds when validating the plot
 example. The package-build wrapper may return success after `R CMD build`
-fails, allowing `make` to check a pre-existing tarball; do not treat that
-later check as validating the new build. Verify the archive version and that
-its vignette PDF matches the freshly generated PDF before uploading it.
+fails; `make build` now deletes the current tarball up front, so the
+following check skips instead of re-checking a pre-existing archive, but
+still verify that a fresh tarball was produced — its version and vignette
+PDF must match the freshly generated ones before uploading it.
 
 After a build, run all example integration checks with:
 
