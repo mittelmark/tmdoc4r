@@ -165,6 +165,18 @@ lines of output chunks
 
 Detlef Groth, University of Potsdam, Germany
 
+## Contributors
+
+- Detlef Groth (@mittelmark) - author and maintainer
+- MiMo 2.6 Flash - AI coding assistant (via OpenCode) which contributed
+  since version 0.5.3, for instance the version 0.6.0 release: bundled
+  tmdoc 0.21.1 / mndoc 0.17.0 refresh with direct PDF output and MathJax
+  equations, the book.css stylesheet and make book showcase, the AGENTS.md
+  agent guide, new vignette sections, regenerated example fixtures and the
+  inst/doc vignette-index fix for the release tarballs. AI-assisted commits
+  from 2026-11-04 on carry a `Co-authored-by: MiMo-V2.6-Flash` trailer in
+  the git history.
+
 ## License
 
 ```
@@ -198,12 +210,3 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ```
 
-## Contributors
-
-- Detlef Groth (@mittelmark) - author and maintainer
-- MiMo 2.6 Flash - AI coding assistant (via OpenCode) which contributed
-  since version 0.5.3, for instance the version 0.6.0 release: bundled
-  tmdoc 0.21.1 / mndoc 0.17.0 refresh with direct PDF output and MathJax
-  equations, the book.css stylesheet and make book showcase, the AGENTS.md
-  agent guide, new vignette sections, regenerated example fixtures and the
-  inst/doc vignette-index fix for the release tarballs

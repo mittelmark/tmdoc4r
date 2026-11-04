@@ -60,6 +60,10 @@ Rscript tmdoc4r-src.R --vignettex tmdoc4r-src.R # write examples Rmd + COPY inst
 - `DESCRIPTION` `Collate:` controls generated R-file load order;
   `exportPattern("^[[:lower:]]+")` exports the lowercase public functions
   (`tmdoc`, `ttangle`, `df2md`, `lipsum`).
+- AI-assisted commits must end with the trailer
+  `Co-authored-by: MiMo-V2.6-Flash <noreply@opencode.ai>` (convention
+  adopted 2026-11-04, mirroring the mndoc repository; earlier AI-assisted
+  commits predate it).
 
 ## Bundled Tcl runtime — `inst/tmdoc/lib/`
 
