@@ -4,6 +4,9 @@ Guidance for coding agents working in this repository.
 
 A companion document with additional build/CI caveats lives at
 `.github/copilot-instructions.md` (user-maintained) — consult both.
+Work-session records live in `session-YYYY-MM-DD.md` files at the repo
+root; `session-2026-11-04.md` covers the 0.6.0 release and the
+vignette-index fix.
 
 ## What this project is
 
@@ -238,9 +241,10 @@ mndoc tmdoc4r/inst/doc/tmdoc4r-vignette.html tmdoc4r/inst/doc/tmdoc4r-vignette.p
   full `R CMD build` additionally writes `build/vignette.rds`, which is
   not required). **A tarball with an empty `inst/doc` therefore installs
   without a vignette index** and `vignette("tmdoc4r-vignette")` reports
-  "not found" — this is what the first v0.6.0 release asset shipped (the
-  v0.5.3 asset has the same defect); the `build` target now seeds
-  `inst/doc` after its build attempt so the TeX-less
+  "not found" — which is what the first v0.6.0 and the v0.5.3 release
+  assets shipped; both were replaced with their CI full builds on
+  2026-11-04 (see *Replacing a release asset* below), and the `build`
+  target now seeds `inst/doc` after its build attempt so the TeX-less
   `--no-build-vignettes` fallback cannot regress. Verify any release
   candidate with a fresh install + `vignette()` before attaching it.
 
@@ -260,6 +264,26 @@ mndoc tmdoc4r/inst/doc/tmdoc4r-vignette.html tmdoc4r/inst/doc/tmdoc4r-vignette.p
    with a fresh `R CMD INSTALL` + `vignette("tmdoc4r-vignette")` before
    uploading it (the v0.6.0 release initially got a tarball without
    `inst/doc`).
+
+### Replacing a release asset with the CI build
+
+If a defective tarball was already attached (both the v0.6.0 and v0.5.3
+assets were, on 2026-11-04), do not rebuild by hand — pull the artifact
+of the green CI run for the release commit:
+
+```sh
+gh run list --commit <release-commit-sha>          # pick the green run
+gh run download <run-id> -n tmdoc4r_<version>.tar.gz -D /tmp/art
+R CMD INSTALL -l /tmp/lib /tmp/art/tmdoc4r_<version>.tar.gz
+R_LIBS=/tmp/lib Rscript -e 'library(tmdoc4r); vignette("tmdoc4r-vignette")'
+gh release upload <tag> /tmp/art/tmdoc4r_<version>.tar.gz --clobber
+```
+
+Then re-download the asset from the release and repeat the install check
+(closed loop), and append an *Asset note* line to the release body.
+Caveat: the tag may sit one workflow-only commit away from the run's
+commit — check `git diff <tag> <run-sha>` first (for v0.5.3 that diff was
+`.github/workflows/r.yml` only, so the artifact was package-identical).
 
 ## Known issues and pitfalls
 
