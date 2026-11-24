@@ -2,7 +2,7 @@
 ##############################################################################
 #  Author        : Dr. Detlef Groth
 #  Created       : Fri Nov 15 10:20:22 2019
-#  Last Modified : <260128.0743>
+#  Last Modified : <261123.1620>
 #
 #  Description	 : Command line utility and package to extract Markdown documentation 
 #                  from programming code if embedded as after comment sequence #' 
@@ -50,6 +50,8 @@
 #                  2026-11-02 Release 0.17.0 flexible command line option order, .pdf output via headless
 #                                            chrome/chromium or weasyprint, shared print fit and locale paper
 #                                            size, mndoc --upgrade checks GitHub for and installs a newer release
+#                  2026-11-23 Release 0.17.1 fix MathJax equation parsing, fenced code blocks and
+#                                            single-backslash plus legacy double-backslash equation delimiters
 ##############################################################################
 #
 # Copyright (c) 2019-2026  Detlef Groth, E-mail: dgroth((at)uni-potsdam(dot)de
@@ -57,9 +59,9 @@
 # 
 ##############################################################################
 #' ---
-#' title: mndoc::mndoc 0.17.0
+#' title: mndoc::mndoc 0.17.1
 #' author: Detlef Groth, University of Potsdam, Germany
-#' date: 2026-10-31
+#' date: 2026-11-23
 #' css: mndoc.css
 #' style: |
 #'    @import url('https://fonts.bunny.net/css?family=Andika&display=swap'); 
@@ -246,8 +248,8 @@ package require Tcl 8.6-
 package require yaml
 package require Markdown
 
-package provide mndoc 0.17.0
-package provide mndoc::mndoc 0.17.0
+package provide mndoc 0.17.1
+package provide mndoc::mndoc 0.17.1
 namespace eval ::mndoc {
     variable deindent [list \n\t \n "\n    " \n]
     variable scriptfile [info script]
@@ -570,6 +572,78 @@ proc ::mndoc::inline-assets {filename html} {
     return $htm
 }
 
+proc ::mndoc::protect-equations {markdown} {
+    set equations [list]
+    set lines [list]
+    set block ""
+    set inblock false
+    foreach line [split $markdown "\n"] {
+        if {[regexp {^[ \t]*\$\$[ \t]*$} $line]} {
+            if {!$inblock} {
+                set block "$line\n"
+                set inblock true
+                continue
+            }
+            append block "$line\n"
+            set placeholder "MNDOCMATH[llength $equations]Z"
+            lappend equations [list $placeholder [string trimright $block] 1]
+            lappend lines $placeholder
+            set block ""
+            set inblock false
+            continue
+        }
+        if {$inblock} {
+            append block "$line\n"
+        } else {
+            lappend lines $line
+        }
+    }
+    if {$inblock} {
+        lappend lines [string trimright $block]
+    }
+    set markdown [join $lines "\n"]
+
+    set patterns [list \
+        {\$\$[^$\r\n]+\$\$} \
+        {(?s)\\\\\[.*?\\\\\]} \
+        {(?s)\\\\\(.*?\\\\\)} \
+        {(?s)\\\[.*?\\\]} \
+        {(?s)\\\(.*?\\\)} \
+        {\$[^$\r\n]+\$}]
+
+    foreach re $patterns {
+        set pos 0
+        set out ""
+        set found false
+        while {[regexp -start $pos -indices $re $markdown span]} {
+            set found true
+            lassign $span start end
+            append out [string range $markdown $pos [expr {$start - 1}]]
+            set equation [string range $markdown $start $end]
+            set placeholder "MNDOCMATH[llength $equations]Z"
+            lappend equations [list $placeholder $equation 1]
+            append out $placeholder
+            set pos [expr {$end + 1}]
+        }
+        if {$found} {
+            append out [string range $markdown $pos end]
+            set markdown $out
+        }
+    }
+    return [list $markdown $equations]
+}
+
+proc ::mndoc::restore-equations {html equations} {
+    foreach pair $equations {
+        lassign $pair placeholder equation normalize
+        if {$normalize} {
+            set equation [string map [list {\\(} {\(} {\\)} {\)} {\\[} {\[} {\\]} {\]}] $equation]
+        }
+        set html [string map [list $placeholder $equation] $html]
+    }
+    return $html
+}
+
 proc ::mndoc::mndoc {filename outfile args} {
     variable deindent [list \n\t \n "\n    " \n]    
     variable htmltemplate
@@ -771,8 +845,8 @@ proc ::mndoc::mndoc {filename outfile args} {
         }
     }
     if {$arg(--mathjax)} {
-        set document(mathjax) {<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>}
-        append document(mathjax) {<script>  window.MathJax = {  tex: { inlineMath: [['$', '$'], ['\\(', '\\)']]  } }; </script> }
+        set document(mathjax) {<script>window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] } }; </script>}
+        append document(mathjax) {<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>}
     } else {
         set document(mathjax) ""
     }
@@ -813,7 +887,15 @@ proc ::mndoc::mndoc {filename outfile args} {
             set style [dict get $yamldict css]
             append style "\n<style>\n[dict get $yamldict style]</style>"
         }
-        set html [Markdown::convert $mdhtml]
+        set equations [list]
+        set mdforhtml $mdhtml
+        if {$arg(--mathjax)} {
+            lassign [protect-equations $mdforhtml] mdforhtml equations
+        }
+        set html [Markdown::convert $mdforhtml]
+        if {$arg(--mathjax)} {
+            set html [restore-equations $html $equations]
+        }
         set html [mndoc::mark-figures $html]
         if {$arg(--base64)} {
             set html [mndoc::inline-assets $filename $html]
@@ -1339,9 +1421,9 @@ set HELP [string map [list "\n    " "\n"] {
 #'
 #' ```
 #' #' ---
-#' #' title: mndoc::mndoc 0.17.0
+#' #' title: mndoc::mndoc 0.17.1
 #' #' author: Detlef Groth, University of Potsdam, Germany
-#' #' date: 2026-10-31
+#' #' date: 2026-11-23
 #' #' css: mndoc.css
 #' #' style: |
 #' #'   @import url('https://fonts.bunny.net/css?family=Andika&display=swap'); 
@@ -1562,23 +1644,67 @@ set HELP [string map [list "\n    " "\n"] {
 #' 
 #' <a name="equations">**Equations**</a>
 #'
-#' Since version 0.9.0 as well LaTeX equations can be embedded into Markdown documents and are
-#' rendered using the [MathJax](https://www.mathjax.org/) library. Just include either inline 
-#' equations using parenthesis protected by two backslashes or block equations embedded within
-#' brackets protected by two backslashes or within two dollar symbols in your Markdown code and use
-#' the option `--mathjax true` during document conversion. Here an example for 
-#' inline equations:
+#' Since version 0.9.0 as well LaTeX equations can be embedded into Markdown
+#' documents and are rendered using the [MathJax](https://www.mathjax.org/)
+#' library. The equation source stays in your own document: MathJax typesets
+#' it in the browser, so the rendering does not depend on an external
+#' equation service (like CodeCogs, where equations are images fetched from a
+#' third party domain that may disappear).
+#'
+#' Use the option `--mathjax true` during document conversion. You can then
+#' write inline equations using `\( ... \)` or `$ ... $`, and block equations
+#' using `\[ ... \]` or `$$ ... $$`. Legacy doubled-backslash forms
+#' `\\( ... \\)` and `\\[ ... \\]` remain accepted for existing documents.
+#' Equation bodies are protected from Markdown emphasis parsing, so
+#' underscores such as `x_i` remain LaTeX instead of becoming italics.
+#'
+#' Here an inline example:
 #'
 #' ```
-#' The  famous  Einstein  equation  \\( E = mc^2 \\) is  probably  the most known
+#' The famous Einstein equation \( E = mc^2 \) is probably the most known
 #' equation world wide.
 #' ```
 #' 
 #' And here the output (will not work on http://htmlpreview.github.io/):
 #' 
-#' The  famous  Einstein  equation  \\( E = mc^2 \\) is  probably  the most know
+#' The famous Einstein equation \( E = mc^2 \) is probably the most known
 #' equation world wide. 
 #' 
+#' The dollar form is shorter for inline equations:
+#'
+#' ```
+#' The relation $E = mc^2$ is a famous example.
+#' ```
+#'
+#' And here the bracket `\[ ... \]` approach for a block equation:
+#'
+#' ```
+#' \[ \sum_{i=0}^n i^2 = \frac{(n^2+n)(2n+1)}{6} \]
+#' ```
+#'
+#' The output (will as well not work in Github Preview Mode):
+#'
+#' \[ \sum_{i=0}^n i^2 = \frac{(n^2+n)(2n+1)}{6} \]
+#'
+#' Multiline display equations and subscripts use the Pandoc-style `$$` form:
+#'
+#' ```
+#' $$
+#' \left(\prod_{i=1}^{n} x_i\right)^{1/n}
+#' $$
+#' ```
+#'
+#' Here the inline and block double-backslash forms remain accepted for
+#' backward compatibility:
+#'
+#' ```
+#' \\(E = mc^2\\)
+#'
+#' \\[
+#' E = mc^2
+#' \\]
+#' ```
+#'
 #' Block equations should be usually aligned left, like in the
 #' following examples:
 #'
@@ -1643,6 +1769,12 @@ set HELP [string map [list "\n    " "\n"] {
 #' 
 #' ## <a name='changes'>CHANGES</a>
 #'
+#' - 2026-11-23 Release 0.17.1
+#'       - fixed single-backslash `\( ... \)` and `\[ ... \]` equations
+#'       - fixed multiline `$$ ... $$` equations containing underscores
+#'       - preserved legacy double-backslash `\\\( ... \\\)` and `\\\[ ... \\\]`
+#'         delimiters
+#'       - fixed plain triple-backtick fenced code blocks with MathJax enabled
 #' - 2026-11-02 Release 0.17.0
 #'       - flexible command line option order: options may be placed before,
 #'         between or after the two file arguments, each directly followed

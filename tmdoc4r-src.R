@@ -3,8 +3,8 @@
 #' Package: tmdoc4r
 #' Type: Package
 #' Title: tmdoc4r package for literate programming with R, Python, Octave, Julia and Tcl
-#' Version: 0.6.0
-#' Date: 2026-11-03
+#' Version: 0.7.0
+#' Date: 2026-11-24
 #' Author: Detlef Groth
 #' Authors@R: c(person("Detlef","Groth", role=c("aut", "cre"),
 #'                   email = "dgroth@uni-potsdam.de",
@@ -27,6 +27,10 @@
 #' COPYRIGHT HOLDER: Detlef Groth
 
 #' FILE: tmdoc4r/NEWS
+#' 2026-11-24: version 0.7.0 - fix for mathjax inserts with single backticks
+#'                             fix for code blocks without type indicator,
+#'                             fix for math equations with underlines inside
+#'                             adding circular mode graphics for tblocks code chunks
 #' 2026-11-03: version 0.6.0 - update bundled tmdoc to 0.21.1 and mndoc to 0.17.0 bringing
 #'                             direct PDF output, MathJax equations and the book.css book
 #'                             layout, new MathJax/Direct PDF vignette sections and a

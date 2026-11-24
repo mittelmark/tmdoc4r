@@ -59,7 +59,7 @@ The package should be installed in an interactive R session like this:
 
 ```
 install.packages(
-  "https://github.com/mittelmark/tmdoc4r/releases/download/v0.6.0/tmdoc4r_0.6.0.tar.gz",
+  "https://github.com/mittelmark/tmdoc4r/releases/download/v0.7.0/tmdoc4r_0.7.0.tar.gz",
   repos=NULL);
 ```
 
@@ -117,6 +117,9 @@ More examples can be found at the [tmdoc tutorial](https://github.com/mittelmark
 ## Changes
 
 
+- __v0.7.0 - 2026-11-24:__ updated bundled mndoc to 0.17.1 and tblocks to 0.1.0;
+  fixed single-backslash MathJax equations and equations containing underscores,
+  restored untyped fenced code blocks, and added circular tblocks graphics
 - __v0.6.0 - 2026-11-03:__ bundled tmdoc 0.21.1 / mndoc 0.17.0 with direct PDF output,
   MathJax equations and the book.css book layout; new vignette sections, AGENTS.md guide
 - __v0.5.3 - 2026-10-28:__ updating bundled mndoc to 0.15.5, fixing non-ISO YAML dates,
