@@ -664,15 +664,19 @@ tmdoc('infile.Rmd','outfile.html',
 
 ## LaTeX Equations
 
+
 You can as well include LaTeX math code like equations or matrices into your documents.
-This functionality is provided by the [CodeCogs](https://latex.codecogs.com/) webservice.
+This functionality is provided by the [CodeCogs](https://latex.codecogs.com/) webservice or by Using the
+[https://www.mathjax.org/](Mathjax JavaScript library) .
+
+### CodeCogs Equations
 
 <a title="CodeCogs.com" href="https://www.codecogs.com">
 <img src="https://www.codecogs.com/images/poweredbycodecogs.png" border="0" 
 title="CodeCogs - An Open Source Scientific Library" 
 alt="Powered by CodeCogs"></a>
 
-Here an example: 
+Here an example using the CodeCogs web service where the LaTeX code is embedded within `mtex` code blocks:
 
 ```
 ' ```{.mtex}
