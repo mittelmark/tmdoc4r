@@ -1,46 +1,4 @@
-#!/bin/bash
-#' ---------------------------------------------------------------
-#' tmdoc4r - command line application to convert Rmd files to HTML
-#'           requires the R package tmdoc4r to be installed
-#' Usage:
-#'    tmdoc4r FILENAME.Rmd OUTFILE.html ?FILE.CSS?
-########################################################
-##
-##  Copyright (c) 2025, Detlef Groth, University of Potsdam, Germany
-##  License       : BSD
-##  Created By    : Detlef Groth
-##  Created       : 2025-11-05 09:37:57
-##  Last Modified : <251119.0932>
-##
-##  Description   : Bash script for using the tmdoc4r package
-##                  to convert RMarkdown documents to HTML
-##
-##  Installation  : Copy the file as tmdoc4r to your ~/.local/bin
-##                  or ~/bin folder or to any other folder
-##                  belonging to your PATH variable
-##                  make the file executable using for example
-##                  chmod 755 ~/.local/bin/tmdoc4r
-########################################################
-
-function tmdoc4r {
-  if [ -z $2 ]; then
-      echo "tmdoc4r @ Detlef Groth, University of Potsdam, Germany"
-      echo "Usage: tmdoc4r INFILE.Rmd OUTFILE.html ?CSSFILE?"
-  elif [ ! -f "$1" ]; then
-      echo "Error: INFILE '$1' does not exists!"; return
-  else
-      if [ "${2##*.}" == "html" ]; then
-          if [ -z $3 ]; then
-              CSS=$3
-          else
-              CSS="file.path(system.file(package='tmdoc4r'),'files','tmdoc.css')"
-          fi
-          Rscript -e "library(tmdoc4r);tmdoc('$1','$2',css=${CSS},toc=TRUE);"
-      else
-          echo "Error: currently only HTML output is supported!"
-      fi
-  fi
-}
-
-tmdoc4r "$@"
+#!/bin/sh
+scriptdir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+exec Rscript "$scriptdir/tmdoc4r.R" "$@"
 

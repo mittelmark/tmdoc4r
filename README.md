@@ -70,6 +70,15 @@ library(tmdoc4r)
 vignette("tmdoc4r-vignette")
 ```
 
+The package also provides a command-line wrapper that uses the embedded Tcl
+libraries, so no separate `tmdoc` or `mndoc` executable is required:
+
+```
+tmdoc4r document.Rmd document.html
+tmdoc4r document.Rmd document.pdf
+tmdoc4r document.Rmd document.html styles.css
+```
+
 ## Usage
 
 After loading the library Markdown documents with embedded code chunks can be evaluated and converted to HTML documents using the tmdoc function of the tmdoc4r package for instance like this:

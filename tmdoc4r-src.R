@@ -31,6 +31,7 @@
 #'                             fix for code blocks without type indicator,
 #'                             fix for math equations with underlines inside
 #'                             adding circular mode graphics for tblocks code chunks
+#'                             adding an Rscript-based tmdoc4r command using embedded Tcl libraries
 #' 2026-11-03: version 0.6.0 - update bundled tmdoc to 0.21.1 and mndoc to 0.17.0 bringing
 #'                             direct PDF output, MathJax equations and the book.css book
 #'                             layout, new MathJax/Direct PDF vignette sections and a
@@ -132,45 +133,63 @@
 #' 33	31.115	7.19	10.27	1.91	28.3968	24.4444	34.36	4.1	54.94	20.0015
 
 #' FILE: tmdoc4r/exec/tmdoc4r
-#' #!/bin/bash
-#' ########################################################
-#' ##
-#' ##  Copyright (c) 2025, Detlef Groth, University of Potsdam, Germany
-#' ##  License       : BSD
-#' ##  Created By    : Detlef Groth
-#' ##  Created       : 2025-11-05 09:37:57
-#' ##  Last Modified : <251121.1859>
-#' ##
-#' ##  Description   : Bash script for using the tmdoc4r package
-#' ##                  to convert RMarkdown documents to HTML
-#' ##
-#' ##  Installation  : Copy the file as tmdoc4r to your ~/.local/bin
-#' ##                  or ~/bin folder or to any other folder
-#' ##                  belonging to your PATH variable
-#' ##                  make the file executable using for example
-#' ##                  chmod 755 ~/.local/bin/tmdoc4r
-#' ########################################################
-#' 
-#' function tmdoc4r {
-#'   if [ -z $2 ]; then
-#'     echo "Usage: tmdoc4r INFILE.Rmd OUTFILE.html ?CSSFILE?"
-#'   elif [ ! -f "$1" ]; then
-#'     echo "Error: INFILE '$1' does not exists!"; return
-#'   else
-#'     if [ "${2##*.}" == "html" ]; then
-#'       if [ -z $3 ]; then
-#'         CSS=$3
-#'       else
-#'         CSS="file.path(system.file(package='tmdoc4r'),'files','tmdoc.css')"
-#'       fi
-#'       Rscript -e "library(tmdoc4r);tmdoc('$1','$2',css=${CSS},toc=TRUE);"
-#'     else
-#'       echo "Error: currently only HTML output is supported!"
-#'     fi        
-#'   fi
-#' }
-#' 
-#' tmdoc4r "$@"
+#'#!/bin/sh
+#'scriptdir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+#'exec Rscript "$scriptdir/tmdoc4r.R" "$@"
+
+#' FILE: tmdoc4r/exec/tmdoc4r.R
+#'#!/usr/bin/env Rscript
+#'
+#'usage <- function() {
+#'  cat("Usage: tmdoc4r INFILE.Rmd OUTFILE.{html,pdf,md} [CSSFILE]\n")
+#'}
+#'
+#'argv <- commandArgs(trailingOnly=TRUE)
+#'if (length(argv) == 1L && argv[[1]] %in% c("-h", "--help")) {
+#'  usage()
+#'  quit(status=0L)
+#'}
+#'if (length(argv) < 2L) {
+#'  usage()
+#'  quit(status=2L)
+#'}
+#'
+#'infile <- argv[[1]]
+#'outfile <- argv[[2]]
+#'css <- if (length(argv) >= 3L) argv[[3]] else NULL
+#'
+#'if (!file.exists(infile)) {
+#'  stop(sprintf("Input file '%s' does not exist", infile))
+#'}
+#'
+#'library(tmdoc4r)
+#'
+#'extension <- tolower(tools::file_ext(outfile))
+#'if (!extension %in% c("html", "htm", "pdf", "md")) {
+#'  stop("Output must have one of these extensions: .html, .pdf or .md")
+#'}
+#'
+#'html_file <- outfile
+#'if (extension == "pdf") {
+#'  html_file <- tempfile("tmdoc4r-", fileext=".html")
+#'  on.exit(unlink(html_file), add=TRUE)
+#'}
+#'
+#'# The first pass writes the included TOC and the second pass embeds it.
+#'tmdoc(infile, html_file, css=css, mathjax=TRUE, quiet=TRUE, toc=TRUE)
+#'tmdoc(infile, html_file, css=css, mathjax=TRUE, quiet=TRUE, toc=TRUE)
+#'
+#'if (extension == "pdf") {
+#'  tcltk::.Tcl("if {[info commands ::exitorig] eq {}} { rename ::exit ::exitorig }; proc ::exit {args} { return }")
+#'  quote <- function(value) paste0("{", gsub("([\\\\{}])", "\\\\\\1", value), "}")
+#'  tcltk::.Tcl(paste("set ::argv [list",
+#'                    quote(normalizePath(html_file, mustWork=TRUE)),
+#'                    quote(normalizePath(outfile, mustWork=FALSE)),
+#'                    "]"))
+#'  tcltk::.Tcl("set ::argv0 mndoc")
+#'  tcltk::.Tcl("mndoc::main $argv")
+#'  unlink(html_file)
+#'}
 
 #' FILE: tmdoc4r/man/tmdoc4r-package.Rd
 #' \name{tmdoc4r-package}
