@@ -181,11 +181,9 @@ R CMD build --no-build-vignettes tmdoc4r
 R CMD check --ignore-vignettes --no-manual tmdoc4r_<version>.tar.gz
 ```
 
-Requirements: R with `tcltk`; for artifact builds additionally the
-**external `tmdoc` and `mndoc` CLIs on PATH** (`~/.local/bin` — install or
-refresh with the official installer;
-`tmdoc --upgrade` works from 0.21.1 on), WeasyPrint and/or Chromium for
-the vignette PDF, TeX (`texlive-latex-extra`) for the `.Rnw` Sweave
+Requirements: R with `tcltk`; for artifact builds additionally use the
+generated package's embedded Tcl libraries via `exec/tmdoc4r`, WeasyPrint
+and/or Chromium for the vignette PDF, TeX (`texlive-latex-extra`) for the `.Rnw` Sweave
 vignette, Graphviz/ImageMagick for diagram examples, and
 `python3 -c 'import matplotlib'` (Debian/Ubuntu: **`python3-matplotlib`**,
 which pulls in `python3-numpy`) for the vignette's Python plotting

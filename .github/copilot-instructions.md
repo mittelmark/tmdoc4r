@@ -48,9 +48,12 @@ This regenerates the package, generates vignette artifacts, runs `R CMD
 build`, and runs `R CMD check --ignore-vignettes`. There is no separate lint
 command or conventional unit-test suite.
 
-The build requires the external `tmdoc` and `mndoc` executables, WeasyPrint,
-and TeX dependencies used by the `.Rnw` vignette. When preparing artifacts
-without rebuilding that Sweave vignette, run `R CMD build
+The build installs the freshly generated package into `Rbuild-lib/` and uses
+its embedded Tcl libraries through `exec/tmdoc4r`; external `tmdoc` and
+`mndoc` executables are not required. The PDF workflow also needs Chromium or
+WeasyPrint, and the full build needs TeX dependencies used by the `.Rnw`
+vignette. When preparing artifacts without rebuilding that Sweave vignette,
+run `R CMD build
 --no-build-vignettes tmdoc4r` **after** `make build`, which seeds
 `tmdoc4r/inst/doc/` with the vignette Rnw and PDF once its full-build
 attempt is done; without that directory the tarball carries no vignette

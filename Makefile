@@ -13,6 +13,8 @@ CURRENT_MAKEFILE := $(lastword $(MAKEFILE_LIST))
 
 ## argument delegation
 ARGS=
+TMDOC4R_LIB=$(CURDIR)/Rbuild-lib
+TMDOC4R_RUN=R_LIBS=$(TMDOC4R_LIB) $(TMDOC4R_LIB)/tmdoc4r/exec/tmdoc4r
 
 ## default: list existing tasks 
 pkg=tmdoc4r
@@ -29,10 +31,11 @@ build:
 	mv $(pkg)/vignettes temp
 	mkdir $(pkg)/inst/doc
 	mkdir $(pkg)/vignettes
-	tmdoc tmdoc4r-examples.Rmd - | mndoc - $(pkg)/inst/doc/$(pkg)-examples.html --css examples/tmdoc.css
-	tmdoc tmdoc4r-vignette.Rmd - --toc true > /dev/null
-	tmdoc tmdoc4r-vignette.Rmd - --toc true | mndoc - $(pkg)/inst/doc/$(pkg)-vignette.html --css examples/tmdoc.css --mathjax true
-	mndoc $(pkg)/inst/doc/$(pkg)-vignette.html $(pkg)/inst/doc/tmdoc4r-vignette.pdf
+	mkdir -p $(TMDOC4R_LIB)
+	R CMD INSTALL -l $(TMDOC4R_LIB) $(pkg)
+	$(TMDOC4R_RUN) tmdoc4r-examples.Rmd $(pkg)/inst/doc/$(pkg)-examples.html examples/tmdoc.css
+	$(TMDOC4R_RUN) tmdoc4r-vignette.Rmd $(pkg)/inst/doc/$(pkg)-vignette.html examples/tmdoc.css
+	$(TMDOC4R_RUN) tmdoc4r-vignette.Rmd $(pkg)/inst/doc/tmdoc4r-vignette.pdf examples/tmdoc.css
 	mv $(pkg)/inst/doc/tmdoc4r-vignette.pdf $(pkg)/vignettes/
 	cp tmdoc4r-vignette.Rnw  $(pkg)/vignettes/
 	cp examples/tmdoc.css $(pkg)/inst/files/
@@ -50,14 +53,16 @@ build:
 	rm -f $(pkg)/vignettes/*.pdf
 	R_LIBS=`pwd`/$(pkg).Rcheck Rscript $(pkg)-src.R --check $(pkg)_$(VERSION).tar.gz
 vignette:
-	tmdoc tmdoc4r-vignette.Rmd - --toc true > /dev/null
-	tmdoc tmdoc4r-vignette.Rmd - --toc true | mndoc - $(pkg)/inst/doc/$(pkg)-vignette.html --css examples/tmdoc.css --mathjax true
-	mndoc $(pkg)/inst/doc/$(pkg)-vignette.html $(pkg)/inst/doc/tmdoc4r-vignette.pdf
+	mkdir -p $(TMDOC4R_LIB)
+	R CMD INSTALL -l $(TMDOC4R_LIB) $(pkg)
+	$(TMDOC4R_RUN) tmdoc4r-vignette.Rmd $(pkg)/inst/doc/$(pkg)-vignette.html examples/tmdoc.css
+	$(TMDOC4R_RUN) tmdoc4r-vignette.Rmd $(pkg)/inst/doc/tmdoc4r-vignette.pdf examples/tmdoc.css
 	mv $(pkg)/inst/doc/tmdoc4r-vignette.pdf $(pkg)/vignettes/
 book:
-	tmdoc tmdoc4r-vignette.Rmd - --toc true > /dev/null
-	tmdoc tmdoc4r-vignette.Rmd - --toc true | mndoc - tmdoc4r-tutorial-book.html --css book.css --mathjax true
-	mndoc tmdoc4r-tutorial-book.html tmdoc4r-tutorial-book.pdf
+	mkdir -p $(TMDOC4R_LIB)
+	R CMD INSTALL -l $(TMDOC4R_LIB) $(pkg)
+	$(TMDOC4R_RUN) tmdoc4r-vignette.Rmd tmdoc4r-tutorial-book.html book.css
+	$(TMDOC4R_RUN) tmdoc4r-vignette.Rmd tmdoc4r-tutorial-book.pdf book.css
 install: build	
 	Rscript $(pkg)-src.R --install $(pkg)_$(VERSION).tar.gz
 
